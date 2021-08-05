@@ -66,7 +66,7 @@ public class UserUtils {
         }
 
         case "showUsers": {
-            showUserGroups(session, data, true, 0);
+            showUserGroups(session, data, true, recordNr);
             if (recordNr == 0)
                 data.resetColumn(1);
             else

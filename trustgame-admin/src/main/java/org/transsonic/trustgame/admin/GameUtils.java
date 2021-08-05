@@ -35,32 +35,32 @@ public class GameUtils {
             data.setMenuChoice(2);
             data.clearColumns("20%", "Game", "10%", "Round", "10%", "Order", "20%", "Carrier");
             data.clearFormColumn("40%", "Edit Properties");
-            showGames(session, data, true, 0);
+            showGames(session, data, true, 0); // view the list of games, no highlight
             break;
         }
 
         case "viewGame": {
-            showGames(session, data, false, recordNr);
-            editGame(session, data, recordNr, false);
-            showRounds(session, data, false, 0);
+            showGames(session, data, false, recordNr); // view the list of games, highlight viewed game
+            editGame(session, data, recordNr, false); // view the selected game
+            showRounds(session, data, true, 0); // allow editing of rounds for that game, no highlight
             data.resetColumn(2);
             data.resetColumn(3);
             break;
         }
 
         case "editGame": {
-            showGames(session, data, false, recordNr);
-            editGame(session, data, recordNr, true);
-            showRounds(session, data, false, 0);
+            showGames(session, data, false, recordNr); // view the list of games, highlight edited game
+            editGame(session, data, recordNr, true); // edit the selected game
+            showRounds(session, data, false, 0); // view the rounds belonging to that game, no highlight
             data.resetColumn(2);
             data.resetColumn(3);
             break;
         }
 
         case "saveGame": {
-            recordNr = saveGame(request, data, recordNr);
-            showGames(session, data, true, recordNr);
-            showRounds(session, data, false, 0);
+            recordNr = saveGame(request, data, recordNr); // save the edited game
+            showGames(session, data, true, recordNr); // show the games for editing, highlighting the saved one
+            showRounds(session, data, true, 0); // allow editing of rounds for that game, no highlight
             data.resetColumn(2);
             data.resetColumn(3);
             data.resetFormColumn();
@@ -68,9 +68,9 @@ public class GameUtils {
         }
 
         case "newGame": {
-            showGames(session, data, false, 0);
-            editGame(session, data, 0, true);
-            data.resetColumn(1);
+            showGames(session, data, false, 0); // view the list of games, no highlight
+            editGame(session, data, 0, true); // edit the new game
+            data.resetColumn(1); // no rounds visible until save
             data.resetColumn(2);
             data.resetColumn(3);
             break;
@@ -79,8 +79,11 @@ public class GameUtils {
         // Round
         
         case "showRounds": {
-            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
-            showRounds(session, data, true, 0);
+            showGames(session, data, true, recordNr); // view the list of games for editing, highlight selected one
+            if (recordNr == 0)
+                data.resetColumn(1); // to solve 'cancel' for new round
+            else
+                showRounds(session, data, true, 0); // allow editing of rounds for the selected game, no highlight
             data.resetColumn(2);
             data.resetColumn(3);
             data.resetFormColumn();
@@ -88,8 +91,8 @@ public class GameUtils {
         }
 
         case "viewRound": {
-            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
-            showRounds(session, data, false, data.getColumn(0).getSelectedRecordNr());
+            showGames(session, data, false, data.getColumn(0).getSelectedRecordNr()); 
+            showRounds(session, data, false, recordNr);
             editRound(session, data, recordNr, false);
             showOrders(session, data, false, 0);
             data.resetColumn(3);
@@ -97,8 +100,8 @@ public class GameUtils {
         }
 
         case "editRound": {
-            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
-            showRounds(session, data, false, data.getColumn(0).getSelectedRecordNr());
+            showGames(session, data, false, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, false, recordNr);
             editRound(session, data, recordNr, true);
             showOrders(session, data, false, 0);
             data.resetColumn(3);
@@ -106,10 +109,10 @@ public class GameUtils {
         }
 
         case "saveRound": {
-            recordNr = saveRound(request, data, data.getColumn(0).getSelectedRecordNr());
+            recordNr = saveRound(request, data, recordNr);
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
-            showRounds(session, data, true, 0);
-            data.resetColumn(2);
+            showRounds(session, data, true, recordNr);
+            showOrders(session, data, false, 0);
             data.resetColumn(3);
             data.resetFormColumn();
             break;
@@ -117,7 +120,7 @@ public class GameUtils {
 
         case "newRound": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
-            showRounds(session, data, false, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, false, recordNr);
             editRound(session, data, 0, true);
             data.resetColumn(2);
             data.resetColumn(3);
@@ -128,8 +131,11 @@ public class GameUtils {
         
         case "showOrders": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
-            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
-            showOrders(session, data, true, 0);
+            showRounds(session, data, true, recordNr);
+            if (recordNr == 0)
+                data.resetColumn(2); // to solve 'cancel' for new order
+            else
+                showOrders(session, data, true, 0);
             data.resetColumn(3);
             data.resetFormColumn();
             break;
@@ -153,40 +159,70 @@ public class GameUtils {
 
         case "saveOrder": {
             recordNr = saveOrder(request, data, recordNr);
-            showOrders(session, data, true, 0);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, false, recordNr);
+            showOrderCarriers(session, data, false, 0);
             data.resetFormColumn();
             break;
         }
 
         case "newOrder": {
-            showOrders(session, data, false, 0);
+            showGames(session, data, false, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, false, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, false, recordNr);
             editOrder(session, data, 0, true);
+            data.resetColumn(3);
             break;
         }
 
         // OrderCarrier
         
+        case "showOrderCarriers": {
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, recordNr);
+            if (recordNr == 0)
+                data.resetColumn(3); // to solve 'cancel' for new order
+            else
+                showOrderCarriers(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "viewOrderCarrier": {
-            showOrderCarriers(session, data, false, recordNr);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, data.getColumn(2).getSelectedRecordNr());
+            showOrderCarriers(session, data, true, recordNr);
             editOrderCarrier(session, data, recordNr, false);
             break;
         }
 
         case "editOrderCarrier": {
-            showOrderCarriers(session, data, false, recordNr);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, data.getColumn(2).getSelectedRecordNr());
+            showOrderCarriers(session, data, true, recordNr);
             editOrderCarrier(session, data, recordNr, true);
             break;
         }
 
         case "saveOrderCarrier": {
             recordNr = saveOrderCarrier(request, data, recordNr);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, data.getColumn(2).getSelectedRecordNr());
             showOrderCarriers(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
         case "newOrderCarrier": {
-            showOrderCarriers(session, data, false, 0);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, data.getColumn(2).getSelectedRecordNr());
+            showOrderCarriers(session, data, true, recordNr);
             editOrderCarrier(session, data, 0, true);
             break;
         }
@@ -199,14 +235,18 @@ public class GameUtils {
         AdminServlet.makeColumnContent(5, data);
     }
 
-    public static void showGames(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
+    /* ********************************************************************************************************* */
+    /* ****************************************** GAME ********************************************************* */
+    /* ********************************************************************************************************* */
+
+    public static void showGames(HttpSession session, AdminData data, boolean editButton, int selectedGameRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
 
         s.append(AdminTable.startTable());
         for (GameRecord game : gameRecords) {
-            TableRow tableRow = new TableRow(game.getId(), selectedRecordNr, game.getName(), "viewGame");
+            TableRow tableRow = new TableRow(game.getId(), selectedGameRecordNr, game.getName(), "viewGame");
             if (editButton) {
                 tableRow.addButton("Rounds", "showRounds");
                 tableRow.addButton("Edit", "editGame");
@@ -218,7 +258,7 @@ public class GameUtils {
         if (editButton)
             s.append(AdminTable.finalButton("New Game", "newGame"));
 
-        data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(0).setSelectedRecordNr(selectedGameRecordNr);
         data.getColumn(0).setContent(s.toString());
     }
 
@@ -273,7 +313,7 @@ public class GameUtils {
     /* ***************************************** ROUND ********************************************************* */
     /* ********************************************************************************************************* */
 
-    public static void showRounds(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
+    public static void showRounds(HttpSession session, AdminData data, boolean editButton, int selectedRoundRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<RoundRecord> roundRecords = dslContext.selectFrom(Tables.ROUND)
@@ -281,10 +321,12 @@ public class GameUtils {
 
         s.append(AdminTable.startTable());
         for (RoundRecord round : roundRecords) {
-            TableRow tableRow = new TableRow(round.getId(), selectedRecordNr, "Round " + round.getRoundnumber(),
+            TableRow tableRow = new TableRow(round.getId(), selectedRoundRecordNr, "Round " + round.getRoundnumber(),
                     "viewRound");
-            if (editButton)
+            if (editButton) {
+                tableRow.addButton("Orders", "showOrders");
                 tableRow.addButton("Edit", "editRound");
+            }
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
@@ -292,7 +334,7 @@ public class GameUtils {
         if (editButton)
             s.append(AdminTable.finalButton("New Round", "newRound"));
 
-        data.getColumn(1).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(1).setSelectedRecordNr(selectedRoundRecordNr);
         data.getColumn(1).setContent(s.toString());
     }
 
@@ -344,7 +386,7 @@ public class GameUtils {
     /* ***************************************** ORDER ********************************************************* */
     /* ********************************************************************************************************* */
 
-    public static void showOrders(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
+    public static void showOrders(HttpSession session, AdminData data, boolean editButton, int selectedOrderRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<OrderRecord> orderRecords = dslContext.selectFrom(Tables.ORDER)
@@ -352,10 +394,12 @@ public class GameUtils {
 
         s.append(AdminTable.startTable());
         for (OrderRecord order : orderRecords) {
-            TableRow tableRow = new TableRow(order.getId(), selectedRecordNr, "Order #" + order.getOrdernumber(),
+            TableRow tableRow = new TableRow(order.getId(), selectedOrderRecordNr, "Order #" + order.getOrdernumber(),
                     "viewOrder");
-            if (editButton)
+            if (editButton) {
+                tableRow.addButton("Carriers", "showOrderCarriers");
                 tableRow.addButton("Edit", "editOrder");
+            }
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
@@ -363,7 +407,7 @@ public class GameUtils {
         if (editButton)
             s.append(AdminTable.finalButton("New Order", "newOrder"));
 
-        data.getColumn(2).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(2).setSelectedRecordNr(selectedOrderRecordNr);
         data.getColumn(2).setContent(s.toString());
     }
 
@@ -432,7 +476,7 @@ public class GameUtils {
     /* ********************************************************************************************************* */
 
     public static void showOrderCarriers(HttpSession session, AdminData data, boolean editButton,
-            int selectedRecordNr) {
+            int selectedOrderCarrierRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<OrdercarrierRecord> orderCarrierRecords = dslContext.selectFrom(Tables.ORDERCARRIER)
@@ -440,7 +484,7 @@ public class GameUtils {
 
         s.append(AdminTable.startTable());
         for (OrdercarrierRecord orderCarrier : orderCarrierRecords) {
-            TableRow tableRow = new TableRow(orderCarrier.getId(), selectedRecordNr,
+            TableRow tableRow = new TableRow(orderCarrier.getId(), selectedOrderCarrierRecordNr,
                     makeCarrierString(data, orderCarrier), "viewOrderCarrier");
             if (editButton)
                 tableRow.addButton("Edit", "editOrderCarrier");
@@ -451,7 +495,7 @@ public class GameUtils {
         if (editButton)
             s.append(AdminTable.finalButton("New OrderCarrier", "newOrderCarrier"));
 
-        data.getColumn(3).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(3).setSelectedRecordNr(selectedOrderCarrierRecordNr);
         data.getColumn(3).setContent(s.toString());
     }
 
