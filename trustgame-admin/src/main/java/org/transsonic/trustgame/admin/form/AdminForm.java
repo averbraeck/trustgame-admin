@@ -21,6 +21,8 @@ public class AdminForm {
     private int cancelRecordNr = 0;
     private String saveMethod = "";
     private String editMethod = "";
+    private String deleteMethod = "";
+    private String deleteText = "Delete";
     List<AbstractFormEntry<?, ?>> entries = new ArrayList<>();
     private boolean multipart;
     private boolean edit;
@@ -97,6 +99,15 @@ public class AdminForm {
             s.append(this.recordNr);
             s.append("); return false;\">Edit</a></span>");
         }
+        if (this.edit && this.deleteMethod.length() > 0) {
+            s.append("      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");
+            s.append(this.deleteMethod);
+            s.append("', ");
+            s.append(this.recordNr);
+            s.append("); return false;\">");
+            s.append(this.deleteText);
+            s.append("</a></span>");
+        }
         s.append("    </div>\n");
     }
     
@@ -129,6 +140,18 @@ public class AdminForm {
 
     public AdminForm setEditMethod(String editMethod) {
         this.editMethod = editMethod;
+        return this;
+    }
+
+    public AdminForm setDeleteMethod(String deleteeMethod) {
+        this.deleteMethod = deleteeMethod;
+        this.deleteText = "Delete";
+        return this;
+    }
+
+    public AdminForm setDeleteMethod(String deleteeMethod, String deleteText) {
+        this.deleteMethod = deleteeMethod;
+        this.deleteText = deleteText;
         return this;
     }
 

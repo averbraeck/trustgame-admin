@@ -21,7 +21,12 @@ import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameplayRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameuserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.SelectedcarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.UsercarrierRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.UserorderRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.UserroundRecord;
 
 public class GamePlayUtils {
 
@@ -124,11 +129,43 @@ public class GamePlayUtils {
             break;
         }
 
-        case "newGameUser": {
+        case "addGameUser": {
             showGames(session, data, data.getColumn(0).getSelectedRecordNr());
             showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
             showGameUsers(session, data, true, recordNr);
             editGameUser(session, data, 0, true);
+            break;
+        }
+
+        case "removeGameUser": {
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            removeGameUser(session, data, recordNr);
+            showGameUsers(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "selectGameUserGroup": {
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showGameUsers(session, data, true, recordNr);
+            // TODO: selectGameUserGroup(session, data);
+            ModalWindowUtils.popup(data, "Method not yet implemented",
+                    "<p>Adding groups of users not yet implemented</p>",
+                    "clickRecordId('showGameUsers'," + data.getColumn(1).getSelectedRecordNr() + ")");
+            break;
+        }
+
+        case "addGameUserGroup": {
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            // TODO: addGameUserGroup(session, data);
+            showGameUsers(session, data, true, recordNr);
+            data.resetFormColumn();
+            ModalWindowUtils.popup(data, "Method not yet implemented",
+                    "<p>Adding groups of users not yet implemented</p>",
+                    "clickRecordId('showGameUsers'," + data.getColumn(1).getSelectedRecordNr() + ")");
             break;
         }
 
@@ -251,18 +288,23 @@ public class GamePlayUtils {
 
         s.append(AdminTable.startTable());
         for (GameuserRecord gameUser : gameUserRecords) {
+            boolean played = userHasPlayed(data, gameUser);
             UserRecord user = SqlUtils.readUserFromUserId(data, gameUser.getUserId());
             TableRow tableRow = new TableRow(gameUser.getId(), selectedGameuserRecordNr, user.getName(),
                     "viewGameUser");
             if (editButton) {
+                if (!played)
+                    tableRow.addButton("Remove", "removeGameUser");
                 tableRow.addButton("Edit", "editGameUser");
             }
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
 
-        if (editButton)
-            s.append(AdminTable.finalButton("New GameUser", "newGameUser"));
+        if (editButton) {
+            s.append(AdminTable.finalButton("Add User to GamePlay", "addGameUser"));
+            s.append(AdminTable.finalButton("Add UserGroup to GamePlay", "addGameUserGroup"));
+        }
 
         data.getColumn(2).setSelectedRecordNr(selectedGameuserRecordNr);
         data.getColumn(2).setContent(s.toString());
@@ -272,12 +314,14 @@ public class GamePlayUtils {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         GameuserRecord gameUser = gameUserId == 0 ? initializeGameUser(data)
                 : dslContext.selectFrom(Tables.GAMEUSER).where(Tables.GAMEUSER.ID.eq(gameUserId)).fetchOne();
+        boolean played = gameUserId != 0 && userHasPlayed(data, gameUser);
 
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)
                 .setCancelMethod("showGameUsers", data.getColumn(1).getSelectedRecordNr())
                 .setEditMethod("editGameUser")
+                .setDeleteMethod("removeGameUser", gameUserId == 0 ? "" : played ? "REMOVE INCLUDING PLAY DATA" : "Remove from Game")
                 .setSaveMethod("saveGameUser")
                 .setRecordNr(gameUserId)
                 .startForm()
@@ -335,6 +379,56 @@ public class GamePlayUtils {
         return gameUser.getId();
     }
 
+    public static void removeGameUser(HttpSession session, AdminData data, int gameUserId) {
+        if (gameUserId == 0)
+            return;
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        GameuserRecord gameUser = dslContext.selectFrom(Tables.GAMEUSER).where(Tables.GAMEUSER.ID.eq(gameUserId))
+                .fetchOne();
+        if (userHasPlayed(data, gameUser)) {
+            // remove all play records
+            try {
+                List<UsercarrierRecord> userCarriers = dslContext.selectFrom(Tables.USERCARRIER)
+                        .where(Tables.USERCARRIER.GAMEUSER_ID.eq(gameUserId)).fetch(); // bought reports
+                for (UsercarrierRecord userCarrier : userCarriers) {
+                    userCarrier.delete();
+                }
+                List<UserclickRecord> userClicks = dslContext.selectFrom(Tables.USERCLICK)
+                        .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUserId)).fetch(); // clicks
+                for (UserclickRecord userClick : userClicks) {
+                    userClick.delete();
+                }
+                List<UserroundRecord> userRounds = dslContext.selectFrom(Tables.USERROUND)
+                        .where(Tables.USERROUND.GAMEUSER_ID.eq(gameUserId)).fetch();
+                for (UserroundRecord userRound : userRounds) {
+                    List<UserorderRecord> userOrders = dslContext.selectFrom(Tables.USERORDER)
+                            .where(Tables.USERORDER.USERROUND_ID.eq(userRound.getId())).fetch();
+                    for (UserorderRecord userOrder : userOrders) {
+                        List<SelectedcarrierRecord> selectedCarriers = dslContext.selectFrom(Tables.SELECTEDCARRIER)
+                                .where(Tables.SELECTEDCARRIER.USERORDER_ID.eq(userOrder.getId())).fetch();
+                        for (SelectedcarrierRecord selectedCarrier : selectedCarriers) {
+                            selectedCarrier.delete();
+                        }
+                        userOrder.delete();
+                    }
+                    userRound.delete();
+                }
+                gameUser.delete();
+            } catch (DataAccessException exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('gameplay')");
+            }
+        } else {
+            // just delete the gameuser -- no play yet
+            try {
+                gameUser.delete();
+            } catch (DataAccessException exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('gameplay')");
+            }
+        }
+    }
+
     private static GameuserRecord initializeGameUser(AdminData data) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         GameuserRecord gameUser = dslContext.newRecord(Tables.GAMEUSER);
@@ -342,13 +436,31 @@ public class GamePlayUtils {
         int gameId = data.getColumn(0).getSelectedRecordNr();
         GameRecord game = SqlUtils.readGameFromGameId(data, gameId);
         gameUser.setGameplayId(gamePlayId);
-        PlayerorganizationRecord organization = SqlUtils.readPlayerOrganizationFromId(data,
-                game.getOrganizationId());
+        PlayerorganizationRecord organization = SqlUtils.readPlayerOrganizationFromId(data, game.getOrganizationId());
         gameUser.setScoreprofit(organization.getStartprofit());
         gameUser.setScoresatisfaction(organization.getStartsatisfaction());
         gameUser.setScoresustainability(organization.getStartsustainability());
         gameUser.setRoundnumber(UInteger.valueOf(1));
         gameUser.setRoundstatus(0);
         return gameUser;
+    }
+
+    private static boolean userHasPlayed(AdminData data, GameuserRecord gameUser) {
+        if (gameUser.getRoundnumber().intValue() > 1 || gameUser.getRoundstatus() != 0)
+            return true;
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        UserclickRecord userClick = dslContext.selectFrom(Tables.USERCLICK)
+                .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetchAny(); // clicks
+        if (userClick != null)
+            return true;
+        UserroundRecord userRound = dslContext.selectFrom(Tables.USERROUND)
+                .where(Tables.USERROUND.GAMEUSER_ID.eq(gameUser.getId())).fetchAny(); // rounds
+        if (userRound != null)
+            return true;
+        UsercarrierRecord userCarrier = dslContext.selectFrom(Tables.USERCARRIER)
+                .where(Tables.USERCARRIER.GAMEUSER_ID.eq(gameUser.getId())).fetchAny(); // bought reports
+        if (userCarrier != null)
+            return true;
+        return false;
     }
 }

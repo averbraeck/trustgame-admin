@@ -146,7 +146,10 @@ public class AdminServlet extends HttpServlet {
         case "viewGameUser":
         case "editGameUser":
         case "saveGameUser":
-        case "newGameUser":
+        case "addGameUser":
+        case "removeGameUser":
+        case "selectGameUserGroup":
+        case "addGameUserGroup":
             data.setMenuChoice("gameplay") ;
             GamePlayUtils.handleMenu(request, click, recordNr);
             break;

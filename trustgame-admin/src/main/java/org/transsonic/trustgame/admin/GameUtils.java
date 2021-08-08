@@ -144,6 +144,7 @@ public class GameUtils {
         case "viewOrder": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, recordNr);
             editOrder(session, data, recordNr, false);
             showOrderCarriers(session, data, true, 0);
             break;
@@ -152,6 +153,7 @@ public class GameUtils {
         case "editOrder": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, recordNr);
             editOrder(session, data, recordNr, true);
             showOrderCarriers(session, data, true, 0);
             break;
@@ -170,7 +172,7 @@ public class GameUtils {
         case "newOrder": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
-            showOrders(session, data, true, recordNr);
+            showOrders(session, data, true, 0);
             editOrder(session, data, 0, true);
             data.resetColumn(3);
             break;
