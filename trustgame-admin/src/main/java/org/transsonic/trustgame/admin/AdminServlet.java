@@ -122,7 +122,18 @@ public class AdminServlet extends HttpServlet {
             break;
 
         case "review":
+        case "showReviewRounds":
+        case "showReviews":
+        case "viewReview":
+        case "editReview":
+        case "saveReview":
+        case "newReview":
+        case "viewCarrierReview":
+        case "editCarrierReview":
+        case "saveCarrierReview":
+        case "newCarrierReview":
             data.setMenuChoice("review") ;
+            ReviewUtils.handleMenu(request, click, recordNr);
             break;
 
         case "gameplay":
