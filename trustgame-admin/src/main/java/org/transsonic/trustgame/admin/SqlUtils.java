@@ -12,6 +12,8 @@ import org.jooq.impl.DSL;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 
 public final class SqlUtils {
@@ -27,6 +29,18 @@ public final class SqlUtils {
 
         Class.forName("com.mysql.cj.jdbc.Driver");
         return DriverManager.getConnection(jdbcURL, dbUser, dbPassword);
+    }
+
+    public static GameRecord readGameFromGameId(final AdminData data, final Integer gameId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        return dslContext.selectFrom(Tables.GAME).where(Tables.GAME.ID.eq(gameId)).fetchAny();
+    }
+
+    public static PlayerorganizationRecord readPlayerOrganizationFromId(final AdminData data,
+            final Integer playerOrganizationId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        return dslContext.selectFrom(Tables.PLAYERORGANIZATION)
+                .where(Tables.PLAYERORGANIZATION.ID.eq(playerOrganizationId)).fetchAny();
     }
 
     public static UserRecord readUserFromUserId(final AdminData data, final Integer userId) {
@@ -51,6 +65,6 @@ public final class SqlUtils {
 
     public static void loadAttributes(HttpSession session) {
         AdminData data = SessionUtils.getData(session);
-        data.setMenuChoice(0);
+        data.setMenuChoice("");
     }
 }

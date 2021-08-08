@@ -23,9 +23,10 @@ public class FBReportUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
+        
         switch (click) {
+        
         case "fbreport": {
-            data.setMenuChoice(2);
             data.clearColumns("40%", "FBReport");
             data.clearFormColumn("60%", "Edit Properties");
             showFBReports(session, data, true, 0);
@@ -33,13 +34,13 @@ public class FBReportUtils {
         }
 
         case "viewFBReport": {
-            showFBReports(session, data, false, recordNr);
+            showFBReports(session, data, true, recordNr);
             editFBReport(session, data, recordNr, false);
             break;
         }
 
         case "editFBReport": {
-            showFBReports(session, data, false, recordNr);
+            showFBReports(session, data, true, recordNr);
             editFBReport(session, data, recordNr, true);
             break;
         }
@@ -52,7 +53,7 @@ public class FBReportUtils {
         }
 
         case "newFBReport": {
-            showFBReports(session, data, false, 0);
+            showFBReports(session, data, true, 0);
             editFBReport(session, data, 0, true);
             break;
         }
@@ -61,7 +62,7 @@ public class FBReportUtils {
             break;
         }
 
-        AdminServlet.makeColumnContent(2, data);
+        AdminServlet.makeColumnContent(data);
     }
 
     public static void showFBReports(HttpSession session, AdminData data, boolean editButton,

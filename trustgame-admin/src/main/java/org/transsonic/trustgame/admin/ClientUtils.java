@@ -21,9 +21,10 @@ public class ClientUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
+        
         switch (click) {
+        
         case "client": {
-            data.setMenuChoice(4);
             data.clearColumns("40%", "Client");
             data.clearFormColumn("60%", "Edit Properties");
             showClients(session, data, true, 0);
@@ -31,13 +32,13 @@ public class ClientUtils {
         }
 
         case "viewClient": {
-            showClients(session, data, false, recordNr);
+            showClients(session, data, true, recordNr);
             editClient(session, data, recordNr, false);
             break;
         }
 
         case "editClient": {
-            showClients(session, data, false, recordNr);
+            showClients(session, data, true, recordNr);
             editClient(session, data, recordNr, true);
             break;
         }
@@ -50,7 +51,7 @@ public class ClientUtils {
         }
 
         case "newClient": {
-            showClients(session, data, false, 0);
+            showClients(session, data, true, 0);
             editClient(session, data, 0, true);
             break;
         }
@@ -59,7 +60,7 @@ public class ClientUtils {
             break;
         }
 
-        AdminServlet.makeColumnContent(2, data);
+        AdminServlet.makeColumnContent(data);
     }
 
     public static void showClients(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {

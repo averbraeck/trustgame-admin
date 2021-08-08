@@ -24,9 +24,10 @@ public class CarrierUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
+
         switch (click) {
+
         case "carrier": {
-            data.setMenuChoice(2);
             data.clearColumns("40%", "Carrier");
             data.clearFormColumn("60%", "Edit Properties");
             showCarriers(session, data, true, 0);
@@ -34,13 +35,13 @@ public class CarrierUtils {
         }
 
         case "editCarrier": {
-            showCarriers(session, data, false, recordNr);
+            showCarriers(session, data, true, recordNr);
             editCarrier(session, data, recordNr, true);
             break;
         }
 
         case "viewCarrier": {
-            showCarriers(session, data, false, recordNr);
+            showCarriers(session, data, true, recordNr);
             editCarrier(session, data, recordNr, false);
             break;
         }
@@ -53,7 +54,7 @@ public class CarrierUtils {
         }
 
         case "newCarrier": {
-            showCarriers(session, data, false, 0);
+            showCarriers(session, data, true, 0);
             editCarrier(session, data, 0, true);
             break;
         }
@@ -62,7 +63,7 @@ public class CarrierUtils {
             break;
         }
 
-        AdminServlet.makeColumnContent(2, data);
+        AdminServlet.makeColumnContent(data);
     }
 
     public static void showCarriers(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {

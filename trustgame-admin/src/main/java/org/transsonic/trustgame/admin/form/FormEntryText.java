@@ -69,7 +69,10 @@ public class FormEntryText extends AbstractFormEntry<FormEntryText, String> {
         else
             s.append("\" name=\"");
         s.append(getTableField().getName());
-        s.append("\">\n");
+        if (isReadOnly())
+            s.append("\" readonly>\n");
+        else
+            s.append("\">\n");
         s.append(getLastEnteredValue() == null ? "" : getLastEnteredValue());
         s.append("\n</textarea>\n");
         s.append("</td>\n");

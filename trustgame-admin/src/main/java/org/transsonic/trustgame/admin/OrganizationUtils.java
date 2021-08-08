@@ -21,9 +21,10 @@ public class OrganizationUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
+        
         switch (click) {
+        
         case "organization": {
-            data.setMenuChoice(4);
             data.clearColumns("40%", "PlayerOrganization");
             data.clearFormColumn("60%", "Edit Properties");
             showOrganizations(session, data, true, 0);
@@ -31,13 +32,13 @@ public class OrganizationUtils {
         }
 
         case "editOrganization": {
-            showOrganizations(session, data, false, recordNr);
+            showOrganizations(session, data, true, recordNr);
             editOrganization(session, data, recordNr, true);
             break;
         }
 
         case "viewOrganization": {
-            showOrganizations(session, data, false, recordNr);
+            showOrganizations(session, data, true, recordNr);
             editOrganization(session, data, recordNr, false);
             break;
         }
@@ -50,7 +51,7 @@ public class OrganizationUtils {
         }
 
         case "newOrganization": {
-            showOrganizations(session, data, false, 0);
+            showOrganizations(session, data, true, 0);
             editOrganization(session, data, 0, true);
             break;
         }
@@ -59,7 +60,7 @@ public class OrganizationUtils {
             break;
         }
         
-        AdminServlet.makeColumnContent(2, data);
+        AdminServlet.makeColumnContent(data);
     }
 
     public static void showOrganizations(HttpSession session, AdminData data, boolean editButton,

@@ -10,6 +10,7 @@ public abstract class AbstractFormEntry<F extends AbstractFormEntry<F, T>, T> {
     private String label;
     private String type;
     private boolean required;
+    private boolean readOnly;
     protected String errors; // cumulative error register
     private T initialValue; // to be able to reset the form
     private String lastEnteredValue; // to restore the form after error
@@ -19,6 +20,7 @@ public abstract class AbstractFormEntry<F extends AbstractFormEntry<F, T>, T> {
         this.label = this.tableField.getName();
         this.type = this.tableField.getType().getName().toUpperCase();
         this.required = false;
+        this.readOnly = false;
         this.errors = "";
     }
 
@@ -85,6 +87,22 @@ public abstract class AbstractFormEntry<F extends AbstractFormEntry<F, T>, T> {
 
     public void setLastEnteredValue(String lastEnteredValue) {
         this.lastEnteredValue = lastEnteredValue;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    @SuppressWarnings("unchecked")
+    public F setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+        return (F) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public F setReadOnly() {
+        this.readOnly = true;
+        return (F) this;
     }
 
     public String getErrors() {

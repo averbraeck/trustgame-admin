@@ -56,7 +56,10 @@ public class FormEntryPickRecord extends AbstractFormEntry<FormEntryPickRecord, 
         else
             s.append(" name=\"");
         s.append(getTableField().getName());
-        s.append("\">\n");
+        if (isReadOnly())
+            s.append("\" readonly>\n");
+        else
+            s.append("\">\n");
         for (String name : this.records.keySet()) {
             int id = this.records.get(name);
             s.append("        <option value=\"");

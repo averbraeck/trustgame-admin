@@ -118,7 +118,10 @@ public class FormEntryImage extends AbstractFormEntry<FormEntryImage, byte[]> {
         s.append(getTableField().getName());
         s.append("\" id=\"");
         s.append(getTableField().getName());
-        s.append("'\" />\n");
+        if (isReadOnly())
+            s.append("'\" readonly />\n");
+        else
+            s.append("'\" />\n");
         if (isLargeImage())
             s.append("        <div class=\"tg-preview-image-200\">\n");
         else

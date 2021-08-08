@@ -38,7 +38,7 @@ public class AdminData {
      */
     private UserRecord user;
 
-    private TableColumn[] tableColumns = new TableColumn[4];
+    private TableColumn[] tableColumns;
     
     private FormColumn formColumn;
 
@@ -51,7 +51,7 @@ public class AdminData {
     /**
      * which menu has been chosen, to maintain persistence after a POST. <br>
      */
-    private int menuChoice = 0;
+    private String menuChoice = "";
 
     /**
      * when 0, do not show popup; when 1: show popup. <br>
@@ -108,14 +108,18 @@ public class AdminData {
         this.showModalWindow = showModalWindow;
     }
 
-    public int getMenuChoice() {
+    public String getMenuChoice() {
         return menuChoice;
     }
 
-    public void setMenuChoice(int menuChoice) {
+    public void setMenuChoice(String menuChoice) {
         this.menuChoice = menuChoice;
     }
 
+    public String getTopMenu() {
+        return AdminServlet.getTopMenu(this);
+    }
+    
     public String getContentHtml() {
         return contentHtml;
     }
@@ -133,7 +137,8 @@ public class AdminData {
     }
 
     public void clearColumns(String... widthsAndHeaders) {
-        for (int i = 0; i < widthsAndHeaders.length / 2; i++) {
+        this.tableColumns = new TableColumn[widthsAndHeaders.length / 2];
+        for (int i = 0; i < this.tableColumns.length; i++) {
             this.tableColumns[i] = new TableColumn(widthsAndHeaders[2 * i], widthsAndHeaders[2 * i + 1]);
         }
     }
@@ -155,6 +160,10 @@ public class AdminData {
     
     public FormColumn getFormColumn() {
         return this.formColumn;
+    }
+
+    public int getNrColumns() {
+        return this.tableColumns.length;
     }
     
     public TableColumn getColumn(int nr) {

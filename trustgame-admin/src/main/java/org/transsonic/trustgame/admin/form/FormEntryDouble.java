@@ -93,7 +93,10 @@ public class FormEntryDouble extends AbstractFormEntry<FormEntryDouble, Double> 
         s.append(getTableField().getName());
         s.append("\" value=\"");
         s.append(getLastEnteredValue() == null ? "" : getLastEnteredValue());
-        s.append("\" />");
+        if (isReadOnly())
+            s.append("\" readonly />");
+        else
+            s.append("\" />");
         s.append("</td>\n");
         s.append("    </tr>\n");
         return s.toString();

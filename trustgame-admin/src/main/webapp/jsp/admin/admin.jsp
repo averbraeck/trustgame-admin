@@ -7,7 +7,10 @@
     <title>TrustGame Administration</title>
 
     <link rel="stylesheet" type="text/css" href="/trustgame-admin/css/admin.css" />
+    <link rel="stylesheet" type="text/css" href="/trustgame-admin/css/dtsel.css" />
+
     <script src="/trustgame-admin/js/admin.js"></script>
+    <script src="/trustgame-admin/js/dtsel.js"></script>
 
     <style>
     table, th, td {
@@ -44,14 +47,7 @@
       <div class="tg-body">
       
         <div class="tg-admin-menu">
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('user')">Users</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('carrier')">Carriers</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('fbreport')">FB Report</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('client')">Clients</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('organization')">Organizations</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('game')">Games</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('gameplay')">GamePlay</div>
-          <div class="tg-button-large tg-admin-menu-button" onclick="clickMenu('logging')">Logging</div>
+          ${adminData.getTopMenu()}
         </div>
         <div class="tg-admin" id="tg-admin">
           ${adminData.getContentHtml()}

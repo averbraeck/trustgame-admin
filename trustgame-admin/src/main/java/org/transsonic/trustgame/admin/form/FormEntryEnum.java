@@ -50,7 +50,10 @@ public class FormEntryEnum<T extends EnumType> extends AbstractFormEntry<FormEnt
         else
             s.append(" name=\"");
         s.append(getTableField().getName());
-        s.append("\">\n");
+        if (isReadOnly())
+            s.append("\" readonly>\n");
+        else
+            s.append("\">\n");
         for (T entry : getPickListEntries()) {
             s.append("        <option value=\"");
             s.append(entry.getLiteral());

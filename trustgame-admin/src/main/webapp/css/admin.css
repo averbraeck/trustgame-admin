@@ -16,19 +16,6 @@ html, body {
   cursor: pointer;
 }
 
-.tg-button-large {
-  flex-grow: 0;
-  width: 10%;
-  height: 30px;
-  background: navy;
-  font-size: 1.4em;
-  color: white;
-  text-align: center;
-  padding-top: 7px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
 .tg-page {
   display: flex;
   flex-direction: column;
@@ -213,19 +200,30 @@ html, body {
   margin-bottom: 20px;
 }
 
+.tg-admin-menu-button, .tg-admin-menu-button-red, .tg-admin-menu-button-inactive {
+  flex-grow: 0;
+  width: 8%;
+  height: 28px;
+  font-size: 1.2em;
+  color: white;
+  text-align: center;
+  padding-top: 6px;
+  border-radius: 10px;
+}
+
 .tg-admin-menu-button {
-  width: 10%;
+  background-color: navy;
+  cursor: pointer;
 }
 
 .tg-admin-menu-button-inactive {
-  width: 10%;
   background-color: gray;
   cursor: default;
 }
 
 .tg-admin-menu-button-red {
-  width: 10%;
   background-color: red;
+  cursor: pointer;
 }
 
 .tg-admin {

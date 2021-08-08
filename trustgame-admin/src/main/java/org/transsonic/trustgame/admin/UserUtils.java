@@ -29,7 +29,6 @@ public class UserUtils {
         switch (click) {
 
         case "user": {
-            data.setMenuChoice(1);
             data.clearColumns("30%", "UserGroup", "30%", "User");
             data.clearFormColumn("40%", "Edit Properties");
             showUserGroups(session, data, true, 0);
@@ -37,15 +36,15 @@ public class UserUtils {
         }
 
         case "viewUserGroup": {
-            showUserGroups(session, data, false, recordNr);
-            showUsers(session, data, recordNr, false, 0);
+            showUserGroups(session, data, true, recordNr);
+            showUsers(session, data, recordNr, true, 0);
             editUserGroup(session, data, recordNr, false);
             break;
         }
 
         case "editUserGroup": {
-            showUserGroups(session, data, false, recordNr);
-            showUsers(session, data, recordNr, false, 0);
+            showUserGroups(session, data, true, recordNr);
+            showUsers(session, data, recordNr, true, 0);
             editUserGroup(session, data, recordNr, true);
             break;
         }
@@ -59,7 +58,7 @@ public class UserUtils {
         }
 
         case "newUserGroup": {
-            showUserGroups(session, data, false, 0);
+            showUserGroups(session, data, true, 0);
             data.resetColumn(1);
             editUserGroup(session, data, 0, true);
             break;
@@ -76,22 +75,22 @@ public class UserUtils {
         }
 
         case "viewUser": {
-            showUserGroups(session, data, false, data.getColumn(0).getSelectedRecordNr());
-            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), false, recordNr);
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, recordNr);
             editUser(session, data, recordNr, false);
             break;
         }
 
         case "editUser": {
-            showUserGroups(session, data, false, data.getColumn(0).getSelectedRecordNr());
-            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), false, recordNr);
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, recordNr);
             editUser(session, data, recordNr, true);
             break;
         }
 
         case "newUser": {
-            showUserGroups(session, data, false, data.getColumn(0).getSelectedRecordNr());
-            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), false, 0);
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, 0);
             editUser(session, data, 0, true);
             break;
         }
@@ -107,7 +106,7 @@ public class UserUtils {
         case "readUsers":
         case "generateUsers": {
             // TODO: implement readUsers and generateUsers
-            // makeUserGroupContent(session, data, false, 0);
+            // makeUserGroupContent(session, data, true, 0);
             // data.resetColumn(1);
             ModalWindowUtils.popup(data, "Method not yet implemented",
                     "<p>User generation and reading not yet implemented</p>",
@@ -119,7 +118,7 @@ public class UserUtils {
             break;
         }
 
-        AdminServlet.makeColumnContent(3, data);
+        AdminServlet.makeColumnContent(data);
     }
 
     public static void showUserGroups(HttpSession session, AdminData data, boolean editButton,

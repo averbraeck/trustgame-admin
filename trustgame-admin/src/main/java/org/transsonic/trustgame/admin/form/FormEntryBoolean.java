@@ -34,7 +34,11 @@ public class FormEntryBoolean extends AbstractFormEntry<FormEntryBoolean, Byte> 
         s.append(getTableField().getName());
         s.append("\" ");
         s.append(getLastEnteredValue() == null || "0".equals(getLastEnteredValue()) ? "" : "checked");
-        s.append(" value=\"1\" />");
+        s.append(" value=\"1\"");
+        if (isReadOnly())
+            s.append(" readonly />");
+        else
+            s.append(" />");
         s.append("</td>\n");
         s.append("    </tr>\n");
         return s.toString();
