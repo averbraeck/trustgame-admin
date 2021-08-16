@@ -20,6 +20,7 @@ public class AdminForm {
     private String cancelMethod = "";
     private int cancelRecordNr = 0;
     private String saveMethod = "";
+    private String saveText = "Save";
     private String editMethod = "";
     private String deleteMethod = "";
     private String deleteText = "Delete";
@@ -90,7 +91,9 @@ public class AdminForm {
             s.append(this.saveMethod);
             s.append("', ");
             s.append(this.recordNr);
-            s.append("); return false;\">Save</a></span>");
+            s.append("); return false;\">");
+            s.append(this.saveText);
+            s.append("</a></span>");
         }
         if (!this.edit && this.editMethod.length() > 0) {
             s.append("      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");
@@ -135,6 +138,12 @@ public class AdminForm {
 
     public AdminForm setSaveMethod(String saveMethod) {
         this.saveMethod = saveMethod;
+        return this;
+    }
+
+    public AdminForm setSaveMethod(String saveMethod, String saveText) {
+        this.saveMethod = saveMethod;
+        this.saveText = saveText;
         return this;
     }
 

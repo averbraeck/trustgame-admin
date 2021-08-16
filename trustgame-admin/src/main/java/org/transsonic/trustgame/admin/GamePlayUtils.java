@@ -25,6 +25,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.SelectedcarrierRec
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UsercarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.UsergroupRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserorderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserroundRecord;
 
@@ -150,22 +151,25 @@ public class GamePlayUtils {
             showGames(session, data, data.getColumn(0).getSelectedRecordNr());
             showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
             showGameUsers(session, data, true, recordNr);
-            // TODO: selectGameUserGroup(session, data);
-            ModalWindowUtils.popup(data, "Method not yet implemented",
-                    "<p>Adding groups of users not yet implemented</p>",
-                    "clickRecordId('showGameUsers'," + data.getColumn(1).getSelectedRecordNr() + ")");
+            selectGameUserGroup(session, data);
+            break;
+        }
+
+        case "confirmGameUserGroup": {
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showGameUsers(session, data, true, recordNr);
+            confirmGameUserGroup(request, data);
+            data.resetFormColumn();
             break;
         }
 
         case "addGameUserGroup": {
             showGames(session, data, data.getColumn(0).getSelectedRecordNr());
             showGamePlay(session, data, true, data.getColumn(1).getSelectedRecordNr());
-            // TODO: addGameUserGroup(session, data);
-            showGameUsers(session, data, true, recordNr);
+            addGameUserGroup(session, data, recordNr);
+            showGameUsers(session, data, true, 0);
             data.resetFormColumn();
-            ModalWindowUtils.popup(data, "Method not yet implemented",
-                    "<p>Adding groups of users not yet implemented</p>",
-                    "clickRecordId('showGameUsers'," + data.getColumn(1).getSelectedRecordNr() + ")");
             break;
         }
 
@@ -303,7 +307,7 @@ public class GamePlayUtils {
 
         if (editButton) {
             s.append(AdminTable.finalButton("Add User to GamePlay", "addGameUser"));
-            s.append(AdminTable.finalButton("Add UserGroup to GamePlay", "addGameUserGroup"));
+            s.append(AdminTable.finalButton("Add UserGroup to GamePlay", "selectGameUserGroup"));
         }
 
         data.getColumn(2).setSelectedRecordNr(selectedGameuserRecordNr);
@@ -329,6 +333,7 @@ public class GamePlayUtils {
                         .setInitialValue(gameUser.getUserId() == null ? 0 : gameUser.getUserId())
                         .setLabel("User")
                         .setRequired()
+                        .setReadOnly(gameUserId != 0)
                         .setPickTable(data, Tables.USER, Tables.USER.ID, Tables.USER.NAME))
                 .addEntry(new FormEntryDateTime(Tables.GAMEUSER.FIRSTLOGIN)
                         .setInitialValue(gameUser.getFirstlogin())
@@ -361,6 +366,24 @@ public class GamePlayUtils {
 
     public static int saveGameUser(HttpServletRequest request, AdminData data, int gameUserId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        // check if entered user already exists in case of new user
+        if (gameUserId == 0) {
+            String id = request.getParameter("User_ID");
+            if (id == null || id.length() == 0) {
+                ModalWindowUtils.popup(data, "Error adding user", "<p>User id of added gameuser is null</p>",
+                        "clickMenu('gameplay')");
+                return -1;
+            }
+            int selectedUserId = Integer.valueOf(id);
+            GameuserRecord checkGameUser = dslContext.selectFrom(Tables.GAMEUSER)
+                    .where(Tables.GAMEUSER.USER_ID.eq(selectedUserId))
+                    .and(Tables.GAMEUSER.GAMEPLAY_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetchOne();
+            if (checkGameUser != null) {
+                ModalWindowUtils.popup(data, "Error adding user", "<p>User id already registered for this GamePlay</p>",
+                        "clickMenu('gameplay')");
+                return -1;
+            }
+        }
         GameuserRecord gameUser = gameUserId == 0 ? initializeGameUser(data)
                 : dslContext.selectFrom(Tables.GAMEUSER).where(Tables.GAMEUSER.ID.eq(gameUserId)).fetchOne();
         String errors = data.getFormColumn().getForm().setFields(gameUser, request, data);
@@ -463,4 +486,79 @@ public class GamePlayUtils {
             return true;
         return false;
     }
+
+    /* ********************************************************************************************************* */
+    /* **************************************** GAMEUSERGROUP ************************************************** */
+    /* ********************************************************************************************************* */
+
+    public static void selectGameUserGroup(HttpSession session, AdminData data) {
+
+        //@formatter:off
+        AdminForm form = new AdminForm()
+                .setEdit(true)
+                .setCancelMethod("showGameUsers", data.getColumn(1).getSelectedRecordNr())
+                .setEditMethod("")
+                .setDeleteMethod("")
+                .setSaveMethod("confirmGameUserGroup", "Add All Users from Group")
+                .startForm()
+                .addEntry(new FormEntryPickRecord(Tables.USERGROUP.ID)
+                        .setInitialValue(0)
+                        .setLabel("User Group")
+                        .setRequired()
+                        .setPickTable(data, Tables.USERGROUP, Tables.USERGROUP.ID, Tables.USERGROUP.GROUPNAME))
+                .endForm();
+        //@formatter:on
+        data.getFormColumn().setHeaderForm("Add UserGroup", form);
+    }
+
+    public static void confirmGameUserGroup(HttpServletRequest request, AdminData data) {
+        String id = request.getParameter("ID");
+        if (id == null || id.length() == 0)
+            return;
+        int userGroupId = Integer.valueOf(id);
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        UsergroupRecord userGroup = dslContext.selectFrom(Tables.USERGROUP).where(Tables.USERGROUP.ID.eq(userGroupId))
+                .fetchAny();
+        List<UserRecord> userList = dslContext.selectFrom(Tables.USER).where(Tables.USER.USERGROUP_ID.eq(userGroupId))
+                .fetch();
+        int countNew = 0;
+        for (UserRecord user : userList) {
+            GameuserRecord gameUser = dslContext.selectFrom(Tables.GAMEUSER).where(Tables.GAMEUSER.USER_ID
+                    .eq(user.getId()).and(Tables.GAMEUSER.GAMEPLAY_ID.eq(data.getColumn(1).getSelectedRecordNr())))
+                    .fetchAny();
+            if (gameUser == null) {
+                countNew++;
+            }
+        }
+        String closeMethod = "clickRecordId('showGameUsers', " + data.getColumn(1).getSelectedRecordNr() + ")";
+        String addMethod = "clickRecordId('addGameUserGroup', " + userGroupId + ")";
+        String content = "Adding user group '" + userGroup.getGroupname() + "'<br>Number of users in group: "
+                + userList.size() + "<br>Number of users already registered for gameplay: "
+                + (userList.size() - countNew) + "<br>Number of users to add to the gameplay: " + countNew + "<br>";
+        ModalWindowUtils.make2ButtonModalWindow(data, "Confirm add user group", content, "Add user group", addMethod,
+                "Cancel", closeMethod, closeMethod);
+    }
+
+    public static void addGameUserGroup(HttpSession session, AdminData data, int userGroupId) {
+        try {
+            DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+            List<UserRecord> userList = dslContext.selectFrom(Tables.USER)
+                    .where(Tables.USER.USERGROUP_ID.eq(userGroupId)).fetch();
+            for (UserRecord user : userList) {
+                GameuserRecord gameUser = dslContext.selectFrom(Tables.GAMEUSER)
+                        .where(Tables.GAMEUSER.USER_ID.eq(user.getId())
+                                .and(Tables.GAMEUSER.GAMEPLAY_ID.eq(data.getColumn(1).getSelectedRecordNr())))
+                        .fetchAny();
+                if (gameUser == null) {
+                    GameuserRecord newGameUser = initializeGameUser(data);
+                    newGameUser.setUserId(user.getId());
+                    newGameUser.store();
+                }
+            }
+        } catch (DataAccessException exception) {
+            ModalWindowUtils.popup(data, "Error adding user from group", "<p>" + exception.getMessage() + "</p>",
+                    "clickMenu('gameplay')");
+        }
+    }
+
 }

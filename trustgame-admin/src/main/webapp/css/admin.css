@@ -255,6 +255,10 @@ html, body {
   background-color: yellow;
 }
 
+.tg-admin-highlight, .tg-admin-highlight a {
+  background-color: yellow;
+}
+
 .tg-admin-line-field {
   flex-grow: 1;
 }
@@ -295,6 +299,18 @@ html, body {
 .tg-preview-image-200 > img {
   max-width: 200px;
   max-height: 200px;
+}
+
+.tg-users-score {
+  font-size: 0.8em;
+}
+
+.tg-detail-score {
+  font-size: 0.8em;
+}
+
+.tg-logging {
+  font-size: 0.8em;
 }
 
 /* ===================================== */

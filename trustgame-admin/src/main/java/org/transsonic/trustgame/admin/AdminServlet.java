@@ -57,7 +57,7 @@ public class AdminServlet extends HttpServlet {
         case "newUser":
         case "readUsers":
         case "generateUsers":
-            data.setMenuChoice("user") ;
+            data.setMenuChoice("user");
             UserUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -66,7 +66,7 @@ public class AdminServlet extends HttpServlet {
         case "editCarrier":
         case "saveCarrier":
         case "newCarrier":
-            data.setMenuChoice("carrier") ;
+            data.setMenuChoice("carrier");
             CarrierUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -75,7 +75,7 @@ public class AdminServlet extends HttpServlet {
         case "editFBReport":
         case "saveFBReport":
         case "newFBReport":
-            data.setMenuChoice("fbreport") ;
+            data.setMenuChoice("fbreport");
             FBReportUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -84,7 +84,7 @@ public class AdminServlet extends HttpServlet {
         case "editClient":
         case "saveClient":
         case "newClient":
-            data.setMenuChoice("client") ;
+            data.setMenuChoice("client");
             ClientUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -93,7 +93,7 @@ public class AdminServlet extends HttpServlet {
         case "editOrganization":
         case "saveOrganization":
         case "newOrganization":
-            data.setMenuChoice("organization") ;
+            data.setMenuChoice("organization");
             OrganizationUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -117,7 +117,7 @@ public class AdminServlet extends HttpServlet {
         case "editOrderCarrier":
         case "saveOrderCarrier":
         case "newOrderCarrier":
-            data.setMenuChoice("game") ;
+            data.setMenuChoice("game");
             GameUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -132,7 +132,7 @@ public class AdminServlet extends HttpServlet {
         case "editCarrierReview":
         case "saveCarrierReview":
         case "newCarrierReview":
-            data.setMenuChoice("review") ;
+            data.setMenuChoice("review");
             ReviewUtils.handleMenu(request, click, recordNr);
             break;
 
@@ -149,17 +149,27 @@ public class AdminServlet extends HttpServlet {
         case "addGameUser":
         case "removeGameUser":
         case "selectGameUserGroup":
+        case "confirmGameUserGroup":
         case "addGameUserGroup":
-            data.setMenuChoice("gameplay") ;
+            data.setMenuChoice("gameplay");
             GamePlayUtils.handleMenu(request, click, recordNr);
             break;
 
         case "result":
-            data.setMenuChoice("result") ;
+        case "resultGamePlay":
+        case "resultGameUsers":
+        case "resultGameUserDetail":
+            data.setMenuChoice("result");
+            ResultUtils.handleMenu(request, click, recordNr);
             break;
 
         case "logging":
-            data.setMenuChoice("logging") ;
+        case "loggingGamePlay":
+        case "loggingGameUsers":
+        case "loggingGamePlayLogs":
+        case "loggingGameUserLogs":
+            data.setMenuChoice("logging");
+            LoggingUtils.handleMenu(request, click, recordNr);
             break;
 
         default:
@@ -183,14 +193,16 @@ public class AdminServlet extends HttpServlet {
             s.append(data.getColumn(i).getContent());
             s.append("    </td>\n");
         }
-        s.append("    <td width=\"");
-        s.append(data.getFormColumn().getWidth());
-        s.append("\">\n");
-        s.append("      <div class=\"tg-admin-line-header\">");
-        s.append(data.getFormColumn().getHeader());
-        s.append("</div>\n");
-        s.append(data.getFormColumn().getContent());
-        s.append("    </td>\n");
+        if (data.getFormColumn() != null) {
+            s.append("    <td width=\"");
+            s.append(data.getFormColumn().getWidth());
+            s.append("\">\n");
+            s.append("      <div class=\"tg-admin-line-header\">");
+            s.append(data.getFormColumn().getHeader());
+            s.append("</div>\n");
+            s.append(data.getFormColumn().getContent());
+            s.append("    </td>\n");
+        }
         s.append("  </tr>");
         s.append("</table>\n");
         data.setContentHtml(s.toString());

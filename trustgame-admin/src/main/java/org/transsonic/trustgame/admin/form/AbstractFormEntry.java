@@ -121,7 +121,7 @@ public abstract class AbstractFormEntry<F extends AbstractFormEntry<F, T>, T> {
     protected void validate(String value) {
         this.lastEnteredValue = value;
         this.errors = "";
-        if (value.length() == 0 && (isRequired() || !tableField.getDataType().nullable()))
+        if ((value == null || value.length() == 0) && (isRequired() || !tableField.getDataType().nullable()))
             addError("should not be empty");
     }
 

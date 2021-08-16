@@ -162,6 +162,10 @@ public class AdminData {
         return this.formColumn;
     }
 
+    public void setFormColumn(FormColumn formColumn) {
+        this.formColumn = formColumn;
+    }
+
     public int getNrColumns() {
         return this.tableColumns.length;
     }
