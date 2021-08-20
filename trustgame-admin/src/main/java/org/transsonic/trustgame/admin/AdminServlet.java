@@ -160,17 +160,30 @@ public class AdminServlet extends HttpServlet {
         case "resultGameUsers":
         case "resultGameUserDetail":
             data.setMenuChoice("result");
-            ResultUtils.handleMenu(request, click, recordNr);
+            ResultUtils.handleMenu(request, response, click, recordNr);
             break;
 
+        case "csvResultGamePlay":
+        case "tsvResultGamePlay":
+            data.setMenuChoice("result");
+            ResultUtils.handleMenu(request, response, click, recordNr);
+            return;
+            
         case "logging":
         case "loggingGamePlay":
         case "loggingGameUsers":
-        case "loggingGamePlayLogs":
         case "loggingGameUserLogs":
             data.setMenuChoice("logging");
-            LoggingUtils.handleMenu(request, click, recordNr);
+            LoggingUtils.handleMenu(request, response, click, recordNr); 
             break;
+
+        case "csvGamePlayLogs":
+        case "csvGameUserLogs":
+        case "tsvGamePlayLogs":
+        case "tsvGameUserLogs":
+            data.setMenuChoice("logging");
+            LoggingUtils.handleMenu(request, response, click, recordNr); 
+            return;
 
         default:
             break;

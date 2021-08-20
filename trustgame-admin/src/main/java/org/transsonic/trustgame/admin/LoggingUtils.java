@@ -1,8 +1,17 @@
 package org.transsonic.trustgame.admin;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jooq.DSLContext;
@@ -17,7 +26,8 @@ import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
 
 public class LoggingUtils {
 
-    public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
+    public static void handleMenu(HttpServletRequest request, HttpServletResponse response, String click,
+            int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
 
@@ -26,7 +36,7 @@ public class LoggingUtils {
         // Game
 
         case "logging": {
-            data.clearColumns("15%", "Game", "20%", "GamePlay", "15%", "GameUsers", "50%", "Log Records");
+            data.clearColumns("15%", "Game", "18%", "GamePlay", "17%", "GameUsers", "50%", "Log Records");
             data.setFormColumn(null);
             showGames(session, data, 0);
             break;
@@ -62,12 +72,24 @@ public class LoggingUtils {
             break;
         }
 
-        case "loggingGamePlayLogs": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
-            showGamePlay(session, data, data.getColumn(1).getSelectedRecordNr());
-            showGameUsers(session, data, recordNr);
-            // showDetailedScore(session, data, recordNr);
-            break;
+        case "csvGamePlayLogs": {
+            downloadGamePlayLogs(response, data, false, recordNr);
+            return;
+        }
+
+        case "tsvGamePlayLogs": {
+            downloadGamePlayLogs(response, data, true, recordNr);
+            return;
+        }
+
+        case "csvGameUserLogs": {
+            downloadGameUserLogs(response, data, false, recordNr);
+            return;
+        }
+
+        case "tsvGameUserLogs": {
+            downloadGameUserLogs(response, data, true, recordNr);
+            return;
         }
 
         default:
@@ -113,7 +135,8 @@ public class LoggingUtils {
             TableRow tableRow = new TableRow(gamePlay.getId(), selectedGameplayRecordNr, gamePlay.getGroupdescription(),
                     "loggingGameUsers");
             tableRow.addButton("Users", "loggingGameUsers");
-            tableRow.addButton("Log", "loggingGamePlayLogs");
+            tableRow.addButton("csv", "csvGamePlayLogs");
+            tableRow.addButton("tsv", "tsvGamePlayLogs");
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
@@ -137,7 +160,8 @@ public class LoggingUtils {
             UserRecord user = SqlUtils.readUserFromUserId(data, gameUser.getUserId());
             TableRow tableRow = new TableRow(gameUser.getId(), selectedGameuserRecordNr, user.getName(),
                     "loggingGameUserLogs");
-            tableRow.addButton("Log", "loggingGameUserLogs");
+            tableRow.addButton("csv", "csvGameUserLogs");
+            tableRow.addButton("tsv", "tsvGameUserLogs");
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
@@ -167,7 +191,7 @@ public class LoggingUtils {
 
         for (UserclickRecord userClick : userClicks) {
             s.append("      <tr><td>");
-            s.append(userClick.getTimestamp().toString().replaceFirst("T", " "));
+            s.append(userClick.getTimestamp().format(DATE_TIME_FORMATTER));
             s.append("</td><td>");
             s.append(userClick.getButtonorfield());
             s.append("</td><td>");
@@ -189,6 +213,154 @@ public class LoggingUtils {
 
         data.getColumn(3).setHeader("Log records for " + user.getName());
         data.getColumn(3).setContent(s.toString());
+    }
+
+    public static void downloadGameUserLogs(HttpServletResponse response, AdminData data, boolean tab, int gameUserId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        GameuserRecord gameUser = dslContext.selectFrom(Tables.GAMEUSER).where(Tables.GAMEUSER.ID.eq(gameUserId))
+                .fetchAny();
+        GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY)
+                .where(Tables.GAMEPLAY.ID.eq(data.getColumn(1).getSelectedRecordNr())).fetchAny();
+        List<UserclickRecord> userClicks = dslContext.selectFrom(Tables.USERCLICK)
+                .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetch().sortAsc(Tables.USERCLICK.TIMESTAMP);
+        try {
+            File tempFile = File.createTempFile("trustgame-", tab ? ".xls" : ".csv");
+            tempFile.deleteOnExit();
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
+                bw.write(csvHeader(tab));
+                for (UserclickRecord userClick : userClicks) {
+                    bw.write(csvLine(gamePlay, userClick, tab));
+                }
+            } catch (IOException exception) {
+                ModalWindowUtils.popup(data, "Error writing to temporary file", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('logging')");
+            }
+
+            // stream the results for download
+            String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuuMMdd_HHmmss"));
+            String ext = tab ? ".xls" : ".csv";
+            response.setContentType(tab ? "text/tab-separated-values" : "text/csv");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=" + "GameUserData_" + gameUser.getId() + "_" + date + ext);
+
+            final BufferedReader br = new BufferedReader(new FileReader(tempFile));
+            try {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    response.getWriter().write(line + "\n");
+                }
+            } finally {
+                br.close();
+            }
+        } catch (IOException exception) {
+            ModalWindowUtils.popup(data, "Error creating temporary file", "<p>" + exception.getMessage() + "</p>",
+                    "clickMenu('logging')");
+        }
+    }
+
+    public static void downloadGamePlayLogs(HttpServletResponse response, AdminData data, boolean tab, int gamePlayId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<GameuserRecord> gameUserRecords = dslContext.selectFrom(Tables.GAMEUSER)
+                .where(Tables.GAMEUSER.GAMEPLAY_ID.eq(gamePlayId)).fetch();
+        GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY)
+                .where(Tables.GAMEPLAY.ID.eq(gamePlayId)).fetchAny();
+        try {
+            File tempFile = File.createTempFile("trustgame-", tab ? ".xls" : ".csv");
+            tempFile.deleteOnExit();
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
+                bw.write(csvHeader(tab));
+                for (GameuserRecord gameUser : gameUserRecords) {
+                    List<UserclickRecord> userClicks = dslContext.selectFrom(Tables.USERCLICK)
+                            .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetch().sortAsc(Tables.USERCLICK.TIMESTAMP);
+                    for (UserclickRecord userClick : userClicks) {
+                        bw.write(csvLine(gamePlay, userClick, tab));
+                    }
+                }
+            } catch (IOException exception) {
+                ModalWindowUtils.popup(data, "Error writing to temporary file", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('logging')");
+            }
+
+            // stream the results for download
+            String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("uuuuMMdd_HHmmss"));
+            String ext = tab ? ".xls" : ".csv";
+            response.setContentType(tab ? "text/tab-separated-values" : "text/csv");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=" + "GamePlayData_" + gamePlay.getId() + "_" + date + ext);
+
+            final BufferedReader br = new BufferedReader(new FileReader(tempFile));
+            try {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    response.getWriter().write(line + "\n");
+                }
+            } finally {
+                br.close();
+            }
+        } catch (IOException exception) {
+            ModalWindowUtils.popup(data, "Error creating temporary file", "<p>" + exception.getMessage() + "</p>",
+                    "clickMenu('logging')");
+        }
+    }
+
+    public static String csvHeader(boolean tab) {
+        StringBuffer s = new StringBuffer();
+        String sep = tab ? "\t" : ","; 
+        s.append("gameNr");
+        s.append(sep);
+        s.append("gamePlayNr");
+        s.append(sep);
+        s.append("gameUserNr");
+        s.append(sep);
+        s.append("time");
+        s.append(sep);
+        s.append("button");
+        s.append(sep);
+        s.append("value");
+        s.append(sep);
+        s.append("round");
+        s.append(sep);
+        s.append("order");
+        s.append(sep);
+        s.append("client");
+        s.append(sep);
+        s.append("carrier");
+        s.append("\n");
+        return s.toString();
+    }
+
+    private static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+
+    public static String csvLine(GameplayRecord gamePlay, UserclickRecord userClick, boolean tab) {
+        StringBuffer s = new StringBuffer();
+        String sep = tab ? "\t" : ","; 
+        s.append(gamePlay.getGameId());
+        s.append(sep);
+        s.append(gamePlay.getId());
+        s.append(sep);
+        s.append(userClick.getGameuserId());
+        s.append(sep);
+        s.append(csvString(userClick.getTimestamp().format(DATE_TIME_FORMATTER)));
+        s.append(sep);
+        s.append(csvString(userClick.getButtonorfield()));
+        s.append(sep);
+        s.append(csvString(userClick.getValue() == null ? "" : userClick.getValue()));
+        s.append(sep);
+        s.append(userClick.getRoundnumber());
+        s.append(sep);
+        s.append(userClick.getOrdernumber());
+        s.append(sep);
+        s.append(csvString(userClick.getClientname() == null ? "" : userClick.getClientname()));
+        s.append(sep);
+        s.append(csvString(userClick.getCarriername() == null ? "" : userClick.getCarriername()));
+        s.append("\n");
+        return s.toString();
+    }
+
+    public static String csvString(String s) {
+        String result = s;
+        result.replaceAll("\"", "\"\"");
+        return "\"" + result + "\"";
     }
 
 }
