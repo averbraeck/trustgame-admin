@@ -10,6 +10,7 @@ import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.transsonic.trustgame.admin.form.AdminForm;
+import org.transsonic.trustgame.admin.form.FormEntryBoolean;
 import org.transsonic.trustgame.admin.form.FormEntryInt;
 import org.transsonic.trustgame.admin.form.FormEntryPickRecord;
 import org.transsonic.trustgame.admin.form.FormEntryString;
@@ -358,6 +359,10 @@ public class GameUtils {
                         .setLabel("Round number")
                         .setMin(1)
                         .setMax(99))
+                .addEntry(new FormEntryBoolean(Tables.ROUND.TESTROUND)
+                        .setRequired()
+                        .setInitialValue(round.getTestround())
+                        .setLabel("Practice round?"))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit Round", form);

@@ -122,8 +122,7 @@ public class UserUtils {
         AdminServlet.makeColumnContent(data);
     }
 
-    public static void showUserGroups(HttpSession session, AdminData data, boolean editButton,
-            int selectedRecordNr) {
+    public static void showUserGroups(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<UsergroupRecord> userGroupRecords = dslContext.selectFrom(Tables.USERGROUP).fetch();
@@ -218,19 +217,25 @@ public class UserUtils {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         UserRecord user = userId == 0 ? dslContext.newRecord(Tables.USER)
                 : dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(userId)).fetchOne();
-        
-        // make user code
+
+        // make unique user code
         if (userId == 0) {
             String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            Random r = new Random();
             String code = "";
-            for (int i=0; i<5; i++) {
-                int p = r.nextInt(chars.length()); // bounds is exclusive
-                code += chars.charAt(p);
+            boolean same = true;
+            while (same) {
+                Random r = new Random();
+                code = "";
+                for (int i = 0; i < 5; i++) {
+                    int p = r.nextInt(chars.length()); // bounds is exclusive
+                    code += chars.charAt(p);
+                }
+                UserRecord codeUser = dslContext.selectFrom(Tables.USER).where(Tables.USER.USERCODE.eq(code)).fetchAny();
+                same = codeUser != null;
             }
             user.setUsercode(code);
         }
-        
+
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)

@@ -154,12 +154,12 @@ html, body {
         <h1>Administration for the Trust Game</h1> 
           <p>The following functions are available:</p>
           <ul>
-            <li>Creating and maintaining carrier data</li>
-            <li>Creating and maintaining games and game rounds</li>
+            <li>Creating and maintaining carrier and client data</li>
+            <li>Creating and maintaining games, game rounds and reviews</li>
             <li>Creating and maintaining game-play instances</li>
             <li>Creating and maintaining users (also in bulk)</li>
             <li>Allocating users to game-play instances</li>
-            <li>Exporting log data</li>
+            <li>Viewing and exporting results and log data</li>
           </ul>
       </div>
 

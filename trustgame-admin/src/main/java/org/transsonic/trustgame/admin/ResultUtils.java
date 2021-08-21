@@ -303,8 +303,11 @@ public class ResultUtils {
                 CarrierRecord carrier = selectedCarrier == null ? null
                         : dslContext.selectFrom(Tables.CARRIER).where(Tables.CARRIER.ID.eq(orderCarrier.getCarrierId()))
                                 .fetchAny();
+                boolean practice = roundMap.get(round).getTestround() != 0;
                 s.append("           <tr><td>");
                 s.append(round);
+                if (practice)
+                    s.append(" (Practice)");
                 s.append("</td><td>");
                 s.append(order.getOrdernumber());
                 s.append("</td><td>");
@@ -315,12 +318,23 @@ public class ResultUtils {
                 else {
                     int profit = order.getTransportearnings() - orderCarrier.getQuoteoffer()
                             + orderCarrier.getExtraprofit();
-                    s.append(profit);
+                    if (practice)
+                        s.append("(" + profit + ")");
+                    else
+                        s.append(profit);
                 }
                 s.append("</td><td>");
-                s.append(orderCarrier == null ? "-" : orderCarrier.getOutcomesatisfaction());
+                String satis = orderCarrier == null ? "-" : Integer.toString(orderCarrier.getOutcomesatisfaction());
+                if (practice)
+                    s.append("(" + satis + ")");
+                else
+                    s.append(satis);
                 s.append("</td><td>");
-                s.append(orderCarrier == null ? "-" : orderCarrier.getOutcomesustainability());
+                String sust = orderCarrier == null ? "-" : Integer.toString(orderCarrier.getOutcomesustainability());
+                if (practice)
+                    s.append("(" + sust + ")");
+                else
+                    s.append(sust);
                 s.append("</td></tr>\n");
             }
         }
