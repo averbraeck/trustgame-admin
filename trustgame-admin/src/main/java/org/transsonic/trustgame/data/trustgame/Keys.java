@@ -96,6 +96,7 @@ public class Keys {
     public static final UniqueKey<SelectedcarrierRecord> KEY_SELECTEDCARRIER_PRIMARY = Internal.createUniqueKey(Selectedcarrier.SELECTEDCARRIER, DSL.name("KEY_selectedcarrier_PRIMARY"), new TableField[] { Selectedcarrier.SELECTEDCARRIER.ID }, true);
     public static final UniqueKey<UserRecord> KEY_USER_ID_UNIQUE = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_ID_UNIQUE"), new TableField[] { User.USER.ID }, true);
     public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_PRIMARY"), new TableField[] { User.USER.ID }, true);
+    public static final UniqueKey<UserRecord> KEY_USER_USERCODE_UNIQUE = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_UserCode_UNIQUE"), new TableField[] { User.USER.USERCODE }, true);
     public static final UniqueKey<UserRecord> KEY_USER_USERNAME_UNIQUE = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_Username_UNIQUE"), new TableField[] { User.USER.USERNAME }, true);
     public static final UniqueKey<UsercarrierRecord> KEY_USERCARRIER_ID_UNIQUE = Internal.createUniqueKey(Usercarrier.USERCARRIER, DSL.name("KEY_usercarrier_ID_UNIQUE"), new TableField[] { Usercarrier.USERCARRIER.ID }, true);
     public static final UniqueKey<UsercarrierRecord> KEY_USERCARRIER_PRIMARY = Internal.createUniqueKey(Usercarrier.USERCARRIER, DSL.name("KEY_usercarrier_PRIMARY"), new TableField[] { Usercarrier.USERCARRIER.ID }, true);

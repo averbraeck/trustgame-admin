@@ -138,6 +138,21 @@ public class OrganizationUtils {
                         .setInitialValue(organization.getStartsustainability())
                         .setMin(0)
                         .setLabel("Start sustainability"))
+                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.MAXPROFIT)
+                        .setRequired()
+                        .setInitialValue(organization.getMaxprofit())
+                        .setMin(0)
+                        .setLabel("Max profit (graph)"))
+                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.MAXSATISFACTION)
+                        .setRequired()
+                        .setInitialValue(organization.getMaxsatisfaction())
+                        .setMin(0)
+                        .setLabel("Max satisfaction (graph)"))
+                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.MAXSUSTAINABILITY)
+                        .setRequired()
+                        .setInitialValue(organization.getMaxsustainability())
+                        .setMin(0)
+                        .setLabel("Max sustainability (graph)"))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit Organization", form);

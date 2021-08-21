@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -217,6 +218,19 @@ public class UserUtils {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         UserRecord user = userId == 0 ? dslContext.newRecord(Tables.USER)
                 : dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(userId)).fetchOne();
+        
+        // make user code
+        if (userId == 0) {
+            String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random r = new Random();
+            String code = "";
+            for (int i=0; i<5; i++) {
+                int p = r.nextInt(chars.length()); // bounds is exclusive
+                code += chars.charAt(p);
+            }
+            user.setUsercode(code);
+        }
+        
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)
@@ -225,6 +239,12 @@ public class UserUtils {
                 .setSaveMethod("saveUser")
                 .setRecordNr(userId)
                 .startForm()
+                .addEntry(new FormEntryString(Tables.USER.USERCODE)
+                        .setLabel("Login code")
+                        .setRequired()
+                        .setReadOnly()
+                        .setInitialValue(user.getUsercode())
+                        .setMaxChars(5))
                 .addEntry(new FormEntryString(Tables.USER.USERNAME)
                         .setLabel("Login name")
                         .setRequired()

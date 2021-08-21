@@ -267,6 +267,29 @@ public class ResultUtils {
                             .and(Tables.USERROUND.GAMEPLAY_ID.eq(gamePlay.getId()))
                             .and(Tables.USERROUND.GAMEUSER_ID.eq(gameUser.getId())))
                     .fetchAny();
+
+            // bought reports
+            for (UsercarrierRecord userCarrier : userCarriers) {
+                if (userCarrier.getRoundnumber() == round) {
+                    CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
+                            .where(Tables.CARRIER.ID.eq(userCarrier.getCarrierId())).fetchAny();
+                    s.append("           <tr><td>");
+                    s.append(round);
+                    s.append("</td><td>");
+                    s.append("Report");
+                    s.append("</td><td>");
+                    s.append(carrier == null ? "-" : carrier.getName());
+                    s.append("</td><td>");
+                    s.append("-5");
+                    s.append("</td><td>");
+                    s.append("-");
+                    s.append("</td><td>");
+                    s.append("-");
+                    s.append("</td></tr>\n");
+                }
+            }
+
+            // orders and their scores
             for (OrderRecord order : orderMap.get(round)) {
                 UserorderRecord userOrder = userRound == null ? null
                         : dslContext.selectFrom(Tables.USERORDER).where(Tables.USERORDER.ORDER_ID.eq(order.getId())
@@ -300,25 +323,6 @@ public class ResultUtils {
                 s.append(orderCarrier == null ? "-" : orderCarrier.getOutcomesustainability());
                 s.append("</td></tr>\n");
             }
-        }
-
-        // bought reports. TODO: will move to round level
-        for (UsercarrierRecord userCarrier : userCarriers) {
-            CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
-                    .where(Tables.CARRIER.ID.eq(userCarrier.getCarrierId())).fetchAny();
-            s.append("           <tr><td>");
-            s.append("Buy");
-            s.append("</td><td>");
-            s.append("Report");
-            s.append("</td><td>");
-            s.append(carrier == null ? "-" : carrier.getName());
-            s.append("</td><td>");
-            s.append("-5");
-            s.append("</td><td>");
-            s.append("-");
-            s.append("</td><td>");
-            s.append("-");
-            s.append("</td></tr>\n");
         }
 
         s.append("           <tr><td>Total</td><td>&nbsp;</td><td>&nbsp;</td><td>");
@@ -407,6 +411,18 @@ public class ResultUtils {
                                         .and(Tables.USERROUND.GAMEPLAY_ID.eq(gamePlay.getId()))
                                         .and(Tables.USERROUND.GAMEUSER_ID.eq(gameUser.getId())))
                                 .fetchAny();
+
+                        // bought reports
+                        for (UsercarrierRecord userCarrier : userCarriers) {
+                            if (userCarrier.getRoundnumber() == round) {
+                                CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
+                                        .where(Tables.CARRIER.ID.eq(userCarrier.getCarrierId())).fetchAny();
+                                bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed,
+                                        Integer.toString(round), true, "", carrier.getName(), -5, 0, 0));
+                            }
+                        }
+
+                        // scores per order
                         for (OrderRecord order : orderMap.get(round)) {
                             UserorderRecord userOrder = userRound == null ? null
                                     : dslContext.selectFrom(Tables.USERORDER)
@@ -433,15 +449,6 @@ public class ResultUtils {
                                     orderCarrier.getOutcomesustainability()));
 
                         }
-                    }
-
-                    // bought reports. TODO: will move to round level
-                    for (UsercarrierRecord userCarrier : userCarriers) {
-                        CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
-                                .where(Tables.CARRIER.ID.eq(userCarrier.getCarrierId())).fetchAny();
-                        bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed, "", true, "",
-                                carrier.getName(), -5, 0, 0));
-
                     }
 
                     bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed, "Total", false, "", "",

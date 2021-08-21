@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -90,6 +90,11 @@ public class User extends TableImpl<UserRecord> {
      */
     public final TableField<UserRecord, Byte> ADMINISTRATOR = createField(DSL.name("Administrator"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.field("0", SQLDataType.TINYINT)), this, "");
 
+    /**
+     * The column <code>trustgame.user.UserCode</code>.
+     */
+    public final TableField<UserRecord, String> USERCODE = createField(DSL.name("UserCode"), SQLDataType.VARCHAR(6).nullable(false), this, "");
+
     private User(Name alias, Table<UserRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -145,7 +150,7 @@ public class User extends TableImpl<UserRecord> {
 
     @Override
     public List<UniqueKey<UserRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY, Keys.KEY_USER_ID_UNIQUE, Keys.KEY_USER_USERNAME_UNIQUE);
+        return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY, Keys.KEY_USER_ID_UNIQUE, Keys.KEY_USER_USERNAME_UNIQUE, Keys.KEY_USER_USERCODE_UNIQUE);
     }
 
     @Override
@@ -189,11 +194,11 @@ public class User extends TableImpl<UserRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Integer, Integer, String, String, String, String, LocalDateTime, Byte> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<Integer, Integer, String, String, String, String, LocalDateTime, Byte, String> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }
