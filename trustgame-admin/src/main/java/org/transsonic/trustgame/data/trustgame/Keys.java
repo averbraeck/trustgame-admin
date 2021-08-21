@@ -9,6 +9,7 @@ import org.jooq.TableField;
 import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.Internal;
+import org.transsonic.trustgame.data.trustgame.tables.Briefing;
 import org.transsonic.trustgame.data.trustgame.tables.Carrier;
 import org.transsonic.trustgame.data.trustgame.tables.Carrierreview;
 import org.transsonic.trustgame.data.trustgame.tables.Client;
@@ -28,6 +29,7 @@ import org.transsonic.trustgame.data.trustgame.tables.Userclick;
 import org.transsonic.trustgame.data.trustgame.tables.Usergroup;
 import org.transsonic.trustgame.data.trustgame.tables.Userorder;
 import org.transsonic.trustgame.data.trustgame.tables.Userround;
+import org.transsonic.trustgame.data.trustgame.tables.records.BriefingRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierreviewRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
@@ -60,15 +62,20 @@ public class Keys {
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<BriefingRecord> KEY_BRIEFING_ID_UNIQUE = Internal.createUniqueKey(Briefing.BRIEFING, DSL.name("KEY_briefing_ID_UNIQUE"), new TableField[] { Briefing.BRIEFING.ID }, true);
+    public static final UniqueKey<BriefingRecord> KEY_BRIEFING_PRIMARY = Internal.createUniqueKey(Briefing.BRIEFING, DSL.name("KEY_briefing_PRIMARY"), new TableField[] { Briefing.BRIEFING.ID }, true);
     public static final UniqueKey<CarrierRecord> KEY_CARRIER_ID_UNIQUE = Internal.createUniqueKey(Carrier.CARRIER, DSL.name("KEY_carrier_ID_UNIQUE"), new TableField[] { Carrier.CARRIER.ID }, true);
+    public static final UniqueKey<CarrierRecord> KEY_CARRIER_NAME_UNIQUE = Internal.createUniqueKey(Carrier.CARRIER, DSL.name("KEY_carrier_Name_UNIQUE"), new TableField[] { Carrier.CARRIER.NAME }, true);
     public static final UniqueKey<CarrierRecord> KEY_CARRIER_PRIMARY = Internal.createUniqueKey(Carrier.CARRIER, DSL.name("KEY_carrier_PRIMARY"), new TableField[] { Carrier.CARRIER.ID }, true);
     public static final UniqueKey<CarrierreviewRecord> KEY_CARRIERREVIEW_ID_UNIQUE = Internal.createUniqueKey(Carrierreview.CARRIERREVIEW, DSL.name("KEY_carrierreview_ID_UNIQUE"), new TableField[] { Carrierreview.CARRIERREVIEW.ID }, true);
     public static final UniqueKey<CarrierreviewRecord> KEY_CARRIERREVIEW_PRIMARY = Internal.createUniqueKey(Carrierreview.CARRIERREVIEW, DSL.name("KEY_carrierreview_PRIMARY"), new TableField[] { Carrierreview.CARRIERREVIEW.ID }, true);
     public static final UniqueKey<ClientRecord> KEY_CLIENT_ID_UNIQUE = Internal.createUniqueKey(Client.CLIENT, DSL.name("KEY_client_ID_UNIQUE"), new TableField[] { Client.CLIENT.ID }, true);
+    public static final UniqueKey<ClientRecord> KEY_CLIENT_NAME_UNIQUE = Internal.createUniqueKey(Client.CLIENT, DSL.name("KEY_client_Name_UNIQUE"), new TableField[] { Client.CLIENT.NAME }, true);
     public static final UniqueKey<ClientRecord> KEY_CLIENT_PRIMARY = Internal.createUniqueKey(Client.CLIENT, DSL.name("KEY_client_PRIMARY"), new TableField[] { Client.CLIENT.ID }, true);
     public static final UniqueKey<FbreportRecord> KEY_FBREPORT_ID_UNIQUE = Internal.createUniqueKey(Fbreport.FBREPORT, DSL.name("KEY_fbreport_ID_UNIQUE"), new TableField[] { Fbreport.FBREPORT.ID }, true);
     public static final UniqueKey<FbreportRecord> KEY_FBREPORT_PRIMARY = Internal.createUniqueKey(Fbreport.FBREPORT, DSL.name("KEY_fbreport_PRIMARY"), new TableField[] { Fbreport.FBREPORT.ID }, true);
     public static final UniqueKey<GameRecord> KEY_GAME_IDGAME_UNIQUE = Internal.createUniqueKey(Game.GAME, DSL.name("KEY_game_idGame_UNIQUE"), new TableField[] { Game.GAME.ID }, true);
+    public static final UniqueKey<GameRecord> KEY_GAME_NAME_UNIQUE = Internal.createUniqueKey(Game.GAME, DSL.name("KEY_game_Name_UNIQUE"), new TableField[] { Game.GAME.NAME }, true);
     public static final UniqueKey<GameRecord> KEY_GAME_PRIMARY = Internal.createUniqueKey(Game.GAME, DSL.name("KEY_game_PRIMARY"), new TableField[] { Game.GAME.ID }, true);
     public static final UniqueKey<GameplayRecord> KEY_GAMEPLAY_ID_UNIQUE = Internal.createUniqueKey(Gameplay.GAMEPLAY, DSL.name("KEY_gameplay_ID_UNIQUE"), new TableField[] { Gameplay.GAMEPLAY.ID }, true);
     public static final UniqueKey<GameplayRecord> KEY_GAMEPLAY_PRIMARY = Internal.createUniqueKey(Gameplay.GAMEPLAY, DSL.name("KEY_gameplay_PRIMARY"), new TableField[] { Gameplay.GAMEPLAY.ID }, true);
@@ -79,6 +86,7 @@ public class Keys {
     public static final UniqueKey<OrdercarrierRecord> KEY_ORDERCARRIER_ID_UNIQUE = Internal.createUniqueKey(Ordercarrier.ORDERCARRIER, DSL.name("KEY_ordercarrier_ID_UNIQUE"), new TableField[] { Ordercarrier.ORDERCARRIER.ID }, true);
     public static final UniqueKey<OrdercarrierRecord> KEY_ORDERCARRIER_PRIMARY = Internal.createUniqueKey(Ordercarrier.ORDERCARRIER, DSL.name("KEY_ordercarrier_PRIMARY"), new TableField[] { Ordercarrier.ORDERCARRIER.ID }, true);
     public static final UniqueKey<PlayerorganizationRecord> KEY_PLAYERORGANIZATION_ID_UNIQUE = Internal.createUniqueKey(Playerorganization.PLAYERORGANIZATION, DSL.name("KEY_playerorganization_ID_UNIQUE"), new TableField[] { Playerorganization.PLAYERORGANIZATION.ID }, true);
+    public static final UniqueKey<PlayerorganizationRecord> KEY_PLAYERORGANIZATION_NAME_UNIQUE = Internal.createUniqueKey(Playerorganization.PLAYERORGANIZATION, DSL.name("KEY_playerorganization_Name_UNIQUE"), new TableField[] { Playerorganization.PLAYERORGANIZATION.NAME }, true);
     public static final UniqueKey<PlayerorganizationRecord> KEY_PLAYERORGANIZATION_PRIMARY = Internal.createUniqueKey(Playerorganization.PLAYERORGANIZATION, DSL.name("KEY_playerorganization_PRIMARY"), new TableField[] { Playerorganization.PLAYERORGANIZATION.ID }, true);
     public static final UniqueKey<ReviewRecord> KEY_REVIEW_ID_UNIQUE = Internal.createUniqueKey(Review.REVIEW, DSL.name("KEY_review_ID_UNIQUE"), new TableField[] { Review.REVIEW.ID }, true);
     public static final UniqueKey<ReviewRecord> KEY_REVIEW_PRIMARY = Internal.createUniqueKey(Review.REVIEW, DSL.name("KEY_review_PRIMARY"), new TableField[] { Review.REVIEW.ID }, true);
@@ -88,6 +96,7 @@ public class Keys {
     public static final UniqueKey<SelectedcarrierRecord> KEY_SELECTEDCARRIER_PRIMARY = Internal.createUniqueKey(Selectedcarrier.SELECTEDCARRIER, DSL.name("KEY_selectedcarrier_PRIMARY"), new TableField[] { Selectedcarrier.SELECTEDCARRIER.ID }, true);
     public static final UniqueKey<UserRecord> KEY_USER_ID_UNIQUE = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_ID_UNIQUE"), new TableField[] { User.USER.ID }, true);
     public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_PRIMARY"), new TableField[] { User.USER.ID }, true);
+    public static final UniqueKey<UserRecord> KEY_USER_USERNAME_UNIQUE = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_Username_UNIQUE"), new TableField[] { User.USER.USERNAME }, true);
     public static final UniqueKey<UsercarrierRecord> KEY_USERCARRIER_ID_UNIQUE = Internal.createUniqueKey(Usercarrier.USERCARRIER, DSL.name("KEY_usercarrier_ID_UNIQUE"), new TableField[] { Usercarrier.USERCARRIER.ID }, true);
     public static final UniqueKey<UsercarrierRecord> KEY_USERCARRIER_PRIMARY = Internal.createUniqueKey(Usercarrier.USERCARRIER, DSL.name("KEY_usercarrier_PRIMARY"), new TableField[] { Usercarrier.USERCARRIER.ID }, true);
     public static final UniqueKey<UserclickRecord> KEY_USERCLICK_ID_UNIQUE = Internal.createUniqueKey(Userclick.USERCLICK, DSL.name("KEY_userclick_ID_UNIQUE"), new TableField[] { Userclick.USERCLICK.ID }, true);
@@ -107,6 +116,8 @@ public class Keys {
     public static final ForeignKey<CarrierreviewRecord, RoundRecord> FK_CARRIERREVIEW_ROUND1 = Internal.createForeignKey(Carrierreview.CARRIERREVIEW, DSL.name("fk_CarrierReview_Round1"), new TableField[] { Carrierreview.CARRIERREVIEW.ROUND_ID }, Keys.KEY_ROUND_PRIMARY, new TableField[] { Round.ROUND.ID }, true);
     public static final ForeignKey<FbreportRecord, CarrierRecord> FK_FBREPORT_CARRIER1 = Internal.createForeignKey(Fbreport.FBREPORT, DSL.name("fk_FBReport_Carrier1"), new TableField[] { Fbreport.FBREPORT.CARRIER_ID }, Keys.KEY_CARRIER_PRIMARY, new TableField[] { Carrier.CARRIER.ID }, true);
     public static final ForeignKey<GameRecord, PlayerorganizationRecord> FK_GAME_ORGANIZATION1 = Internal.createForeignKey(Game.GAME, DSL.name("fk_Game_Organization1"), new TableField[] { Game.GAME.ORGANIZATION_ID }, Keys.KEY_PLAYERORGANIZATION_PRIMARY, new TableField[] { Playerorganization.PLAYERORGANIZATION.ID }, true);
+    public static final ForeignKey<GameplayRecord, BriefingRecord> FK_GAMEPLAY_BRIEFING1 = Internal.createForeignKey(Gameplay.GAMEPLAY, DSL.name("fk_GamePlay_Briefing1"), new TableField[] { Gameplay.GAMEPLAY.BRIEFING_ID }, Keys.KEY_BRIEFING_PRIMARY, new TableField[] { Briefing.BRIEFING.ID }, true);
+    public static final ForeignKey<GameplayRecord, BriefingRecord> FK_GAMEPLAY_BRIEFING2 = Internal.createForeignKey(Gameplay.GAMEPLAY, DSL.name("fk_GamePlay_Briefing2"), new TableField[] { Gameplay.GAMEPLAY.DEBRIEFING_ID }, Keys.KEY_BRIEFING_PRIMARY, new TableField[] { Briefing.BRIEFING.ID }, true);
     public static final ForeignKey<GameplayRecord, GameRecord> FK_GAMEPLAY_GAME1 = Internal.createForeignKey(Gameplay.GAMEPLAY, DSL.name("fk_GamePlay_Game1"), new TableField[] { Gameplay.GAMEPLAY.GAME_ID }, Keys.KEY_GAME_PRIMARY, new TableField[] { Game.GAME.ID }, true);
     public static final ForeignKey<GameuserRecord, GameplayRecord> FK_USER_GAMEPLAY1 = Internal.createForeignKey(Gameuser.GAMEUSER, DSL.name("fk_User_GamePlay1"), new TableField[] { Gameuser.GAMEUSER.GAMEPLAY_ID }, Keys.KEY_GAMEPLAY_PRIMARY, new TableField[] { Gameplay.GAMEPLAY.ID }, true);
     public static final ForeignKey<GameuserRecord, UserRecord> FK_USER_USERS1 = Internal.createForeignKey(Gameuser.GAMEUSER, DSL.name("fk_User_users1"), new TableField[] { Gameuser.GAMEUSER.USER_ID }, Keys.KEY_USER_PRIMARY, new TableField[] { User.USER.ID }, true);

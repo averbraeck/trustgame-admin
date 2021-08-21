@@ -4,6 +4,7 @@
 package org.transsonic.trustgame.data.trustgame;
 
 
+import org.transsonic.trustgame.data.trustgame.tables.Briefing;
 import org.transsonic.trustgame.data.trustgame.tables.Carrier;
 import org.transsonic.trustgame.data.trustgame.tables.Carrierreview;
 import org.transsonic.trustgame.data.trustgame.tables.Client;
@@ -30,6 +31,11 @@ import org.transsonic.trustgame.data.trustgame.tables.Userround;
  */
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Tables {
+
+    /**
+     * The table <code>trustgame.briefing</code>.
+     */
+    public static final Briefing BRIEFING = Briefing.BRIEFING;
 
     /**
      * The table <code>trustgame.carrier</code>.

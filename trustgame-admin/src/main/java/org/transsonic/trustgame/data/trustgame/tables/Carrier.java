@@ -174,7 +174,7 @@ public class Carrier extends TableImpl<CarrierRecord> {
 
     @Override
     public List<UniqueKey<CarrierRecord>> getKeys() {
-        return Arrays.<UniqueKey<CarrierRecord>>asList(Keys.KEY_CARRIER_PRIMARY, Keys.KEY_CARRIER_ID_UNIQUE);
+        return Arrays.<UniqueKey<CarrierRecord>>asList(Keys.KEY_CARRIER_PRIMARY, Keys.KEY_CARRIER_ID_UNIQUE, Keys.KEY_CARRIER_NAME_UNIQUE);
     }
 
     @Override

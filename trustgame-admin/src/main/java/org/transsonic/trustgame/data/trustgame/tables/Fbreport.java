@@ -13,7 +13,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -81,44 +81,24 @@ public class Fbreport extends TableImpl<FbreportRecord> {
     public final TableField<FbreportRecord, UInteger> FBMEMBERSINCE = createField(DSL.name("FBMemberSince"), SQLDataType.INTEGERUNSIGNED.nullable(false), this, "");
 
     /**
-     * The column <code>trustgame.fbreport.BTWNr</code>.
+     * The column <code>trustgame.fbreport.ServiceOntime</code>.
      */
-    public final TableField<FbreportRecord, String> BTWNR = createField(DSL.name("BTWNr"), SQLDataType.VARCHAR(16).nullable(false), this, "");
+    public final TableField<FbreportRecord, byte[]> SERVICEONTIME = createField(DSL.name("ServiceOntime"), SQLDataType.BLOB.defaultValue(DSL.field("NULL", SQLDataType.BLOB)), this, "");
 
     /**
-     * The column <code>trustgame.fbreport.ISO</code>.
+     * The column <code>trustgame.fbreport.ServiceSatisfaction</code>.
      */
-    public final TableField<FbreportRecord, String> ISO = createField(DSL.name("ISO"), SQLDataType.VARCHAR(45).nullable(false), this, "");
+    public final TableField<FbreportRecord, byte[]> SERVICESATISFACTION = createField(DSL.name("ServiceSatisfaction"), SQLDataType.BLOB.defaultValue(DSL.field("NULL", SQLDataType.BLOB)), this, "");
 
     /**
-     * The column <code>trustgame.fbreport.Contact</code>.
+     * The column <code>trustgame.fbreport.TechnicalFleet</code>.
      */
-    public final TableField<FbreportRecord, String> CONTACT = createField(DSL.name("Contact"), SQLDataType.VARCHAR(45).nullable(false), this, "");
+    public final TableField<FbreportRecord, byte[]> TECHNICALFLEET = createField(DSL.name("TechnicalFleet"), SQLDataType.BLOB.defaultValue(DSL.field("NULL", SQLDataType.BLOB)), this, "");
 
     /**
-     * The column <code>trustgame.fbreport.Capacity</code>.
+     * The column <code>trustgame.fbreport.TechnicalGreen</code>.
      */
-    public final TableField<FbreportRecord, String> CAPACITY = createField(DSL.name("Capacity"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
-
-    /**
-     * The column <code>trustgame.fbreport.Employees</code>.
-     */
-    public final TableField<FbreportRecord, String> EMPLOYEES = createField(DSL.name("Employees"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
-
-    /**
-     * The column <code>trustgame.fbreport.Reliability</code>.
-     */
-    public final TableField<FbreportRecord, String> RELIABILITY = createField(DSL.name("Reliability"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
-
-    /**
-     * The column <code>trustgame.fbreport.FleetCharacteristics</code>.
-     */
-    public final TableField<FbreportRecord, String> FLEETCHARACTERISTICS = createField(DSL.name("FleetCharacteristics"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
-
-    /**
-     * The column <code>trustgame.fbreport.OtherInfo</code>.
-     */
-    public final TableField<FbreportRecord, String> OTHERINFO = createField(DSL.name("OtherInfo"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
+    public final TableField<FbreportRecord, byte[]> TECHNICALGREEN = createField(DSL.name("TechnicalGreen"), SQLDataType.BLOB.defaultValue(DSL.field("NULL", SQLDataType.BLOB)), this, "");
 
     private Fbreport(Name alias, Table<FbreportRecord> aliased) {
         this(alias, aliased, null);
@@ -219,11 +199,11 @@ public class Fbreport extends TableImpl<FbreportRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Integer, Integer, String, String, String, UInteger, String, String, String, String, String, String, String, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row10<Integer, Integer, String, String, String, UInteger, byte[], byte[], byte[], byte[]> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }

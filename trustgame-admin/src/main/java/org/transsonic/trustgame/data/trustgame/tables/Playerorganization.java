@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row9;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -63,19 +63,19 @@ public class Playerorganization extends TableImpl<PlayerorganizationRecord> {
     public final TableField<PlayerorganizationRecord, String> DESCRIPTION = createField(DSL.name("Description"), SQLDataType.CLOB.nullable(false), this, "HTML or Markdown");
 
     /**
-     * The column <code>trustgame.playerorganization.TargetProfit</code>.
+     * The column <code>trustgame.playerorganization.TargetProfit</code>. Target line of the score chart
      */
-    public final TableField<PlayerorganizationRecord, Integer> TARGETPROFIT = createField(DSL.name("TargetProfit"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<PlayerorganizationRecord, Integer> TARGETPROFIT = createField(DSL.name("TargetProfit"), SQLDataType.INTEGER.nullable(false), this, "Target line of the score chart");
 
     /**
-     * The column <code>trustgame.playerorganization.TargetSatisfaction</code>.
+     * The column <code>trustgame.playerorganization.TargetSatisfaction</code>. Target line of the score chart
      */
-    public final TableField<PlayerorganizationRecord, Integer> TARGETSATISFACTION = createField(DSL.name("TargetSatisfaction"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<PlayerorganizationRecord, Integer> TARGETSATISFACTION = createField(DSL.name("TargetSatisfaction"), SQLDataType.INTEGER.nullable(false), this, "Target line of the score chart");
 
     /**
-     * The column <code>trustgame.playerorganization.TargetSustainability</code>.
+     * The column <code>trustgame.playerorganization.TargetSustainability</code>. Target line of the score chart
      */
-    public final TableField<PlayerorganizationRecord, Integer> TARGETSUSTAINABILITY = createField(DSL.name("TargetSustainability"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<PlayerorganizationRecord, Integer> TARGETSUSTAINABILITY = createField(DSL.name("TargetSustainability"), SQLDataType.INTEGER.nullable(false), this, "Target line of the score chart");
 
     /**
      * The column <code>trustgame.playerorganization.StartProfit</code>. Start score of profit for a player
@@ -91,6 +91,21 @@ public class Playerorganization extends TableImpl<PlayerorganizationRecord> {
      * The column <code>trustgame.playerorganization.StartSustainability</code>. Start score of sustainability for a player
      */
     public final TableField<PlayerorganizationRecord, Integer> STARTSUSTAINABILITY = createField(DSL.name("StartSustainability"), SQLDataType.INTEGER.nullable(false), this, "Start score of sustainability for a player");
+
+    /**
+     * The column <code>trustgame.playerorganization.MaxProfit</code>. Top of the score chart
+     */
+    public final TableField<PlayerorganizationRecord, Integer> MAXPROFIT = createField(DSL.name("MaxProfit"), SQLDataType.INTEGER.nullable(false), this, "Top of the score chart");
+
+    /**
+     * The column <code>trustgame.playerorganization.MaxSatisfaction</code>. Top of the score chart
+     */
+    public final TableField<PlayerorganizationRecord, Integer> MAXSATISFACTION = createField(DSL.name("MaxSatisfaction"), SQLDataType.INTEGER.nullable(false), this, "Top of the score chart");
+
+    /**
+     * The column <code>trustgame.playerorganization.MaxSustainability</code>. Top of the score chart
+     */
+    public final TableField<PlayerorganizationRecord, Integer> MAXSUSTAINABILITY = createField(DSL.name("MaxSustainability"), SQLDataType.INTEGER.nullable(false), this, "Top of the score chart");
 
     private Playerorganization(Name alias, Table<PlayerorganizationRecord> aliased) {
         this(alias, aliased, null);
@@ -142,7 +157,7 @@ public class Playerorganization extends TableImpl<PlayerorganizationRecord> {
 
     @Override
     public List<UniqueKey<PlayerorganizationRecord>> getKeys() {
-        return Arrays.<UniqueKey<PlayerorganizationRecord>>asList(Keys.KEY_PLAYERORGANIZATION_PRIMARY, Keys.KEY_PLAYERORGANIZATION_ID_UNIQUE);
+        return Arrays.<UniqueKey<PlayerorganizationRecord>>asList(Keys.KEY_PLAYERORGANIZATION_PRIMARY, Keys.KEY_PLAYERORGANIZATION_ID_UNIQUE, Keys.KEY_PLAYERORGANIZATION_NAME_UNIQUE);
     }
 
     @Override
@@ -172,11 +187,11 @@ public class Playerorganization extends TableImpl<PlayerorganizationRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row9 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row9<Integer, String, String, Integer, Integer, Integer, Integer, Integer, Integer> fieldsRow() {
-        return (Row9) super.fieldsRow();
+    public Row12<Integer, String, String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }

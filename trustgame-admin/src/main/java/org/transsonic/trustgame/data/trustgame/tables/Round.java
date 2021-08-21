@@ -13,7 +13,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -63,6 +63,11 @@ public class Round extends TableImpl<RoundRecord> {
      * The column <code>trustgame.round.RoundNumber</code>.
      */
     public final TableField<RoundRecord, Integer> ROUNDNUMBER = createField(DSL.name("RoundNumber"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.round.TestRound</code>. If true, do not count the points for ths round
+     */
+    public final TableField<RoundRecord, Byte> TESTROUND = createField(DSL.name("TestRound"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.field("0", SQLDataType.TINYINT)), this, "If true, do not count the points for ths round");
 
     private Round(Name alias, Table<RoundRecord> aliased) {
         this(alias, aliased, null);
@@ -163,11 +168,11 @@ public class Round extends TableImpl<RoundRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Integer, Integer, Integer> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row4<Integer, Integer, Integer, Byte> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

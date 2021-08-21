@@ -78,7 +78,7 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>trustgame.user.Password</code>.
      */
-    public final TableField<UserRecord, String> PASSWORD = createField(DSL.name("Password"), SQLDataType.VARCHAR(90).defaultValue(DSL.field("NULL", SQLDataType.VARCHAR)), this, "");
+    public final TableField<UserRecord, String> PASSWORD = createField(DSL.name("Password"), SQLDataType.VARCHAR(90).nullable(false), this, "");
 
     /**
      * The column <code>trustgame.user.CreateTime</code>.
@@ -145,7 +145,7 @@ public class User extends TableImpl<UserRecord> {
 
     @Override
     public List<UniqueKey<UserRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY, Keys.KEY_USER_ID_UNIQUE);
+        return Arrays.<UniqueKey<UserRecord>>asList(Keys.KEY_USER_PRIMARY, Keys.KEY_USER_ID_UNIQUE, Keys.KEY_USER_USERNAME_UNIQUE);
     }
 
     @Override

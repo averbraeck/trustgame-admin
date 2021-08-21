@@ -13,7 +13,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -68,6 +68,11 @@ public class Usercarrier extends TableImpl<UsercarrierRecord> {
      * The column <code>trustgame.usercarrier.BoughtReport</code>.
      */
     public final TableField<UsercarrierRecord, Byte> BOUGHTREPORT = createField(DSL.name("BoughtReport"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.field("0", SQLDataType.TINYINT)), this, "");
+
+    /**
+     * The column <code>trustgame.usercarrier.RoundNumber</code>. Indicates in which round a report was bought
+     */
+    public final TableField<UsercarrierRecord, Integer> ROUNDNUMBER = createField(DSL.name("RoundNumber"), SQLDataType.INTEGER.nullable(false), this, "Indicates in which round a report was bought");
 
     private Usercarrier(Name alias, Table<UsercarrierRecord> aliased) {
         this(alias, aliased, null);
@@ -176,11 +181,11 @@ public class Usercarrier extends TableImpl<UsercarrierRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Integer, Integer, Integer, Byte> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row5<Integer, Integer, Integer, Byte, Integer> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

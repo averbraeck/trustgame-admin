@@ -17,6 +17,9 @@ public class FormEntryImage extends AbstractFormEntry<FormEntryImage, byte[]> {
     /** the record number for retrieving the current image. */
     private int imageRecordNr;
     
+    /** the image number to retrieve if multiple images exist (0 means do not query). */
+    private int imageNr;
+    
     /** large image (200x200). */
     private boolean largeImage;
 
@@ -25,6 +28,7 @@ public class FormEntryImage extends AbstractFormEntry<FormEntryImage, byte[]> {
         this.filename = "";
         this.imageServlet = "";
         this.largeImage = false;
+        this.imageNr = 0;
     }
 
     @Override
@@ -92,6 +96,15 @@ public class FormEntryImage extends AbstractFormEntry<FormEntryImage, byte[]> {
         return this;
     }
 
+    public int getImageNr() {
+        return imageNr;
+    }
+
+    public FormEntryImage setImageNr(int imageNr) {
+        this.imageNr = imageNr;
+        return this;
+    }
+
     @SuppressWarnings("unchecked")
     public String setRecordValue(Record record, byte[] value) {
         this.image = value;
@@ -133,6 +146,10 @@ public class FormEntryImage extends AbstractFormEntry<FormEntryImage, byte[]> {
             s.append(getImageServlet());
             s.append("?id=");
             s.append(getImageRecordNr());
+            if (this.imageNr > 0) {
+                s.append("&image=");
+                s.append(getImageNr());
+            }
         }
         s.append("\" />\n");
         s.append("        </div>\n");

@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -75,6 +75,16 @@ public class Gameplay extends TableImpl<GameplayRecord> {
      */
     public final TableField<GameplayRecord, LocalDateTime> ENDPLAYDATE = createField(DSL.name("EndPlayDate"), SQLDataType.LOCALDATETIME(0).defaultValue(DSL.field("NULL", SQLDataType.LOCALDATETIME)), this, "NULL means no restrictions");
 
+    /**
+     * The column <code>trustgame.gameplay.Briefing_ID</code>.
+     */
+    public final TableField<GameplayRecord, Integer> BRIEFING_ID = createField(DSL.name("Briefing_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.gameplay.Debriefing_ID</code>.
+     */
+    public final TableField<GameplayRecord, Integer> DEBRIEFING_ID = createField(DSL.name("Debriefing_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -115,7 +125,7 @@ public class Gameplay extends TableImpl<GameplayRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.GAMEPLAY_FK_GAMEPLAY_GAME1_IDX);
+        return Arrays.<Index>asList(Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING1_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_GAME1_IDX);
     }
 
     @Override
@@ -135,16 +145,32 @@ public class Gameplay extends TableImpl<GameplayRecord> {
 
     @Override
     public List<ForeignKey<GameplayRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<GameplayRecord, ?>>asList(Keys.FK_GAMEPLAY_GAME1);
+        return Arrays.<ForeignKey<GameplayRecord, ?>>asList(Keys.FK_GAMEPLAY_GAME1, Keys.FK_GAMEPLAY_BRIEFING1, Keys.FK_GAMEPLAY_BRIEFING2);
     }
 
     private transient Game _game;
+    private transient Briefing _fkGameplayBriefing1;
+    private transient Briefing _fkGameplayBriefing2;
 
     public Game game() {
         if (_game == null)
             _game = new Game(this, Keys.FK_GAMEPLAY_GAME1);
 
         return _game;
+    }
+
+    public Briefing fkGameplayBriefing1() {
+        if (_fkGameplayBriefing1 == null)
+            _fkGameplayBriefing1 = new Briefing(this, Keys.FK_GAMEPLAY_BRIEFING1);
+
+        return _fkGameplayBriefing1;
+    }
+
+    public Briefing fkGameplayBriefing2() {
+        if (_fkGameplayBriefing2 == null)
+            _fkGameplayBriefing2 = new Briefing(this, Keys.FK_GAMEPLAY_BRIEFING2);
+
+        return _fkGameplayBriefing2;
     }
 
     @Override
@@ -174,11 +200,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Integer, Integer, String, LocalDateTime, LocalDateTime> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row7<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

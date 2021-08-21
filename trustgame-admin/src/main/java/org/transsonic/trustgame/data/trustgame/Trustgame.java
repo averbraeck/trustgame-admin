@@ -10,6 +10,7 @@ import java.util.List;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
+import org.transsonic.trustgame.data.trustgame.tables.Briefing;
 import org.transsonic.trustgame.data.trustgame.tables.Carrier;
 import org.transsonic.trustgame.data.trustgame.tables.Carrierreview;
 import org.transsonic.trustgame.data.trustgame.tables.Client;
@@ -43,6 +44,11 @@ public class Trustgame extends SchemaImpl {
      * The reference instance of <code>trustgame</code>
      */
     public static final Trustgame TRUSTGAME = new Trustgame();
+
+    /**
+     * The table <code>trustgame.briefing</code>.
+     */
+    public final Briefing BRIEFING = Briefing.BRIEFING;
 
     /**
      * The table <code>trustgame.carrier</code>.
@@ -155,6 +161,7 @@ public class Trustgame extends SchemaImpl {
     @Override
     public final List<Table<?>> getTables() {
         return Arrays.<Table<?>>asList(
+            Briefing.BRIEFING,
             Carrier.CARRIER,
             Carrierreview.CARRIERREVIEW,
             Client.CLIENT,

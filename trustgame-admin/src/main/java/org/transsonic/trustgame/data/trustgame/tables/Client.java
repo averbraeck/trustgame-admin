@@ -117,7 +117,7 @@ public class Client extends TableImpl<ClientRecord> {
 
     @Override
     public List<UniqueKey<ClientRecord>> getKeys() {
-        return Arrays.<UniqueKey<ClientRecord>>asList(Keys.KEY_CLIENT_PRIMARY, Keys.KEY_CLIENT_ID_UNIQUE);
+        return Arrays.<UniqueKey<ClientRecord>>asList(Keys.KEY_CLIENT_PRIMARY, Keys.KEY_CLIENT_ID_UNIQUE, Keys.KEY_CLIENT_NAME_UNIQUE);
     }
 
     @Override

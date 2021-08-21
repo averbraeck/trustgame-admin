@@ -4,7 +4,6 @@
 package org.transsonic.trustgame.data.trustgame.tables;
 
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row4;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -69,11 +68,6 @@ public class Userround extends TableImpl<UserroundRecord> {
      * The column <code>trustgame.userround.GameUser_ID</code>.
      */
     public final TableField<UserroundRecord, Integer> GAMEUSER_ID = createField(DSL.name("GameUser_ID"), SQLDataType.INTEGER.nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.userround.StartTimeRound</code>.
-     */
-    public final TableField<UserroundRecord, LocalDateTime> STARTTIMEROUND = createField(DSL.name("StartTimeRound"), SQLDataType.LOCALDATETIME(0).nullable(false).defaultValue(DSL.field("current_timestamp()", SQLDataType.LOCALDATETIME)), this, "");
 
     private Userround(Name alias, Table<UserroundRecord> aliased) {
         this(alias, aliased, null);
@@ -190,11 +184,11 @@ public class Userround extends TableImpl<UserroundRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row4 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Integer, Integer, Integer, Integer, LocalDateTime> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row4<Integer, Integer, Integer, Integer> fieldsRow() {
+        return (Row4) super.fieldsRow();
     }
 }

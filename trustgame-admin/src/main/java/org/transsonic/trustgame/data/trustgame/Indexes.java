@@ -39,6 +39,8 @@ public class Indexes {
     public static final Index CARRIERREVIEW_FK_CARRIERREVIEW_ROUND1_IDX = Internal.createIndex(DSL.name("fk_CarrierReview_Round1_idx"), Carrierreview.CARRIERREVIEW, new OrderField[] { Carrierreview.CARRIERREVIEW.ROUND_ID }, false);
     public static final Index FBREPORT_FK_FBREPORT_CARRIER1_IDX = Internal.createIndex(DSL.name("fk_FBReport_Carrier1_idx"), Fbreport.FBREPORT, new OrderField[] { Fbreport.FBREPORT.CARRIER_ID }, false);
     public static final Index GAME_FK_GAME_ORGANIZATION1_IDX = Internal.createIndex(DSL.name("fk_Game_Organization1_idx"), Game.GAME, new OrderField[] { Game.GAME.ORGANIZATION_ID }, false);
+    public static final Index GAMEPLAY_FK_GAMEPLAY_BRIEFING1_IDX = Internal.createIndex(DSL.name("fk_GamePlay_Briefing1_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.BRIEFING_ID }, false);
+    public static final Index GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX = Internal.createIndex(DSL.name("fk_GamePlay_Briefing2_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.DEBRIEFING_ID }, false);
     public static final Index GAMEPLAY_FK_GAMEPLAY_GAME1_IDX = Internal.createIndex(DSL.name("fk_GamePlay_Game1_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.GAME_ID }, false);
     public static final Index USERROUND_FK_GAMEPLAYROUND_GAMEPLAY1_IDX = Internal.createIndex(DSL.name("fk_GamePlayRound_GamePlay1_idx"), Userround.USERROUND, new OrderField[] { Userround.USERROUND.GAMEPLAY_ID }, false);
     public static final Index USERROUND_FK_GAMEPLAYROUND_ROUND1_IDX = Internal.createIndex(DSL.name("fk_GamePlayRound_Round1_idx"), Userround.USERROUND, new OrderField[] { Userround.USERROUND.ROUND_ID }, false);
