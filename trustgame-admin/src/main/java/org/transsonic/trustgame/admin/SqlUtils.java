@@ -10,6 +10,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.transsonic.trustgame.data.trustgame.Tables;
+import org.transsonic.trustgame.data.trustgame.tables.records.BriefingRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.FbreportRecord;
@@ -67,6 +68,11 @@ public final class SqlUtils {
     public static FbreportRecord readFBReportForCarrierId(final AdminData data, final int carrierId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         return dslContext.selectFrom(Tables.FBREPORT).where(Tables.FBREPORT.CARRIER_ID.eq(carrierId)).fetchAny();
+    }
+
+    public static BriefingRecord readBriefingFromBriefingId(final AdminData data, final Integer briefingId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        return dslContext.selectFrom(Tables.BRIEFING).where(Tables.BRIEFING.ID.eq(briefingId)).fetchAny();
     }
 
     public static void loadAttributes(HttpSession session) {

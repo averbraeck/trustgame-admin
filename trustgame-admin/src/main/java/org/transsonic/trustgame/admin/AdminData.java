@@ -156,6 +156,7 @@ public class AdminData {
     public void resetFormColumn() {
         this.formColumn.setHeader(this.formColumn.getDefaultHeader());
         this.formColumn.setForm(null);
+        this.formColumn.setHtmlContents("");
     }
     
     public FormColumn getFormColumn() {

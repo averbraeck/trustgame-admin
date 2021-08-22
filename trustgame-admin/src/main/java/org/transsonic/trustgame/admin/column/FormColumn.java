@@ -5,6 +5,7 @@ import org.transsonic.trustgame.admin.form.AdminForm;
 public class FormColumn extends AbstractColumn {
 
     private AdminForm form;
+    private String htmlContents;
 
     public FormColumn(String width, String defaultHeader) {
         super(width, defaultHeader);
@@ -12,7 +13,11 @@ public class FormColumn extends AbstractColumn {
     }
 
     public String getContent() {
-        return this.form == null ? "" : this.form.process();
+        if (this.form != null)
+            return this.form.process();
+        if (this.htmlContents != null && this.htmlContents.length() > 0)
+            return this.htmlContents;
+        return "";
     }
 
     public AdminForm getForm() {
@@ -31,4 +36,13 @@ public class FormColumn extends AbstractColumn {
     public void clearForm() {
         this.form = null;
     }
+
+    public String getHtmlContents() {
+        return htmlContents;
+    }
+
+    public void setHtmlContents(String htmlContents) {
+        this.htmlContents = htmlContents;
+    }
+
 }

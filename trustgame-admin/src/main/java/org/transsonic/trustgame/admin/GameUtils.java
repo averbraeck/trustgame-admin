@@ -284,7 +284,7 @@ public class GameUtils {
                         .setMaxChars(45))
                 .addEntry(new FormEntryPickRecord(Tables.GAME.ORGANIZATION_ID)
                         .setInitialValue(game.getOrganizationId() == null ? 0 : game.getOrganizationId())
-                        .setLabel("Player Organization")
+                        .setLabel("Mission")
                         .setRequired()
                         .setPickTable(data, Tables.PLAYERORGANIZATION, Tables.PLAYERORGANIZATION.ID, Tables.PLAYERORGANIZATION.NAME))
                 .endForm();

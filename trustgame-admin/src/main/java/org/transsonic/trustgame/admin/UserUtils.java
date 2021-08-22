@@ -104,11 +104,23 @@ public class UserUtils {
             break;
         }
 
-        case "readUsers":
+        case "generateUserParameters": {
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, 0);
+            generateUserParameters(request, data);
+            break;
+        }
+
         case "generateUsers": {
-            // TODO: implement readUsers and generateUsers
-            // makeUserGroupContent(session, data, true, 0);
-            // data.resetColumn(1);
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            generateUsers(request, data);
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "readUsers": {
+            // TODO: implement readUsers
             ModalWindowUtils.popup(data, "Method not yet implemented",
                     "<p>User generation and reading not yet implemented</p>",
                     "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
@@ -164,7 +176,7 @@ public class UserUtils {
         if (editButton) {
             s.append(AdminTable.finalButton("New User", "newUser"));
             s.append(AdminTable.finalButton("Read Users from File", "readUsers"));
-            s.append(AdminTable.finalButton("Generate User Batch", "generateUsers"));
+            s.append(AdminTable.finalButton("Generate User Batch", "generateUserParameters"));
         }
 
         data.getColumn(1).setSelectedRecordNr(selectedRecordNr);
@@ -218,23 +230,8 @@ public class UserUtils {
         UserRecord user = userId == 0 ? dslContext.newRecord(Tables.USER)
                 : dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(userId)).fetchOne();
 
-        // make unique user code
-        if (userId == 0) {
-            String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            String code = "";
-            boolean same = true;
-            while (same) {
-                Random r = new Random();
-                code = "";
-                for (int i = 0; i < 5; i++) {
-                    int p = r.nextInt(chars.length()); // bounds is exclusive
-                    code += chars.charAt(p);
-                }
-                UserRecord codeUser = dslContext.selectFrom(Tables.USER).where(Tables.USER.USERCODE.eq(code)).fetchAny();
-                same = codeUser != null;
-            }
-            user.setUsercode(code);
-        }
+        if (userId == 0)
+            user.setUsercode(makeUniqueUserCode(data));
 
         //@formatter:off
         AdminForm form = new AdminForm()
@@ -277,6 +274,25 @@ public class UserUtils {
         data.getFormColumn().setHeaderForm("Edit User", form);
     }
 
+    /** make unique user code */
+    private static String makeUniqueUserCode(AdminData data) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String code = "";
+        boolean same = true;
+        while (same) {
+            Random r = new Random();
+            code = "";
+            for (int i = 0; i < 5; i++) {
+                int p = r.nextInt(chars.length()); // bounds is exclusive
+                code += chars.charAt(p);
+            }
+            UserRecord codeUser = dslContext.selectFrom(Tables.USER).where(Tables.USER.USERCODE.eq(code)).fetchAny();
+            same = codeUser != null;
+        }
+        return code;
+    }
+
     public static int saveUser(HttpServletRequest request, AdminData data, int userId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         UserRecord user = userId == 0 ? dslContext.newRecord(Tables.USER)
@@ -313,6 +329,190 @@ public class UserUtils {
                 return -1;
             }
             return user.getId();
+        }
+    }
+
+    private static void generateUserParameters(HttpServletRequest request, AdminData data) {
+        StringBuffer s = new StringBuffer();
+        s.append("<p>Note: The user numbers will be generated at the places of the %-sign in the username \n"
+                + "and password, with the indicated number of digits. If password is blank, users can only \n"
+                + "login using the generated code. The username and login name will be the same.</p>\n");
+
+        s.append("<div class=\"tg-form\">\n");
+        s.append("  <form id=\"editForm\" action=\"/trustgame-admin/admin\" method=\"POST\" >\n");
+        s.append("    <input id=\"editClick\" type=\"hidden\" name=\"editClick\" value=\"tobefilled\" />\n");
+        s.append("    <input id=\"editRecordNr\" type=\"hidden\" name=\"editRecordNr\" value=\"0\" />\n");
+        s.append(buttonRow(data));
+        s.append("    <fieldset>\n");
+        s.append("     <table width=\"100%\">\n");
+
+        s.append(makeStringField("Name (with %)", true, "username", ""));
+        s.append(makeIntField("Start number", true, "startnumber", 1));
+        s.append(makeIntField("Number of users", true, "nrusers", 10));
+        s.append(makeIntField("Nr of digits for %", true, "nrdigits", 2));
+        s.append(makeStringField("Password (can be empty)", false, "password", ""));
+
+        s.append("     </table>\n");
+        s.append("    </fieldset>\n");
+        s.append(buttonRow(data));
+        s.append("  </form>\n");
+        s.append("</div>\n");
+
+        data.getFormColumn().setHtmlContents(s.toString());
+        data.getFormColumn().setHeader("Generate User Batch");
+    }
+
+    private static String makeStringField(String label, boolean required, String name, String initialValue) {
+        StringBuilder s = new StringBuilder();
+        s.append("    <tr>\n");
+        s.append("      <td width=\"40%\">");
+        s.append(label);
+        s.append("      </td>");
+        s.append("      <td width=\"60%\">");
+        s.append("<input type=\"text\" style=\"width:97%;\" ");
+        if (required)
+            s.append("required name=\"");
+        else
+            s.append("name=\"");
+        s.append(name);
+        s.append("\" value=\"");
+        s.append(initialValue);
+        s.append("\" />");
+        s.append("</td>\n");
+        s.append("    </tr>\n");
+        return s.toString();
+    }
+
+    private static String makeIntField(String label, boolean required, String name, int initialValue) {
+        StringBuilder s = new StringBuilder();
+        s.append("    <tr>\n");
+        s.append("      <td width=\"40%\">");
+        s.append(label);
+        s.append("      </td>");
+        s.append("      <td width=\"60%\">");
+        s.append("<input type=\"number\" style=\"width:97%;\" ");
+        if (required)
+            s.append("required name=\"");
+        else
+            s.append("name=\"");
+        s.append(name);
+        s.append("\" value=\"");
+        s.append(initialValue);
+        s.append("\" />");
+        s.append("</td>\n");
+        s.append("    </tr>\n");
+        return s.toString();
+    }
+
+    private static String buttonRow(AdminData data) {
+        StringBuffer s = new StringBuffer();
+        s.append("    <div class=\"tg-admin-form-buttons\">\n");
+
+        s.append("      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");
+        s.append("showUsers");
+        s.append("', ");
+        s.append(data.getColumn(0).getSelectedRecordNr());
+        s.append("); return false;\">Cancel</a></span>\n");
+
+        s.append("      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");
+        s.append("generateUsers");
+        s.append("', ");
+        s.append(data.getColumn(0).getSelectedRecordNr());
+        s.append("); return false;\">");
+        s.append("Generate");
+        s.append("</a></span>\n");
+
+        s.append("    </div>\n");
+        return s.toString();
+    }
+
+    private static void generateUsers(HttpServletRequest request, AdminData data) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        int userGroupNr = data.getColumn(0).getSelectedRecordNr();
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        String sstartnr = request.getParameter("startnumber");
+        String snrusers = request.getParameter("nrusers");
+        String snrdigits = request.getParameter("nrdigits");
+
+        // check validity
+        if (!username.contains("%")) {
+            ModalWindowUtils.popup(data, "Error in username", "<p>No % sign in username</p>",
+                    "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
+            return;
+        }
+        if (username.indexOf('%') != username.lastIndexOf('%')) {
+            ModalWindowUtils.popup(data, "Error in username", "<p>Multiple % sign in username</p>",
+                    "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
+            return;
+        }
+        if (password.length() > 0 && !password.contains("%")) {
+            ModalWindowUtils.popup(data, "Error in password", "<p>No % sign in pasword</p>",
+                    "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
+            return;
+        }
+        if (password.indexOf('%') != password.lastIndexOf('%')) {
+            ModalWindowUtils.popup(data, "Error in password", "<p>Multiple % sign in password</p>",
+                    "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
+            return;
+        }
+        try {
+            Integer.parseInt(sstartnr);
+            Integer.parseInt(snrusers);
+            Integer.parseInt(snrdigits);
+        } catch (NumberFormatException nfe) {
+            ModalWindowUtils.popup(data, "Error in numeric values", "<p>startnr / nrusers / nrdigits wrong</p>",
+                    "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
+            return;
+        }
+
+        int startnumber = Integer.parseInt(sstartnr);
+        int nrusers = Integer.parseInt(snrusers);
+        int nrdigits = Integer.parseInt(snrdigits);
+
+        // make the users
+        for (int i = startnumber; i < startnumber + nrusers; i++) {
+            UserRecord user = dslContext.newRecord(Tables.USER);
+            user.setUsercode(makeUniqueUserCode(data));
+            String nr = "" + i;
+            while (nr.length() < nrdigits) {
+                nr = "0" + nr;
+            }
+            String name = username.replaceFirst("\\%", nr);
+            String pwd;
+            if (password.length() == 0) {
+                pwd = "" + new Random().nextInt();
+            } else {
+                pwd = password.replaceFirst("\\%", nr);
+            }
+
+            user.setName(name);
+            user.setUsername(name);
+            user.setUsergroupId(userGroupNr);
+            user.setCreatetime(LocalDateTime.now());
+            user.setAdministrator((byte) 0);
+            user.setEmail("");
+            
+            String hashedPassword = "";
+            MessageDigest md;
+            try {
+                // https://www.baeldung.com/java-md5
+                md = MessageDigest.getInstance("MD5");
+                md.update(pwd.getBytes());
+                byte[] digest = md.digest();
+                hashedPassword = DatatypeConverter.printHexBinary(digest).toLowerCase();
+            } catch (NoSuchAlgorithmException e1) {
+                throw new RuntimeException(e1);
+            }
+            user.setPassword(hashedPassword);
+
+            try {
+                user.store();
+            } catch (DataAccessException exception) {
+                ModalWindowUtils.popup(data, "Error storing user record", "<p>" + exception.getMessage() + "</p>",
+                        "clickRecordId('showUsers'," + data.getColumn(0).getSelectedRecordNr() + ")");
+                return;
+            }
         }
     }
 

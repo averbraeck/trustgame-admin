@@ -57,7 +57,10 @@ public class ImageFB extends HttpServlet {
                 ImageUtil.makeResponse(response, image);
             } else
                 ImageUtil.makeResponse(response, fbReport.getTechnicalgreen());
+        } else {
+            ImageUtil.makeResponse(response, ImageUtil.getNoImage());
         }
+
     }
 
 }

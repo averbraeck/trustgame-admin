@@ -20,13 +20,17 @@ public class ImageCarrierWebsite extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         Integer carrierId = Integer.valueOf(request.getParameter("id").toString());
         AdminData data = SessionUtils.getData(request.getSession());
         CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, carrierId);
-        byte[] website = carrier.getCarrierwebimage();
-        ImageUtil.makeResponse(response, website);
+        if (carrier == null || carrier.getCarrierwebimage() == null)
+            ImageUtil.makeResponse(response, ImageUtil.getNoImage());
+        else {
+            byte[] website = carrier.getCarrierwebimage();
+            ImageUtil.makeResponse(response, website);
+        }
     }
 
-    
 }

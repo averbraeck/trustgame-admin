@@ -16,7 +16,7 @@ import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
 
-public class OrganizationUtils {
+public class MissionUtils {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
@@ -24,35 +24,35 @@ public class OrganizationUtils {
         
         switch (click) {
         
-        case "organization": {
-            data.clearColumns("40%", "PlayerOrganization");
+        case "mission": {
+            data.clearColumns("40%", "Mission");
             data.clearFormColumn("60%", "Edit Properties");
-            showOrganizations(session, data, true, 0);
+            showMissions(session, data, true, 0);
             break;
         }
 
-        case "editOrganization": {
-            showOrganizations(session, data, true, recordNr);
-            editOrganization(session, data, recordNr, true);
+        case "editMission": {
+            showMissions(session, data, true, recordNr);
+            editMission(session, data, recordNr, true);
             break;
         }
 
-        case "viewOrganization": {
-            showOrganizations(session, data, true, recordNr);
-            editOrganization(session, data, recordNr, false);
+        case "viewMission": {
+            showMissions(session, data, true, recordNr);
+            editMission(session, data, recordNr, false);
             break;
         }
 
-        case "saveOrganization": {
-            recordNr = saveOrganization(request, data, recordNr);
-            showOrganizations(session, data, true, 0);
+        case "saveMission": {
+            recordNr = saveMission(request, data, recordNr);
+            showMissions(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
-        case "newOrganization": {
-            showOrganizations(session, data, true, 0);
-            editOrganization(session, data, 0, true);
+        case "newMission": {
+            showMissions(session, data, true, 0);
+            editMission(session, data, 0, true);
             break;
         }
         
@@ -63,7 +63,7 @@ public class OrganizationUtils {
         AdminServlet.makeColumnContent(data);
     }
 
-    public static void showOrganizations(HttpSession session, AdminData data, boolean editButton,
+    public static void showMissions(HttpSession session, AdminData data, boolean editButton,
             int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
@@ -72,21 +72,21 @@ public class OrganizationUtils {
 
         s.append(AdminTable.startTable());
         for (PlayerorganizationRecord organization : playerOrganizationRecords) {
-            TableRow tableRow = new TableRow(organization.getId(), selectedRecordNr, organization.getName(), "viewOrganization");
+            TableRow tableRow = new TableRow(organization.getId(), selectedRecordNr, organization.getName(), "viewMission");
             if (editButton)
-                tableRow.addButton("Edit", "editOrganization");
+                tableRow.addButton("Edit", "editMission");
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
         
         if (editButton)
-            s.append(AdminTable.finalButton("New Organization", "newOrganization"));
+            s.append(AdminTable.finalButton("New Mission", "newMission"));
         
         data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
         data.getColumn(0).setContent(s.toString());
     }
 
-    public static void editOrganization(HttpSession session, AdminData data, int organizationId, boolean edit) {
+    public static void editMission(HttpSession session, AdminData data, int organizationId, boolean edit) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         PlayerorganizationRecord organization = organizationId == 0 ? dslContext.newRecord(Tables.PLAYERORGANIZATION)
                 : dslContext.selectFrom(Tables.PLAYERORGANIZATION)
@@ -94,15 +94,15 @@ public class OrganizationUtils {
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)
-                .setCancelMethod("organization")
-                .setEditMethod("editOrganization")
-                .setSaveMethod("saveOrganization")
+                .setCancelMethod("mission")
+                .setEditMethod("editMission")
+                .setSaveMethod("saveMission")
                 .setRecordNr(organizationId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.PLAYERORGANIZATION.NAME)
                         .setRequired()
                         .setInitialValue(organization.getName())
-                        .setLabel("Organization name")
+                        .setLabel("Mission name")
                         .setMaxChars(45))
                 .addEntry(new FormEntryText(Tables.PLAYERORGANIZATION.DESCRIPTION)
                         .setRequired()
@@ -155,24 +155,24 @@ public class OrganizationUtils {
                         .setLabel("Max sustainability (graph)"))
                 .endForm();
         //@formatter:on
-        data.getFormColumn().setHeaderForm("Edit Organization", form);
+        data.getFormColumn().setHeaderForm("Edit Mission", form);
     }
 
-    public static int saveOrganization(HttpServletRequest request, AdminData data, int organizationId) {
+    public static int saveMission(HttpServletRequest request, AdminData data, int organizationId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         PlayerorganizationRecord organization = organizationId == 0 ? dslContext.newRecord(Tables.PLAYERORGANIZATION)
                 : dslContext.selectFrom(Tables.PLAYERORGANIZATION)
                         .where(Tables.PLAYERORGANIZATION.ID.eq(organizationId)).fetchOne();
         String errors = data.getFormColumn().getForm().setFields(organization, request, data);
         if (errors.length() > 0) {
-            ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('organization')");
+            ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('mission')");
             return -1;
         } else {
             try {
                 organization.store();
             } catch (DataAccessException exception) {
                 ModalWindowUtils.popup(data, "Error storing record", "<p>" + exception.getMessage() + "</p>",
-                        "clickMenu('organization')");
+                        "clickMenu('mission')");
                 return -1;
             }
         }

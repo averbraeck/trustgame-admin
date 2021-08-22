@@ -202,12 +202,12 @@ html, body {
 
 .tg-admin-menu-button, .tg-admin-menu-button-red, .tg-admin-menu-button-inactive {
   flex-grow: 0;
-  width: 8%;
+  width: 7%;
   height: 28px;
-  font-size: 1.2em;
+  font-size: 1.1em;
   color: white;
   text-align: center;
-  padding-top: 6px;
+  padding-top: 7px;
   border-radius: 10px;
 }
 

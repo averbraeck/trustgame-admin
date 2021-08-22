@@ -1,6 +1,8 @@
 package org.transsonic.trustgame.admin.image;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,4 +37,16 @@ public class ImageUtil {
         }
         return true;
     }
+
+    public static byte[] getNoImage() {
+        String classPath = ImageUtil.class.getClassLoader().getResource(".").getPath().toString();
+        String root = new File(classPath).getParentFile().getParentFile().getAbsolutePath();
+        String imageFolder = root + "/jsp/admin/images";
+        try {
+            return Files.readAllBytes(new File(imageFolder + "/noimage.png").toPath());
+        } catch (IOException e) {
+            return new byte[] {};
+        }
+    }
+
 }

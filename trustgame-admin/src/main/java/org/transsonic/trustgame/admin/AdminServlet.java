@@ -57,6 +57,7 @@ public class AdminServlet extends HttpServlet {
         case "newUser":
         case "readUsers":
         case "generateUsers":
+        case "generateUserParameters":
             data.setMenuChoice("user");
             UserUtils.handleMenu(request, click, recordNr);
             break;
@@ -88,13 +89,13 @@ public class AdminServlet extends HttpServlet {
             ClientUtils.handleMenu(request, click, recordNr);
             break;
 
-        case "organization":
-        case "viewOrganization":
-        case "editOrganization":
-        case "saveOrganization":
-        case "newOrganization":
-            data.setMenuChoice("organization");
-            OrganizationUtils.handleMenu(request, click, recordNr);
+        case "mission":
+        case "viewMission":
+        case "editMission":
+        case "saveMission":
+        case "newMission":
+            data.setMenuChoice("mission");
+            MissionUtils.handleMenu(request, click, recordNr);
             break;
 
         case "game":
@@ -134,6 +135,15 @@ public class AdminServlet extends HttpServlet {
         case "newCarrierReview":
             data.setMenuChoice("review");
             ReviewUtils.handleMenu(request, click, recordNr);
+            break;
+
+        case "briefing":
+        case "viewBriefing":
+        case "editBriefing":
+        case "saveBriefing":
+        case "newBriefing":
+            data.setMenuChoice("briefing");
+            BriefingUtils.handleMenu(request, click, recordNr);
             break;
 
         case "gameplay":
@@ -223,15 +233,16 @@ public class AdminServlet extends HttpServlet {
 
     public static String getTopMenu(AdminData data) {
         StringBuffer s = new StringBuffer();
-        topmenu(data, s, "user", "Users");
-        topmenu(data, s, "carrier", "Carriers");
+        topmenu(data, s, "user", "User");
+        topmenu(data, s, "carrier", "Carrier");
         topmenu(data, s, "fbreport", "FB Report");
-        topmenu(data, s, "client", "Clients");
-        topmenu(data, s, "organization", "Organizations");
-        topmenu(data, s, "game", "Games");
-        topmenu(data, s, "review", "Reviews");
+        topmenu(data, s, "client", "Client");
+        topmenu(data, s, "mission", "Mission");
+        topmenu(data, s, "game", "Game");
+        topmenu(data, s, "review", "Review");
+        topmenu(data, s, "briefing", "Briefing");
         topmenu(data, s, "gameplay", "GamePlay");
-        topmenu(data, s, "result", "Results");
+        topmenu(data, s, "result", "Result");
         topmenu(data, s, "logging", "Logging");
         return s.toString();
     }

@@ -20,12 +20,15 @@ public class ImageCarrier extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         Integer carrierId = Integer.valueOf(request.getParameter("id").toString());
         AdminData data = SessionUtils.getData(request.getSession());
         CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, carrierId);
-        ImageUtil.makeResponse(response, carrier.getLogo());
+        if (carrier == null || carrier.getLogo() == null)
+            ImageUtil.makeResponse(response, ImageUtil.getNoImage());
+        else
+            ImageUtil.makeResponse(response, carrier.getLogo());
     }
 
-    
 }

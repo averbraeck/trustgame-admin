@@ -253,6 +253,14 @@ public class GamePlayUtils {
                 .addEntry(new FormEntryDateTime(Tables.GAMEPLAY.ENDPLAYDATE)
                         .setInitialValue(gamePlay.getEndplaydate())
                         .setLabel("Latest play date"))
+                .addEntry(new FormEntryPickRecord(Tables.GAMEPLAY.BRIEFING_ID)
+                        .setInitialValue(gamePlay.getBriefingId() == null ? 0 : gamePlay.getBriefingId())
+                        .setLabel("Briefing (help)")
+                        .setPickTable(data, Tables.BRIEFING, Tables.BRIEFING.ID, Tables.BRIEFING.NAME))
+                .addEntry(new FormEntryPickRecord(Tables.GAMEPLAY.DEBRIEFING_ID)
+                        .setInitialValue(gamePlay.getDebriefingId() == null ? 0 : gamePlay.getDebriefingId())
+                        .setLabel("Debriefing (end)")
+                        .setPickTable(data, Tables.BRIEFING, Tables.BRIEFING.ID, Tables.BRIEFING.NAME))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit GamePlay", form);
@@ -469,6 +477,10 @@ public class GamePlayUtils {
     }
 
     private static boolean userHasPlayed(AdminData data, GameuserRecord gameUser) {
+        if (gameUser == null)
+            return false;
+        if (gameUser.getRoundnumber() == null || gameUser.getRoundstatus() == null)
+            return false;
         if (gameUser.getRoundnumber().intValue() > 1 || gameUser.getRoundstatus() != 0)
             return true;
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
