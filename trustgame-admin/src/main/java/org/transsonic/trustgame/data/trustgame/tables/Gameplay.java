@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row7;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -78,12 +78,17 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     /**
      * The column <code>trustgame.gameplay.Briefing_ID</code>.
      */
-    public final TableField<GameplayRecord, Integer> BRIEFING_ID = createField(DSL.name("Briefing_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<GameplayRecord, Integer> BRIEFING_ID = createField(DSL.name("Briefing_ID"), SQLDataType.INTEGER.defaultValue(DSL.field("NULL", SQLDataType.INTEGER)), this, "");
 
     /**
      * The column <code>trustgame.gameplay.Debriefing_ID</code>.
      */
-    public final TableField<GameplayRecord, Integer> DEBRIEFING_ID = createField(DSL.name("Debriefing_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<GameplayRecord, Integer> DEBRIEFING_ID = createField(DSL.name("Debriefing_ID"), SQLDataType.INTEGER.defaultValue(DSL.field("NULL", SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>trustgame.gameplay.Help_ID</code>.
+     */
+    public final TableField<GameplayRecord, Integer> HELP_ID = createField(DSL.name("Help_ID"), SQLDataType.INTEGER.defaultValue(DSL.field("NULL", SQLDataType.INTEGER)), this, "");
 
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);
@@ -125,7 +130,7 @@ public class Gameplay extends TableImpl<GameplayRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING1_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_GAME1_IDX);
+        return Arrays.<Index>asList(Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING1_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING3_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_GAME1_IDX);
     }
 
     @Override
@@ -145,12 +150,13 @@ public class Gameplay extends TableImpl<GameplayRecord> {
 
     @Override
     public List<ForeignKey<GameplayRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<GameplayRecord, ?>>asList(Keys.FK_GAMEPLAY_GAME1, Keys.FK_GAMEPLAY_BRIEFING1, Keys.FK_GAMEPLAY_BRIEFING2);
+        return Arrays.<ForeignKey<GameplayRecord, ?>>asList(Keys.FK_GAMEPLAY_GAME1, Keys.FK_GAMEPLAY_BRIEFING1, Keys.FK_GAMEPLAY_BRIEFING2, Keys.FK_GAMEPLAY_BRIEFING3);
     }
 
     private transient Game _game;
     private transient Briefing _fkGameplayBriefing1;
     private transient Briefing _fkGameplayBriefing2;
+    private transient Briefing _fkGameplayBriefing3;
 
     public Game game() {
         if (_game == null)
@@ -171,6 +177,13 @@ public class Gameplay extends TableImpl<GameplayRecord> {
             _fkGameplayBriefing2 = new Briefing(this, Keys.FK_GAMEPLAY_BRIEFING2);
 
         return _fkGameplayBriefing2;
+    }
+
+    public Briefing fkGameplayBriefing3() {
+        if (_fkGameplayBriefing3 == null)
+            _fkGameplayBriefing3 = new Briefing(this, Keys.FK_GAMEPLAY_BRIEFING3);
+
+        return _fkGameplayBriefing3;
     }
 
     @Override
@@ -200,11 +213,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row7 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row7<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer> fieldsRow() {
-        return (Row7) super.fieldsRow();
+    public Row8<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }
