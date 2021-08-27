@@ -261,6 +261,10 @@ public class GamePlayUtils {
                         .setInitialValue(gamePlay.getDebriefingId() == null ? 0 : gamePlay.getDebriefingId())
                         .setLabel("Debriefing (end)")
                         .setPickTable(data, Tables.BRIEFING, Tables.BRIEFING.ID, Tables.BRIEFING.NAME))
+                .addEntry(new FormEntryPickRecord(Tables.GAMEPLAY.HELP_ID)
+                        .setInitialValue(gamePlay.getHelpId() == null ? 0 : gamePlay.getHelpId())
+                        .setLabel("Help screen")
+                        .setPickTable(data, Tables.BRIEFING, Tables.BRIEFING.ID, Tables.BRIEFING.NAME))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit GamePlay", form);
