@@ -84,6 +84,33 @@ public class GamePlayUtils {
             break;
         }
 
+        case "deleteGamePlay": {
+            GameplayRecord gamePlay = SqlUtils.readGamePlayFromGamePlayId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete GamePlay",
+                    "<p>Delete gameplay for group " + gamePlay.getGroupdescription() + "?</p>", "DELETE",
+                    "clickRecordId('deleteGamePlayOk', " + recordNr + ")", "Cancel", "clickMenu('gameplay')",
+                    "clickMenu('gameplay')");
+            data.setShowModalWindow(1);
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showGamePlay(session, data, true, 0);
+            data.resetColumn(2);
+            break;
+        }
+
+        case "deleteGamePlayOk": {
+            GameplayRecord gamePlay = SqlUtils.readGamePlayFromGamePlayId(data, recordNr);
+            try {
+                gamePlay.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('gameplay')");
+            }
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showGamePlay(session, data, true, 0);
+            data.resetColumn(2);
+            break;
+        }
+
         case "newGamePlay": {
             showGames(session, data, data.getColumn(0).getSelectedRecordNr());
             showGamePlay(session, data, true, recordNr);
@@ -241,6 +268,8 @@ public class GamePlayUtils {
                 .setCancelMethod("game", data.getColumn(0).getSelectedRecordNr())
                 .setEditMethod("editGamePlay")
                 .setSaveMethod("saveGamePlay")
+                .setDeleteMethod("deleteGamePlay", "Delete", "<br>Note: GamePlay can only be deleted when it has no " 
+                        + "<br>associated users, and when it has not been played")
                 .setRecordNr(gamePlayId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.GAMEPLAY.GROUPDESCRIPTION)

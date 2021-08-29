@@ -49,9 +49,13 @@ public class AdminServlet extends HttpServlet {
         case "viewUserGroup":
         case "editUserGroup":
         case "saveUserGroup":
+        case "deleteUserGroup":
+        case "deleteUserGroupOk":
         case "newUserGroup":
         case "showUsers":
         case "saveUser":
+        case "deleteUser":
+        case "deleteUserOk":
         case "viewUser":
         case "editUser":
         case "newUser":
@@ -66,6 +70,8 @@ public class AdminServlet extends HttpServlet {
         case "viewCarrier":
         case "editCarrier":
         case "saveCarrier":
+        case "deleteCarrier":
+        case "deleteCarrierOk":
         case "newCarrier":
             data.setMenuChoice("carrier");
             CarrierUtils.handleMenu(request, click, recordNr);
@@ -75,6 +81,8 @@ public class AdminServlet extends HttpServlet {
         case "viewFBReport":
         case "editFBReport":
         case "saveFBReport":
+        case "deleteFBReport":
+        case "deleteFBReportOk":
         case "newFBReport":
             data.setMenuChoice("fbreport");
             FBReportUtils.handleMenu(request, click, recordNr);
@@ -84,6 +92,8 @@ public class AdminServlet extends HttpServlet {
         case "viewClient":
         case "editClient":
         case "saveClient":
+        case "deleteClient":
+        case "deleteClientOk":
         case "newClient":
             data.setMenuChoice("client");
             ClientUtils.handleMenu(request, click, recordNr);
@@ -93,6 +103,8 @@ public class AdminServlet extends HttpServlet {
         case "viewMission":
         case "editMission":
         case "saveMission":
+        case "deleteMission":
+        case "deleteMissionOk":
         case "newMission":
             data.setMenuChoice("mission");
             MissionUtils.handleMenu(request, click, recordNr);
@@ -102,21 +114,29 @@ public class AdminServlet extends HttpServlet {
         case "viewGame":
         case "editGame":
         case "saveGame":
+        case "deleteGame":
+        case "deleteGameOk":
         case "newGame":
         case "showRounds":
         case "viewRound":
         case "editRound":
         case "saveRound":
+        case "deleteRound":
+        case "deleteRoundOk":
         case "newRound":
         case "showOrders":
         case "viewOrder":
         case "editOrder":
         case "saveOrder":
+        case "deleteOrder":
+        case "deleteOrderOk":
         case "newOrder":
         case "showOrderCarriers":
         case "viewOrderCarrier":
         case "editOrderCarrier":
         case "saveOrderCarrier":
+        case "deleteOrderCarrier":
+        case "deleteOrderCarrierOk":
         case "newOrderCarrier":
             data.setMenuChoice("game");
             GameUtils.handleMenu(request, click, recordNr);
@@ -128,10 +148,14 @@ public class AdminServlet extends HttpServlet {
         case "viewReview":
         case "editReview":
         case "saveReview":
+        case "deleteReview":
+        case "deleteReviewOk":
         case "newReview":
         case "viewCarrierReview":
         case "editCarrierReview":
         case "saveCarrierReview":
+        case "deleteCarrierReview":
+        case "deleteCarrierReviewOk":
         case "newCarrierReview":
             data.setMenuChoice("review");
             ReviewUtils.handleMenu(request, click, recordNr);
@@ -141,6 +165,8 @@ public class AdminServlet extends HttpServlet {
         case "viewBriefing":
         case "editBriefing":
         case "saveBriefing":
+        case "deleteBriefing":
+        case "deleteBriefingOk":
         case "newBriefing":
             data.setMenuChoice("briefing");
             BriefingUtils.handleMenu(request, click, recordNr);
@@ -151,6 +177,8 @@ public class AdminServlet extends HttpServlet {
         case "viewGamePlay":
         case "editGamePlay":
         case "saveGamePlay":
+        case "deleteGamePlay":
+        case "deleteGamePlayOk":
         case "newGamePlay":
         case "showGameUsers":
         case "viewGameUser":

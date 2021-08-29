@@ -28,11 +28,11 @@ public class GameUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
-        
+
         switch (click) {
-        
+
         // Game
-        
+
         case "game": {
             data.clearColumns("20%", "Game", "10%", "Round", "10%", "Order", "20%", "Carrier");
             data.clearFormColumn("40%", "Edit Properties");
@@ -68,6 +68,36 @@ public class GameUtils {
             break;
         }
 
+        case "deleteGame": {
+            GameRecord game = SqlUtils.readGameFromGameId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Game", "<p>Delete game " + game.getName() + "?</p>",
+                    "DELETE", "clickRecordId('deleteGameOk', " + recordNr + ")", "Cancel", "clickMenu('game')",
+                    "clickMenu('game')");
+            data.setShowModalWindow(1);
+            showGames(session, data, true, 0);
+            data.resetColumn(1);
+            data.resetColumn(2);
+            data.resetColumn(3);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteGameOk": {
+            GameRecord game = SqlUtils.readGameFromGameId(data, recordNr);
+            try {
+                game.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('game')");
+            }
+            showGames(session, data, true, 0);
+            data.resetColumn(1);
+            data.resetColumn(2);
+            data.resetColumn(3);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newGame": {
             showGames(session, data, true, 0); // view the list of games, no highlight
             editGame(session, data, 0, true); // edit the new game
@@ -78,7 +108,7 @@ public class GameUtils {
         }
 
         // Round
-        
+
         case "showRounds": {
             showGames(session, data, true, recordNr); // view the list of games for editing, highlight selected one
             if (recordNr == 0)
@@ -92,7 +122,7 @@ public class GameUtils {
         }
 
         case "viewRound": {
-            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr()); 
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, recordNr);
             editRound(session, data, recordNr, false);
             showOrders(session, data, true, 0);
@@ -119,6 +149,38 @@ public class GameUtils {
             break;
         }
 
+        case "deleteRound": {
+            RoundRecord round = SqlUtils.readRoundFromRoundId(data, recordNr);
+            GameRecord game = SqlUtils.readGameFromGameId(data, round.getGameId());
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Round",
+                    "<p>Delete round " + round.getRoundnumber() + " in game " + game.getName() + "?</p>", "DELETE",
+                    "clickRecordId('deleteRoundOk', " + recordNr + ")", "Cancel", "clickMenu('game')",
+                    "clickMenu('game')");
+            data.setShowModalWindow(1);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, 0);
+            data.resetColumn(2);
+            data.resetColumn(3);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteRoundOk": {
+            RoundRecord round = SqlUtils.readRoundFromRoundId(data, recordNr);
+            try {
+                round.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('game')");
+            }
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, 0);
+            data.resetColumn(2);
+            data.resetColumn(3);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newRound": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, recordNr);
@@ -129,7 +191,7 @@ public class GameUtils {
         }
 
         // Order
-        
+
         case "showOrders": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, recordNr);
@@ -170,6 +232,40 @@ public class GameUtils {
             break;
         }
 
+        case "deleteOrder": {
+            OrderRecord order = SqlUtils.readOrderFromOrderId(data, recordNr);
+            RoundRecord round = SqlUtils.readRoundFromRoundId(data, order.getRoundId());
+            GameRecord game = SqlUtils.readGameFromGameId(data, round.getGameId());
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Order",
+                    "<p>Delete order " + order.getOrdernumber() + " for round " + round.getRoundnumber() + " in game "
+                            + game.getName() + "?</p>",
+                    "DELETE", "clickRecordId('deleteOrderOk', " + recordNr + ")", "Cancel", "clickMenu('game')",
+                    "clickMenu('game')");
+            data.setShowModalWindow(1);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, 0);
+            data.resetColumn(3);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteOrderOk": {
+            OrderRecord order = SqlUtils.readOrderFromOrderId(data, recordNr);
+            try {
+                order.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('game')");
+            }
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, 0);
+            data.resetColumn(3);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newOrder": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
@@ -180,7 +276,7 @@ public class GameUtils {
         }
 
         // OrderCarrier
-        
+
         case "showOrderCarriers": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
@@ -221,6 +317,42 @@ public class GameUtils {
             break;
         }
 
+        case "deleteOrderCarrier": {
+            OrdercarrierRecord orderCarrier = SqlUtils.readOrderCarrierFromOrderCarrierId(data, recordNr);
+            OrderRecord order = SqlUtils.readOrderFromOrderId(data, orderCarrier.getOrderId());
+            RoundRecord round = SqlUtils.readRoundFromRoundId(data, order.getRoundId());
+            GameRecord game = SqlUtils.readGameFromGameId(data, round.getGameId());
+            CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, orderCarrier.getCarrierId());
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete OrderCarrier",
+                    "<p>Delete OrderCarrier " + carrier.getName() + "<br>for order " + order.getOrdernumber()
+                            + " for round " + round.getRoundnumber() + "<br>in game " + game.getName() + "?</p>",
+                    "DELETE", "clickRecordId('deleteOrderCarrierOk', " + recordNr + ")", "Cancel", "clickMenu('game')",
+                    "clickMenu('game')");
+            data.setShowModalWindow(1);
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, data.getColumn(2).getSelectedRecordNr());
+            showOrderCarriers(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteOrderCarrierOk": {
+            OrdercarrierRecord orderCarrier = SqlUtils.readOrderCarrierFromOrderCarrierId(data, recordNr);
+            try {
+                orderCarrier.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('game')");
+            }
+            showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
+            showOrders(session, data, true, data.getColumn(2).getSelectedRecordNr());
+            showOrderCarriers(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newOrderCarrier": {
             showGames(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showRounds(session, data, true, data.getColumn(1).getSelectedRecordNr());
@@ -229,7 +361,6 @@ public class GameUtils {
             editOrderCarrier(session, data, 0, true);
             break;
         }
-
 
         default:
             break;
@@ -275,6 +406,8 @@ public class GameUtils {
                 .setCancelMethod("game")
                 .setEditMethod("editGame")
                 .setSaveMethod("saveGame")
+                .setDeleteMethod("deleteGame", "Delete", "<br>Note: Game can only be deleted when it is not used " 
+                    + "<br>in a GamePlay, and when it has no associated rounds")
                 .setRecordNr(gameId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.GAME.NAME)
@@ -351,6 +484,8 @@ public class GameUtils {
                 .setCancelMethod("game", data.getColumn(0).getSelectedRecordNr())
                 .setEditMethod("editRound")
                 .setSaveMethod("saveRound")
+                .setDeleteMethod("deleteRound", "Delete", "<br>Note: Round can only be deleted when it is has not been" 
+                        + "<br> used in a GamePlay, and when it has no associated orders")
                 .setRecordNr(roundId)
                 .startForm()
                 .addEntry(new FormEntryInt(Tables.ROUND.ROUNDNUMBER)
@@ -428,6 +563,8 @@ public class GameUtils {
                 .setCancelMethod("viewRound", data.getColumn(1).getSelectedRecordNr())
                 .setEditMethod("editOrder")
                 .setSaveMethod("saveOrder")
+                .setDeleteMethod("deleteOrder", "Delete", "<br>Note: Order can only be deleted when it is has not been" 
+                        + "<br> used in a GamePlay, and when it has no associated OrderCarriers")
                 .setRecordNr(orderId)
                 .startForm()
                 .addEntry(new FormEntryUInt(Tables.ORDER.ORDERNUMBER)
@@ -517,6 +654,8 @@ public class GameUtils {
                 .setCancelMethod("viewRound", data.getColumn(1).getSelectedRecordNr())
                 .setEditMethod("editOrderCarrier")
                 .setSaveMethod("saveOrderCarrier")
+                .setDeleteMethod("deleteOrderCarrier", "Delete", "<br>Note: OrderCarrier can only be deleted when it is has" 
+                        + "<br>not been used in a GamePlay")
                 .setRecordNr(orderCarrierId)
                 .startForm()
                 .addEntry(new FormEntryPickRecord(Tables.ORDERCARRIER.CARRIER_ID)

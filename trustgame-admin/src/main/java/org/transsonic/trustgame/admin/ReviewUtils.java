@@ -96,6 +96,39 @@ public class ReviewUtils {
             break;
         }
 
+        case "deleteReview": {
+            ReviewRecord review = SqlUtils.readReviewFromReviewId(data, recordNr);
+            CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, review.getCarrierId());
+            RoundRecord round = SqlUtils.readRoundFromRoundId(data, review.getRoundId());
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Review",
+                    "<p>Delete review for " + carrier.getName() + " in round " + round.getRoundnumber() + "?</p>",
+                    "DELETE", "clickRecordId('deleteReviewOk', " + recordNr + ")", "Cancel", "clickMenu('review')",
+                    "clickMenu('review')");
+            data.setShowModalWindow(1);
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
+            showReviews(session, data, true, 0);
+            showCarrierReviews(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteReviewOk": {
+            ReviewRecord review = SqlUtils.readReviewFromReviewId(data, recordNr);
+            try {
+                review.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('review')");
+            }
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
+            showReviews(session, data, true, 0);
+            showCarrierReviews(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newReview": {
             showGames(session, data, data.getColumn(0).getSelectedRecordNr());
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
@@ -131,6 +164,39 @@ public class ReviewUtils {
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, recordNr);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteCarrierReview": {
+            CarrierreviewRecord carrierReview = SqlUtils.readCarrierReviewFromCarrierReviewId(data, recordNr);
+            CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, carrierReview.getCarrierId());
+            RoundRecord round = SqlUtils.readRoundFromRoundId(data, carrierReview.getRoundId());
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Carrier Review",
+                    "<p>Delete carrier review for " + carrier.getName() + " in round " + round.getRoundnumber() + "?</p>",
+                    "DELETE", "clickRecordId('deleteCarrierReviewOk', " + recordNr + ")", "Cancel", "clickMenu('review')",
+                    "clickMenu('review')");
+            data.setShowModalWindow(1);
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
+            showReviews(session, data, true, 0);
+            showCarrierReviews(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteCarrierReviewOk": {
+            CarrierreviewRecord carrierReview = SqlUtils.readCarrierReviewFromCarrierReviewId(data, recordNr);
+            try {
+                carrierReview.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('review')");
+            }
+            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
+            showReviews(session, data, true, 0);
+            showCarrierReviews(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
@@ -234,6 +300,7 @@ public class ReviewUtils {
                 .setCancelMethod("showReviews", data.getColumn(1).getSelectedRecordNr())
                 .setEditMethod("editReview")
                 .setSaveMethod("saveReview")
+                .setDeleteMethod("deleteReview", "Delete", "Careful: Review can always be deleted")
                 .setRecordNr(reviewId)
                 .startForm()
                 .addEntry(new FormEntryPickRecord(Tables.REVIEW.CARRIER_ID)
@@ -321,6 +388,7 @@ public class ReviewUtils {
                 .setCancelMethod("showReviews", data.getColumn(1).getSelectedRecordNr())
                 .setEditMethod("editCarrierReview")
                 .setSaveMethod("saveCarrierReview")
+                .setDeleteMethod("deleteCarrierReview", "Delete", "Careful: Carrier Review can always be deleted")
                 .setRecordNr(carrierReviewId)
                 .startForm()
                 .addEntry(new FormEntryPickRecord(Tables.CARRIERREVIEW.CARRIER_ID)

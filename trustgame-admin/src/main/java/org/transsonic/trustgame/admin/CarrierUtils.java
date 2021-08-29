@@ -53,6 +53,31 @@ public class CarrierUtils {
             break;
         }
 
+        case "deleteCarrier": {
+            CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Carrier",
+                    "<p>Delete carrier " + carrier.getName() + "?</p>", "DELETE",
+                    "clickRecordId('deleteCarrierOk', " + recordNr + ")", "Cancel", "clickMenu('carrier')",
+                    "clickMenu('carrier')");
+            data.setShowModalWindow(1);
+            showCarriers(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteCarrierOk": {
+            CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, recordNr);
+            try {
+                carrier.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('carrier')");
+            }
+            showCarriers(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newCarrier": {
             showCarriers(session, data, true, 0);
             editCarrier(session, data, 0, true);
@@ -97,6 +122,7 @@ public class CarrierUtils {
                 .setCancelMethod("carrier")
                 .setEditMethod("editCarrier")
                 .setSaveMethod("saveCarrier")
+                .setDeleteMethod("deleteCarrier", "Delete", "Note: Carrier can only be deleted when it is not used in a Game")
                 .setRecordNr(carrierId)
                 .startMultipartForm()
                 .addEntry(new FormEntryString(Tables.CARRIER.NAME)

@@ -125,6 +125,16 @@ public class FormEntryImage extends AbstractFormEntry<FormEntryImage, byte[]> {
         s.append(getLabel());
         s.append("      </td>");
         s.append("      <td width=\"75%\">\n");
+        if (!isRequired()) {
+            s.append("        <input id=\"");
+            s.append(getTableField().getName() + "_reset");
+            s.append("\" type=\"hidden\" name=\"");
+            s.append(getTableField().getName() + "_reset");
+            s.append("\" value=\"normal\" />\n");
+            s.append("        <button type=\"button\" onclick=\"resetImage('");
+            s.append(getTableField().getName());
+            s.append("')\">Remove Image</button>&nbsp; &nbsp; \n");
+        }
         s.append("        <input type=\"file\" accept=\"image/*\" onchange=\"previewImage(event, '");
         s.append(getTableField().getName());
         s.append("')\" name=\"");

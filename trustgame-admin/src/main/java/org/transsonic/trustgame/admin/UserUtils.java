@@ -58,6 +58,31 @@ public class UserUtils {
             break;
         }
 
+        case "deleteUserGroup": {
+            UsergroupRecord userGroup = SqlUtils.readUserGroupFromUserGroupId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete UserGroup",
+                    "<p>Delete user group " + userGroup.getGroupname() + "?</p>", "DELETE",
+                    "clickRecordId('deleteUserGroupOk', " + recordNr + ")", "Cancel", "clickMenu('user')",
+                    "clickMenu('user')");
+            data.setShowModalWindow(1);
+            showUserGroups(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteUserGroupOk": {
+            UsergroupRecord userGroup = SqlUtils.readUserGroupFromUserGroupId(data, recordNr);
+            try {
+                userGroup.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('user')");
+            }
+            showUserGroups(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newUserGroup": {
             showUserGroups(session, data, true, 0);
             data.resetColumn(1);
@@ -98,6 +123,32 @@ public class UserUtils {
 
         case "saveUser": {
             recordNr = saveUser(request, data, recordNr);
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteUser": {
+            UserRecord user = SqlUtils.readUserFromUserId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete User", "<p>Delete user " + user.getName() + "?</p>",
+                    "DELETE", "clickRecordId('deleteUserOk', " + recordNr + ")", "Cancel", "clickMenu('user')",
+                    "clickMenu('user')");
+            data.setShowModalWindow(1);
+            showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
+            showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteUserOk": {
+            UserRecord user = SqlUtils.readUserFromUserId(data, recordNr);
+            try {
+                user.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('user')");
+            }
             showUserGroups(session, data, true, data.getColumn(0).getSelectedRecordNr());
             showUsers(session, data, data.getColumn(0).getSelectedRecordNr(), true, 0);
             data.resetFormColumn();
@@ -193,6 +244,7 @@ public class UserUtils {
                 .setCancelMethod("showUsers")
                 .setEditMethod("editUserGroup")
                 .setSaveMethod("saveUserGroup")
+                .setDeleteMethod("deleteUserGroup", "Delete", "Note: UserGroup can only be deleted when it is not used for a User")
                 .setRecordNr(userGroupId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.USERGROUP.GROUPNAME)
@@ -239,6 +291,7 @@ public class UserUtils {
                 .setCancelMethod("showUsers", data.getColumn(0).getSelectedRecordNr())
                 .setEditMethod("editUser")
                 .setSaveMethod("saveUser")
+                .setDeleteMethod("deleteUser", "Delete", "Note: User can only be deleted when not used in a GamePlay")
                 .setRecordNr(userId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.USER.USERCODE)
@@ -492,7 +545,7 @@ public class UserUtils {
             user.setCreatetime(LocalDateTime.now());
             user.setAdministrator((byte) 0);
             user.setEmail("");
-            
+
             String hashedPassword = "";
             MessageDigest md;
             try {

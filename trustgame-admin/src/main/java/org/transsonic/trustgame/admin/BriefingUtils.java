@@ -50,6 +50,31 @@ public class BriefingUtils {
             break;
         }
 
+        case "deleteBriefing": {
+            BriefingRecord briefing = SqlUtils.readBriefingFromBriefingId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Briefing",
+                    "<p>Delete briefing " + briefing.getName() + "?</p>", "DELETE",
+                    "clickRecordId('deleteBriefingOk', " + recordNr + ")", "Cancel", "clickMenu('briefing')",
+                    "clickMenu('briefing')");
+            data.setShowModalWindow(1);
+            showBriefings(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteBriefingOk": {
+            BriefingRecord briefing = SqlUtils.readBriefingFromBriefingId(data, recordNr);
+            try {
+                briefing.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('briefing')");
+            }
+            showBriefings(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newBriefing": {
             showBriefings(session, data, true, 0);
             editBriefing(session, data, 0, true);
@@ -94,6 +119,7 @@ public class BriefingUtils {
                 .setCancelMethod("briefing")
                 .setEditMethod("editBriefing")
                 .setSaveMethod("saveBriefing")
+                .setDeleteMethod("deleteBriefing", "Delete", "Note: Briefing can only be deleted when it is not used in a GamePlay")
                 .setRecordNr(briefingId)
                 .startMultipartForm()
                 .addEntry(new FormEntryString(Tables.BRIEFING.NAME)

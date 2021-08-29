@@ -23,7 +23,8 @@ public class AdminForm {
     private String saveText = "Save";
     private String editMethod = "";
     private String deleteMethod = "";
-    private String deleteText = "Delete";
+    private String deleteButton = "Delete";
+    private String deleteText = "";
     List<AbstractFormEntry<?, ?>> entries = new ArrayList<>();
     private boolean multipart;
     private boolean edit;
@@ -102,14 +103,16 @@ public class AdminForm {
             s.append(this.recordNr);
             s.append("); return false;\">Edit</a></span>");
         }
-        if (this.edit && this.deleteMethod.length() > 0) {
+        if (this.edit && recordNr > 0 && this.deleteMethod.length() > 0) {
             s.append("      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");
             s.append(this.deleteMethod);
             s.append("', ");
             s.append(this.recordNr);
             s.append("); return false;\">");
-            s.append(this.deleteText);
+            s.append(this.deleteButton);
             s.append("</a></span>");
+            if (this.deleteText.length() > 0)
+                s.append("<i>&nbsp; &nbsp; " + this.deleteText + "</i>");
         }
         s.append("    </div>\n");
     }
@@ -154,12 +157,21 @@ public class AdminForm {
 
     public AdminForm setDeleteMethod(String deleteeMethod) {
         this.deleteMethod = deleteeMethod;
-        this.deleteText = "Delete";
+        this.deleteButton = "Delete";
+        this.deleteText = "";
         return this;
     }
 
-    public AdminForm setDeleteMethod(String deleteeMethod, String deleteText) {
+    public AdminForm setDeleteMethod(String deleteeMethod, String deleteButton) {
         this.deleteMethod = deleteeMethod;
+        this.deleteButton = deleteButton;
+        this.deleteText = "";
+        return this;
+    }
+
+    public AdminForm setDeleteMethod(String deleteeMethod, String deleteButton, String deleteText) {
+        this.deleteMethod = deleteeMethod;
+        this.deleteButton = deleteButton;
         this.deleteText = deleteText;
         return this;
     }
@@ -194,7 +206,12 @@ public class AdminForm {
                 try {
                     FormEntryImage imageEntry = (FormEntryImage) entry;
                     Part filePart = request.getPart(imageEntry.getTableField().getName());
-                    if (filePart != null && filePart.getSubmittedFileName() != null
+                    String reset = request.getParameter(entry.getTableField().getName() + "_reset");
+                    boolean delete = reset != null && reset.equals("delete");
+                    if (delete) {
+                        errors += imageEntry.setRecordValue(record, (byte[]) null);
+                    }
+                    else if (filePart != null && filePart.getSubmittedFileName() != null
                             && filePart.getSubmittedFileName().length() > 0) {
                         String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                         imageEntry.setFilename(fileName);

@@ -23,9 +23,9 @@ public class FBReportUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
-        
+
         switch (click) {
-        
+
         case "fbreport": {
             data.clearColumns("40%", "FBReport");
             data.clearFormColumn("60%", "Edit Properties");
@@ -52,6 +52,32 @@ public class FBReportUtils {
             break;
         }
 
+        case "deleteFBReport": {
+            FbreportRecord fbReport = SqlUtils.readFBReportFromFBReportId(data, recordNr);
+            CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, fbReport.getCarrierId());
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete FBReport",
+                    "<p>Delete FreightBooking Report for Carrier " + carrier.getName() + "?</p>", "DELETE",
+                    "clickRecordId('deleteFBReportOk', " + recordNr + ")", "Cancel", "clickMenu('fbreport')",
+                    "clickMenu('fbreport')");
+            data.setShowModalWindow(1);
+            showFBReports(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteFBReportOk": {
+            FbreportRecord fbReport = SqlUtils.readFBReportFromFBReportId(data, recordNr);
+            try {
+                fbReport.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('fbreport')");
+            }
+            showFBReports(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newFBReport": {
             showFBReports(session, data, true, 0);
             editFBReport(session, data, 0, true);
@@ -65,8 +91,7 @@ public class FBReportUtils {
         AdminServlet.makeColumnContent(data);
     }
 
-    public static void showFBReports(HttpSession session, AdminData data, boolean editButton,
-            int selectedRecordNr) {
+    public static void showFBReports(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<FbreportRecord> FbreportRecords = dslContext.selectFrom(Tables.FBREPORT).fetch();
@@ -111,6 +136,7 @@ public class FBReportUtils {
                 .setCancelMethod("fbreport")
                 .setEditMethod("editFBReport")
                 .setSaveMethod("saveFBReport")
+                .setDeleteMethod("deleteFBReport", "Delete", "Careful: FBReport can always be deleted!")
                 .setRecordNr(fbreportId)
                 .startMultipartForm()
                 .addEntry(new FormEntryPickRecord(Tables.FBREPORT.CARRIER_ID)

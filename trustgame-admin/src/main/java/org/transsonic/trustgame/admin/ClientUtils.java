@@ -50,6 +50,31 @@ public class ClientUtils {
             break;
         }
 
+        case "deleteClient": {
+            ClientRecord client = SqlUtils.readClientFromClientId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Client",
+                    "<p>Delete client " + client.getName() + "?</p>", "DELETE",
+                    "clickRecordId('deleteClientOk', " + recordNr + ")", "Cancel", "clickMenu('client')",
+                    "clickMenu('client')");
+            data.setShowModalWindow(1);
+            showClients(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteClientOk": {
+            ClientRecord client = SqlUtils.readClientFromClientId(data, recordNr);
+            try {
+                client.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('client')");
+            }
+            showClients(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newClient": {
             showClients(session, data, true, 0);
             editClient(session, data, 0, true);
@@ -94,6 +119,7 @@ public class ClientUtils {
                 .setCancelMethod("client")
                 .setEditMethod("editClient")
                 .setSaveMethod("saveClient")
+                .setDeleteMethod("deleteClient", "Delete", "Note: Client can only be deleted when it is not used in a Game")
                 .setRecordNr(clientId)
                 .startMultipartForm()
                 .addEntry(new FormEntryString(Tables.CLIENT.NAME)

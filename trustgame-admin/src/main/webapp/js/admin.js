@@ -39,6 +39,17 @@ function previewImage(event, imageId)
     output.src = reader.result;
   }
   reader.readAsDataURL(event.target.files[0]);
+  var image_reset = document.getElementById(imageId + "_reset");
+  image_reset.value = 'normal';
+}
+
+function resetImage(imageId) 
+{
+  var image = document.getElementById(imageId);
+  image.src = '';
+  image.value = '';
+  var image_reset = document.getElementById(imageId + "_reset");
+  image_reset.value = 'delete';
 }
 
 

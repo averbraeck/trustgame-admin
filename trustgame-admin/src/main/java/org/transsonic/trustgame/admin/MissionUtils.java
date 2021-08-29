@@ -21,9 +21,9 @@ public class MissionUtils {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
-        
+
         switch (click) {
-        
+
         case "mission": {
             data.clearColumns("40%", "Mission");
             data.clearFormColumn("60%", "Edit Properties");
@@ -50,21 +50,45 @@ public class MissionUtils {
             break;
         }
 
+        case "deleteMission": {
+            PlayerorganizationRecord mission = SqlUtils.readPlayerOrganizationFromId(data, recordNr);
+            ModalWindowUtils.make2ButtonModalWindow(data, "Delete Mission",
+                    "<p>Delete mission " + mission.getName() + "?</p>", "DELETE",
+                    "clickRecordId('deleteMissionOk', " + recordNr + ")", "Cancel", "clickMenu('mission')",
+                    "clickMenu('mission')");
+            data.setShowModalWindow(1);
+            showMissions(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
+        case "deleteMissionOk": {
+            PlayerorganizationRecord mission = SqlUtils.readPlayerOrganizationFromId(data, recordNr);
+            try {
+                mission.delete();
+            } catch (Exception exception) {
+                ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
+                        "clickMenu('mission')");
+            }
+            showMissions(session, data, true, 0);
+            data.resetFormColumn();
+            break;
+        }
+
         case "newMission": {
             showMissions(session, data, true, 0);
             editMission(session, data, 0, true);
             break;
         }
-        
+
         default:
             break;
         }
-        
+
         AdminServlet.makeColumnContent(data);
     }
 
-    public static void showMissions(HttpSession session, AdminData data, boolean editButton,
-            int selectedRecordNr) {
+    public static void showMissions(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<PlayerorganizationRecord> playerOrganizationRecords = dslContext.selectFrom(Tables.PLAYERORGANIZATION)
@@ -72,16 +96,17 @@ public class MissionUtils {
 
         s.append(AdminTable.startTable());
         for (PlayerorganizationRecord organization : playerOrganizationRecords) {
-            TableRow tableRow = new TableRow(organization.getId(), selectedRecordNr, organization.getName(), "viewMission");
+            TableRow tableRow = new TableRow(organization.getId(), selectedRecordNr, organization.getName(),
+                    "viewMission");
             if (editButton)
                 tableRow.addButton("Edit", "editMission");
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
-        
+
         if (editButton)
             s.append(AdminTable.finalButton("New Mission", "newMission"));
-        
+
         data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
         data.getColumn(0).setContent(s.toString());
     }
@@ -97,6 +122,7 @@ public class MissionUtils {
                 .setCancelMethod("mission")
                 .setEditMethod("editMission")
                 .setSaveMethod("saveMission")
+                .setDeleteMethod("deleteMission", "Delete", "Note: Mission can only be deleted when it is not used in a Game")
                 .setRecordNr(organizationId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.PLAYERORGANIZATION.NAME)
