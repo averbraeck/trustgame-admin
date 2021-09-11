@@ -20,7 +20,7 @@ import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameplayRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameuserRecord;
-import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.MissionRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.SelectedcarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UsercarrierRecord;
@@ -29,7 +29,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.UsergroupRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserorderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserroundRecord;
 
-public class GamePlayUtils {
+public class MaintainGamePlay {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
@@ -500,10 +500,10 @@ public class GamePlayUtils {
         int gameId = data.getColumn(0).getSelectedRecordNr();
         GameRecord game = SqlUtils.readGameFromGameId(data, gameId);
         gameUser.setGameplayId(gamePlayId);
-        PlayerorganizationRecord organization = SqlUtils.readPlayerOrganizationFromId(data, game.getOrganizationId());
-        gameUser.setScoreprofit(organization.getStartprofit());
-        gameUser.setScoresatisfaction(organization.getStartsatisfaction());
-        gameUser.setScoresustainability(organization.getStartsustainability());
+        MissionRecord mission = SqlUtils.readPlayerMissionFromId(data, game.getMissionId());
+        gameUser.setScoreprofit(mission.getStartprofit());
+        gameUser.setScoresatisfaction(mission.getStartsatisfaction());
+        gameUser.setScoresustainability(mission.getStartsustainability());
         gameUser.setRoundnumber(UInteger.valueOf(1));
         gameUser.setRoundstatus(0);
         return gameUser;

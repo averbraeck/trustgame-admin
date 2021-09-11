@@ -18,9 +18,9 @@ import org.transsonic.trustgame.data.trustgame.tables.Fbreport;
 import org.transsonic.trustgame.data.trustgame.tables.Game;
 import org.transsonic.trustgame.data.trustgame.tables.Gameplay;
 import org.transsonic.trustgame.data.trustgame.tables.Gameuser;
+import org.transsonic.trustgame.data.trustgame.tables.Mission;
 import org.transsonic.trustgame.data.trustgame.tables.Order;
 import org.transsonic.trustgame.data.trustgame.tables.Ordercarrier;
-import org.transsonic.trustgame.data.trustgame.tables.Playerorganization;
 import org.transsonic.trustgame.data.trustgame.tables.Review;
 import org.transsonic.trustgame.data.trustgame.tables.Round;
 import org.transsonic.trustgame.data.trustgame.tables.Selectedcarrier;
@@ -86,6 +86,11 @@ public class Trustgame extends SchemaImpl {
     public final Gameuser GAMEUSER = Gameuser.GAMEUSER;
 
     /**
+     * The table <code>trustgame.mission</code>.
+     */
+    public final Mission MISSION = Mission.MISSION;
+
+    /**
      * The table <code>trustgame.order</code>.
      */
     public final Order ORDER = Order.ORDER;
@@ -94,11 +99,6 @@ public class Trustgame extends SchemaImpl {
      * The table <code>trustgame.ordercarrier</code>.
      */
     public final Ordercarrier ORDERCARRIER = Ordercarrier.ORDERCARRIER;
-
-    /**
-     * The table <code>trustgame.playerorganization</code>.
-     */
-    public final Playerorganization PLAYERORGANIZATION = Playerorganization.PLAYERORGANIZATION;
 
     /**
      * The table <code>trustgame.review</code>.
@@ -169,9 +169,9 @@ public class Trustgame extends SchemaImpl {
             Game.GAME,
             Gameplay.GAMEPLAY,
             Gameuser.GAMEUSER,
+            Mission.MISSION,
             Order.ORDER,
             Ordercarrier.ORDERCARRIER,
-            Playerorganization.PLAYERORGANIZATION,
             Review.REVIEW,
             Round.ROUND,
             Selectedcarrier.SELECTEDCARRIER,

@@ -14,9 +14,9 @@ import org.transsonic.trustgame.admin.form.FormEntryInt;
 import org.transsonic.trustgame.admin.form.FormEntryString;
 import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.data.trustgame.Tables;
-import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.MissionRecord;
 
-public class MissionUtils {
+public class MaintainMission {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
@@ -51,7 +51,7 @@ public class MissionUtils {
         }
 
         case "deleteMission": {
-            PlayerorganizationRecord mission = SqlUtils.readPlayerOrganizationFromId(data, recordNr);
+            MissionRecord mission = SqlUtils.readPlayerMissionFromId(data, recordNr);
             ModalWindowUtils.make2ButtonModalWindow(data, "Delete Mission",
                     "<p>Delete mission " + mission.getName() + "?</p>", "DELETE",
                     "clickRecordId('deleteMissionOk', " + recordNr + ")", "Cancel", "clickMenu('mission')",
@@ -63,7 +63,7 @@ public class MissionUtils {
         }
 
         case "deleteMissionOk": {
-            PlayerorganizationRecord mission = SqlUtils.readPlayerOrganizationFromId(data, recordNr);
+            MissionRecord mission = SqlUtils.readPlayerMissionFromId(data, recordNr);
             try {
                 mission.delete();
             } catch (Exception exception) {
@@ -91,12 +91,12 @@ public class MissionUtils {
     public static void showMissions(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<PlayerorganizationRecord> playerOrganizationRecords = dslContext.selectFrom(Tables.PLAYERORGANIZATION)
+        List<MissionRecord> missionRecords = dslContext.selectFrom(Tables.MISSION)
                 .fetch();
 
         s.append(AdminTable.startTable());
-        for (PlayerorganizationRecord organization : playerOrganizationRecords) {
-            TableRow tableRow = new TableRow(organization.getId(), selectedRecordNr, organization.getName(),
+        for (MissionRecord mission : missionRecords) {
+            TableRow tableRow = new TableRow(mission.getId(), selectedRecordNr, mission.getName(),
                     "viewMission");
             if (editButton)
                 tableRow.addButton("Edit", "editMission");
@@ -111,11 +111,11 @@ public class MissionUtils {
         data.getColumn(0).setContent(s.toString());
     }
 
-    public static void editMission(HttpSession session, AdminData data, int organizationId, boolean edit) {
+    public static void editMission(HttpSession session, AdminData data, int missionId, boolean edit) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        PlayerorganizationRecord organization = organizationId == 0 ? dslContext.newRecord(Tables.PLAYERORGANIZATION)
-                : dslContext.selectFrom(Tables.PLAYERORGANIZATION)
-                        .where(Tables.PLAYERORGANIZATION.ID.eq(organizationId)).fetchOne();
+        MissionRecord mission = missionId == 0 ? dslContext.newRecord(Tables.MISSION)
+                : dslContext.selectFrom(Tables.MISSION)
+                        .where(Tables.MISSION.ID.eq(missionId)).fetchOne();
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)
@@ -123,60 +123,60 @@ public class MissionUtils {
                 .setEditMethod("editMission")
                 .setSaveMethod("saveMission")
                 .setDeleteMethod("deleteMission", "Delete", "Note: Mission can only be deleted when it is not used in a Game")
-                .setRecordNr(organizationId)
+                .setRecordNr(missionId)
                 .startForm()
-                .addEntry(new FormEntryString(Tables.PLAYERORGANIZATION.NAME)
+                .addEntry(new FormEntryString(Tables.MISSION.NAME)
                         .setRequired()
-                        .setInitialValue(organization.getName())
+                        .setInitialValue(mission.getName())
                         .setLabel("Mission name")
                         .setMaxChars(45))
-                .addEntry(new FormEntryText(Tables.PLAYERORGANIZATION.DESCRIPTION)
+                .addEntry(new FormEntryText(Tables.MISSION.DESCRIPTION)
                         .setRequired()
-                        .setInitialValue(organization.getDescription())
+                        .setInitialValue(mission.getDescription())
                         .setLabel("Description"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.TARGETPROFIT)
+                .addEntry(new FormEntryInt(Tables.MISSION.TARGETPROFIT)
                         .setRequired()
-                        .setInitialValue(organization.getTargetprofit())
+                        .setInitialValue(mission.getTargetprofit())
                         .setMin(0)
                         .setLabel("Target profit"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.TARGETSATISFACTION)
+                .addEntry(new FormEntryInt(Tables.MISSION.TARGETSATISFACTION)
                         .setRequired()
-                        .setInitialValue(organization.getTargetsatisfaction())
+                        .setInitialValue(mission.getTargetsatisfaction())
                         .setMin(0)
                         .setLabel("Target satisfaction"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.TARGETSUSTAINABILITY)
+                .addEntry(new FormEntryInt(Tables.MISSION.TARGETSUSTAINABILITY)
                         .setRequired()
-                        .setInitialValue(organization.getTargetsustainability())
+                        .setInitialValue(mission.getTargetsustainability())
                         .setMin(0)
                         .setLabel("Target sustainability"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.STARTPROFIT)
+                .addEntry(new FormEntryInt(Tables.MISSION.STARTPROFIT)
                         .setRequired()
-                        .setInitialValue(organization.getStartprofit())
+                        .setInitialValue(mission.getStartprofit())
                         .setMin(0)
                         .setLabel("Start profit"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.STARTSATISFACTION)
+                .addEntry(new FormEntryInt(Tables.MISSION.STARTSATISFACTION)
                         .setRequired()
-                        .setInitialValue(organization.getStartsatisfaction())
+                        .setInitialValue(mission.getStartsatisfaction())
                         .setMin(0)
                         .setLabel("Start satisfaction"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.STARTSUSTAINABILITY)
+                .addEntry(new FormEntryInt(Tables.MISSION.STARTSUSTAINABILITY)
                         .setRequired()
-                        .setInitialValue(organization.getStartsustainability())
+                        .setInitialValue(mission.getStartsustainability())
                         .setMin(0)
                         .setLabel("Start sustainability"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.MAXPROFIT)
+                .addEntry(new FormEntryInt(Tables.MISSION.MAXPROFIT)
                         .setRequired()
-                        .setInitialValue(organization.getMaxprofit())
+                        .setInitialValue(mission.getMaxprofit())
                         .setMin(0)
                         .setLabel("Max profit (graph)"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.MAXSATISFACTION)
+                .addEntry(new FormEntryInt(Tables.MISSION.MAXSATISFACTION)
                         .setRequired()
-                        .setInitialValue(organization.getMaxsatisfaction())
+                        .setInitialValue(mission.getMaxsatisfaction())
                         .setMin(0)
                         .setLabel("Max satisfaction (graph)"))
-                .addEntry(new FormEntryInt(Tables.PLAYERORGANIZATION.MAXSUSTAINABILITY)
+                .addEntry(new FormEntryInt(Tables.MISSION.MAXSUSTAINABILITY)
                         .setRequired()
-                        .setInitialValue(organization.getMaxsustainability())
+                        .setInitialValue(mission.getMaxsustainability())
                         .setMin(0)
                         .setLabel("Max sustainability (graph)"))
                 .endForm();
@@ -184,25 +184,25 @@ public class MissionUtils {
         data.getFormColumn().setHeaderForm("Edit Mission", form);
     }
 
-    public static int saveMission(HttpServletRequest request, AdminData data, int organizationId) {
+    public static int saveMission(HttpServletRequest request, AdminData data, int missionId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        PlayerorganizationRecord organization = organizationId == 0 ? dslContext.newRecord(Tables.PLAYERORGANIZATION)
-                : dslContext.selectFrom(Tables.PLAYERORGANIZATION)
-                        .where(Tables.PLAYERORGANIZATION.ID.eq(organizationId)).fetchOne();
-        String errors = data.getFormColumn().getForm().setFields(organization, request, data);
+        MissionRecord mission = missionId == 0 ? dslContext.newRecord(Tables.MISSION)
+                : dslContext.selectFrom(Tables.MISSION)
+                        .where(Tables.MISSION.ID.eq(missionId)).fetchOne();
+        String errors = data.getFormColumn().getForm().setFields(mission, request, data);
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('mission')");
             return -1;
         } else {
             try {
-                organization.store();
+                mission.store();
             } catch (DataAccessException exception) {
                 ModalWindowUtils.popup(data, "Error storing record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('mission')");
                 return -1;
             }
         }
-        return organization.getId();
+        return mission.getId();
     }
 
 }

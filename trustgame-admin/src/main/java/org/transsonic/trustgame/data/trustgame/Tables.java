@@ -12,9 +12,9 @@ import org.transsonic.trustgame.data.trustgame.tables.Fbreport;
 import org.transsonic.trustgame.data.trustgame.tables.Game;
 import org.transsonic.trustgame.data.trustgame.tables.Gameplay;
 import org.transsonic.trustgame.data.trustgame.tables.Gameuser;
+import org.transsonic.trustgame.data.trustgame.tables.Mission;
 import org.transsonic.trustgame.data.trustgame.tables.Order;
 import org.transsonic.trustgame.data.trustgame.tables.Ordercarrier;
-import org.transsonic.trustgame.data.trustgame.tables.Playerorganization;
 import org.transsonic.trustgame.data.trustgame.tables.Review;
 import org.transsonic.trustgame.data.trustgame.tables.Round;
 import org.transsonic.trustgame.data.trustgame.tables.Selectedcarrier;
@@ -73,6 +73,11 @@ public class Tables {
     public static final Gameuser GAMEUSER = Gameuser.GAMEUSER;
 
     /**
+     * The table <code>trustgame.mission</code>.
+     */
+    public static final Mission MISSION = Mission.MISSION;
+
+    /**
      * The table <code>trustgame.order</code>.
      */
     public static final Order ORDER = Order.ORDER;
@@ -81,11 +86,6 @@ public class Tables {
      * The table <code>trustgame.ordercarrier</code>.
      */
     public static final Ordercarrier ORDERCARRIER = Ordercarrier.ORDERCARRIER;
-
-    /**
-     * The table <code>trustgame.playerorganization</code>.
-     */
-    public static final Playerorganization PLAYERORGANIZATION = Playerorganization.PLAYERORGANIZATION;
 
     /**
      * The table <code>trustgame.review</code>.

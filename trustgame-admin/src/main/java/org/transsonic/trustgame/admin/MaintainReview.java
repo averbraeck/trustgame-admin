@@ -21,7 +21,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ReviewRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.RoundRecord;
 
-public class ReviewUtils {
+public class MaintainReview {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();

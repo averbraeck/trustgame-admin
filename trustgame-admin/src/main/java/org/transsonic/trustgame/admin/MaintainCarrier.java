@@ -19,7 +19,7 @@ import org.transsonic.trustgame.data.trustgame.enums.CarrierService;
 import org.transsonic.trustgame.data.trustgame.enums.CarrierSustainability;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 
-public class CarrierUtils {
+public class MaintainCarrier {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();

@@ -49,16 +49,16 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> implements Recor
     }
 
     /**
-     * Setter for <code>trustgame.game.Organization_ID</code>.
+     * Setter for <code>trustgame.game.Mission_ID</code>.
      */
-    public void setOrganizationId(Integer value) {
+    public void setMissionId(Integer value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>trustgame.game.Organization_ID</code>.
+     * Getter for <code>trustgame.game.Mission_ID</code>.
      */
-    public Integer getOrganizationId() {
+    public Integer getMissionId() {
         return (Integer) get(2);
     }
 
@@ -97,7 +97,7 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> implements Recor
 
     @Override
     public Field<Integer> field3() {
-        return Game.GAME.ORGANIZATION_ID;
+        return Game.GAME.MISSION_ID;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> implements Recor
 
     @Override
     public Integer component3() {
-        return getOrganizationId();
+        return getMissionId();
     }
 
     @Override
@@ -127,7 +127,7 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> implements Recor
 
     @Override
     public Integer value3() {
-        return getOrganizationId();
+        return getMissionId();
     }
 
     @Override
@@ -144,7 +144,7 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> implements Recor
 
     @Override
     public GameRecord value3(Integer value) {
-        setOrganizationId(value);
+        setMissionId(value);
         return this;
     }
 
@@ -170,11 +170,11 @@ public class GameRecord extends UpdatableRecordImpl<GameRecord> implements Recor
     /**
      * Create a detached, initialised GameRecord
      */
-    public GameRecord(Integer id, String name, Integer organizationId) {
+    public GameRecord(Integer id, String name, Integer missionId) {
         super(Game.GAME);
 
         setId(id);
         setName(name);
-        setOrganizationId(organizationId);
+        setMissionId(missionId);
     }
 }

@@ -1,6 +1,8 @@
 package org.transsonic.trustgame.admin;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -18,12 +20,17 @@ import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.admin.form.FormEntryUInt;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.CarrierreviewRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.FbreportRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrdercarrierRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.MissionRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.ReviewRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.RoundRecord;
 
-public class GameUtils {
+public class MaintainGame {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
@@ -104,6 +111,34 @@ public class GameUtils {
             data.resetColumn(1); // no rounds visible until save
             data.resetColumn(2);
             data.resetColumn(3);
+            break;
+        }
+
+        case "cloneGame": {
+            recordNr = cloneGame(session, data, recordNr); // edit the new game
+            showGames(session, data, true, recordNr); // view the list of games, highlight cloned game
+            data.resetColumn(2);
+            data.resetColumn(3);
+            if (recordNr == 0) {
+                data.resetColumn(1);
+                data.resetFormColumn();
+            } else {
+                showRounds(session, data, true, 0); // view the rounds belonging to that game, no highlight
+            }
+            break;
+        }
+
+        case "cloneAll": {
+            recordNr = cloneAll(session, data, recordNr); // edit the new game
+            showGames(session, data, true, recordNr); // view the list of games, highlight cloned game
+            data.resetColumn(2);
+            data.resetColumn(3);
+            if (recordNr == 0) {
+                data.resetColumn(1);
+                data.resetFormColumn();
+            } else {
+                showRounds(session, data, true, 0); // view the rounds belonging to that game, no highlight
+            }
             break;
         }
 
@@ -389,8 +424,9 @@ public class GameUtils {
         }
         s.append(AdminTable.endTable());
 
-        if (editButton)
+        if (editButton) {
             s.append(AdminTable.finalButton("New Game", "newGame"));
+        }
 
         data.getColumn(0).setSelectedRecordNr(selectedGameRecordNr);
         data.getColumn(0).setContent(s.toString());
@@ -408,6 +444,8 @@ public class GameUtils {
                 .setSaveMethod("saveGame")
                 .setDeleteMethod("deleteGame", "Delete", "<br>Note: Game can only be deleted when it is not used " 
                     + "<br>in a GamePlay, and when it has no associated rounds")
+                .addAddtionalButton("cloneGame", "Clone Game")
+                .addAddtionalButton("cloneAll", "Clone Game and other records")
                 .setRecordNr(gameId)
                 .startForm()
                 .addEntry(new FormEntryString(Tables.GAME.NAME)
@@ -415,11 +453,11 @@ public class GameUtils {
                         .setInitialValue(game.getName())
                         .setLabel("Game name")
                         .setMaxChars(45))
-                .addEntry(new FormEntryPickRecord(Tables.GAME.ORGANIZATION_ID)
-                        .setInitialValue(game.getOrganizationId() == null ? 0 : game.getOrganizationId())
+                .addEntry(new FormEntryPickRecord(Tables.GAME.MISSION_ID)
+                        .setInitialValue(game.getMissionId() == null ? 0 : game.getMissionId())
                         .setLabel("Mission")
                         .setRequired()
-                        .setPickTable(data, Tables.PLAYERORGANIZATION, Tables.PLAYERORGANIZATION.ID, Tables.PLAYERORGANIZATION.NAME))
+                        .setPickTable(data, Tables.MISSION, Tables.MISSION.ID, Tables.MISSION.NAME))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit Game", form);
@@ -445,6 +483,285 @@ public class GameUtils {
         return game.getId();
     }
 
+    public static int cloneGame(HttpSession request, AdminData data, int gameId) {
+        if (gameId == 0)
+            return 0;
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        GameRecord game = dslContext.selectFrom(Tables.GAME).where(Tables.GAME.ID.eq(gameId)).fetchOne();
+
+        // MISSION
+        MissionRecord mission = dslContext.selectFrom(Tables.MISSION)
+                .where(Tables.MISSION.ID.eq(game.getMissionId())).fetchOne();
+        MissionRecord newMission = dslContext.newRecord(Tables.MISSION);
+        newMission.setName(mission.getName().substring(0, Math.min(mission.getName().length(), 35)) + " (copy)");
+        newMission.setDescription(mission.getDescription());
+        newMission.setTargetprofit(mission.getTargetprofit());
+        newMission.setTargetsustainability(mission.getTargetsustainability());
+        newMission.setTargetsatisfaction(mission.getTargetsatisfaction());
+        newMission.setStartprofit(mission.getStartprofit());
+        newMission.setStartsustainability(mission.getStartsustainability());
+        newMission.setStartsatisfaction(mission.getStartsatisfaction());
+        newMission.setMaxprofit(mission.getMaxprofit());
+        newMission.setMaxsustainability(mission.getMaxsustainability());
+        newMission.setMaxsatisfaction(mission.getMaxsatisfaction());
+        newMission.store();
+
+        // GAME
+        GameRecord newGame = dslContext.newRecord(Tables.GAME);
+        newGame.setName(game.getName().substring(0, Math.min(game.getName().length(), 35)) + " (copy)");
+        newGame.setMissionId(newMission.getId());
+        newGame.store();
+
+        // ROUNDS
+        Map<Integer, Integer> roundIdOldNew = new HashMap<>();
+        List<RoundRecord> rounds = dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.GAME_ID.eq(game.getId()))
+                .fetch();
+        for (RoundRecord round : rounds) {
+            RoundRecord newRound = dslContext.newRecord(Tables.ROUND);
+            newRound.setGameId(newGame.getId());
+            newRound.setRoundnumber(round.getRoundnumber());
+            newRound.setTestround(round.getTestround());
+            newRound.store();
+            roundIdOldNew.put(round.getId(), newRound.getId());
+        }
+
+        // ORDERS
+        Map<Integer, Integer> orderIdOldNew = new HashMap<>();
+        for (RoundRecord round : rounds) {
+            List<OrderRecord> orders = dslContext.selectFrom(Tables.ORDER)
+                    .where(Tables.ORDER.ROUND_ID.eq(round.getId())).fetch();
+            for (OrderRecord order : orders) {
+                OrderRecord newOrder = dslContext.newRecord(Tables.ORDER);
+                newOrder.setRoundId(roundIdOldNew.get(order.getRoundId()));
+                newOrder.setOrdernumber(order.getOrdernumber());
+                newOrder.setClientId(order.getClientId());
+                newOrder.setDescription(order.getDescription());
+                newOrder.setTransportearnings(order.getTransportearnings());
+                newOrder.setNote(order.getNote());
+                newOrder.store();
+                orderIdOldNew.put(order.getId(), newOrder.getId());
+            }
+        }
+
+        // ORDERCARRIERS
+        for (RoundRecord round : rounds) {
+            List<OrderRecord> orders = dslContext.selectFrom(Tables.ORDER)
+                    .where(Tables.ORDER.ROUND_ID.eq(round.getId())).fetch();
+            for (OrderRecord order : orders) {
+                List<OrdercarrierRecord> orderCarriers = dslContext.selectFrom(Tables.ORDERCARRIER)
+                        .where(Tables.ORDERCARRIER.ORDER_ID.eq(order.getId())).fetch();
+                for (OrdercarrierRecord orderCarrier : orderCarriers) {
+                    OrdercarrierRecord newOC = dslContext.newRecord(Tables.ORDERCARRIER);
+                    newOC.setOrderId(orderIdOldNew.get(orderCarrier.getOrderId()));
+                    newOC.setCarrierId(orderCarrier.getCarrierId());
+                    newOC.setQuoteoffer(orderCarrier.getQuoteoffer());
+                    newOC.setExtraprofit(orderCarrier.getExtraprofit());
+                    newOC.setOutcomesustainability(orderCarrier.getOutcomesustainability());
+                    newOC.setOutcomesatisfaction(orderCarrier.getOutcomesatisfaction());
+                    newOC.setOutcomemessage(orderCarrier.getOutcomemessage());
+                    newOC.setTransportmessage(orderCarrier.getTransportmessage());
+                    newOC.store();
+                }
+            }
+        }
+
+        // REVIEWS
+        for (RoundRecord round : rounds) {
+            List<ReviewRecord> reviews = dslContext.selectFrom(Tables.REVIEW)
+                    .where(Tables.REVIEW.ROUND_ID.eq(round.getId())).fetch();
+            for (ReviewRecord review : reviews) {
+                ReviewRecord newReview = dslContext.newRecord(Tables.REVIEW);
+                newReview.setRoundId(roundIdOldNew.get(review.getRoundId()));
+                newReview.setCarrierId(review.getCarrierId());
+                newReview.setStars(review.getStars());
+                newReview.setWhen(review.getWhen());
+                newReview.setReviewtext(review.getReviewtext());
+                newReview.store();
+            }
+        }
+
+        // CARRIERREVIEWS
+        for (RoundRecord round : rounds) {
+            List<CarrierreviewRecord> carrierReviews = dslContext.selectFrom(Tables.CARRIERREVIEW)
+                    .where(Tables.CARRIERREVIEW.ROUND_ID.eq(round.getId())).fetch();
+            for (CarrierreviewRecord carrierReview : carrierReviews) {
+                CarrierreviewRecord newCarrierReview = dslContext.newRecord(Tables.CARRIERREVIEW);
+                newCarrierReview.setRoundId(roundIdOldNew.get(carrierReview.getRoundId()));
+                newCarrierReview.setCarrierId(carrierReview.getCarrierId());
+                newCarrierReview.setOverallstars(carrierReview.getOverallstars());
+                newCarrierReview.store();
+            }
+        }
+
+        return newGame.getId();
+    }
+
+    public static int cloneAll(HttpSession request, AdminData data, int gameId) {
+        if (gameId == 0)
+            return 0;
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        GameRecord game = dslContext.selectFrom(Tables.GAME).where(Tables.GAME.ID.eq(gameId)).fetchOne();
+
+        // MISSION
+        MissionRecord mission = dslContext.selectFrom(Tables.MISSION)
+                .where(Tables.MISSION.ID.eq(game.getMissionId())).fetchOne();
+        MissionRecord newMission = dslContext.newRecord(Tables.MISSION);
+        newMission.setName(mission.getName().substring(0, Math.min(mission.getName().length(), 35)) + " (copy)");
+        newMission.setDescription(mission.getDescription());
+        newMission.setTargetprofit(mission.getTargetprofit());
+        newMission.setTargetsustainability(mission.getTargetsustainability());
+        newMission.setTargetsatisfaction(mission.getTargetsatisfaction());
+        newMission.setStartprofit(mission.getStartprofit());
+        newMission.setStartsustainability(mission.getStartsustainability());
+        newMission.setStartsatisfaction(mission.getStartsatisfaction());
+        newMission.setMaxprofit(mission.getMaxprofit());
+        newMission.setMaxsustainability(mission.getMaxsustainability());
+        newMission.setMaxsatisfaction(mission.getMaxsatisfaction());
+        newMission.store();
+
+        // GAME
+        GameRecord newGame = dslContext.newRecord(Tables.GAME);
+        newGame.setName(game.getName().substring(0, Math.min(game.getName().length(), 35)) + " (copy)");
+        newGame.setMissionId(newMission.getId());
+        newGame.store();
+
+        // ROUNDS
+        Map<Integer, Integer> roundIdOldNew = new HashMap<>();
+        List<RoundRecord> rounds = dslContext.selectFrom(Tables.ROUND).where(Tables.ROUND.GAME_ID.eq(game.getId()))
+                .fetch();
+        for (RoundRecord round : rounds) {
+            RoundRecord newRound = dslContext.newRecord(Tables.ROUND);
+            newRound.setGameId(newGame.getId());
+            newRound.setRoundnumber(round.getRoundnumber());
+            newRound.setTestround(round.getTestround());
+            newRound.store();
+            roundIdOldNew.put(round.getId(), newRound.getId());
+        }
+
+        // ORDERS
+        Map<Integer, Integer> orderIdOldNew = new HashMap<>();
+        Map<Integer, Integer> clientIdOldNew = new HashMap<>();
+        for (RoundRecord round : rounds) {
+            List<OrderRecord> orders = dslContext.selectFrom(Tables.ORDER)
+                    .where(Tables.ORDER.ROUND_ID.eq(round.getId())).fetch();
+            for (OrderRecord order : orders) {
+                if (!clientIdOldNew.containsKey(order.getClientId())) {
+                    ClientRecord client = dslContext.selectFrom(Tables.CLIENT)
+                            .where(Tables.CLIENT.ID.eq(order.getClientId())).fetchOne();
+                    ClientRecord newClient = dslContext.newRecord(Tables.CLIENT);
+                    newClient.setName(client.getName().substring(0, Math.min(client.getName().length(), 35)) + " (copy)");
+                    newClient.setLogo(client.getLogo());
+                    newClient.setType(client.getType());
+                    newClient.store();
+                    clientIdOldNew.put(client.getId(), newClient.getId());
+                }
+                OrderRecord newOrder = dslContext.newRecord(Tables.ORDER);
+                newOrder.setRoundId(roundIdOldNew.get(order.getRoundId()));
+                newOrder.setOrdernumber(order.getOrdernumber());
+                newOrder.setClientId(clientIdOldNew.get(order.getClientId()));
+                newOrder.setDescription(order.getDescription());
+                newOrder.setTransportearnings(order.getTransportearnings());
+                newOrder.setNote(order.getNote());
+                newOrder.store();
+                orderIdOldNew.put(order.getId(), newOrder.getId());
+            }
+        }
+
+        // ORDERCARRIERS
+        Map<Integer, Integer> carrierIdOldNew = new HashMap<>();
+        for (RoundRecord round : rounds) {
+            List<OrderRecord> orders = dslContext.selectFrom(Tables.ORDER)
+                    .where(Tables.ORDER.ROUND_ID.eq(round.getId())).fetch();
+            for (OrderRecord order : orders) {
+                List<OrdercarrierRecord> orderCarriers = dslContext.selectFrom(Tables.ORDERCARRIER)
+                        .where(Tables.ORDERCARRIER.ORDER_ID.eq(order.getId())).fetch();
+                for (OrdercarrierRecord orderCarrier : orderCarriers) {
+                    testCloneCarrier(dslContext, orderCarrier.getCarrierId(), carrierIdOldNew);
+                    OrdercarrierRecord newOC = dslContext.newRecord(Tables.ORDERCARRIER);
+                    newOC.setOrderId(orderIdOldNew.get(orderCarrier.getOrderId()));
+                    newOC.setCarrierId(carrierIdOldNew.get(orderCarrier.getCarrierId()));
+                    newOC.setQuoteoffer(orderCarrier.getQuoteoffer());
+                    newOC.setExtraprofit(orderCarrier.getExtraprofit());
+                    newOC.setOutcomesustainability(orderCarrier.getOutcomesustainability());
+                    newOC.setOutcomesatisfaction(orderCarrier.getOutcomesatisfaction());
+                    newOC.setOutcomemessage(orderCarrier.getOutcomemessage());
+                    newOC.setTransportmessage(orderCarrier.getTransportmessage());
+                    newOC.store();
+                }
+            }
+        }
+
+        // REVIEWS
+        for (RoundRecord round : rounds) {
+            List<ReviewRecord> reviews = dslContext.selectFrom(Tables.REVIEW)
+                    .where(Tables.REVIEW.ROUND_ID.eq(round.getId())).fetch();
+            for (ReviewRecord review : reviews) {
+                testCloneCarrier(dslContext, review.getCarrierId(), carrierIdOldNew);
+                ReviewRecord newReview = dslContext.newRecord(Tables.REVIEW);
+                newReview.setRoundId(roundIdOldNew.get(review.getRoundId()));
+                newReview.setCarrierId(carrierIdOldNew.get(review.getCarrierId()));
+                newReview.setStars(review.getStars());
+                newReview.setWhen(review.getWhen());
+                newReview.setReviewtext(review.getReviewtext());
+                newReview.store();
+            }
+        }
+
+        // CARRIERREVIEWS
+        for (RoundRecord round : rounds) {
+            List<CarrierreviewRecord> carrierReviews = dslContext.selectFrom(Tables.CARRIERREVIEW)
+                    .where(Tables.CARRIERREVIEW.ROUND_ID.eq(round.getId())).fetch();
+            for (CarrierreviewRecord carrierReview : carrierReviews) {
+                testCloneCarrier(dslContext, carrierReview.getCarrierId(), carrierIdOldNew);
+                CarrierreviewRecord newCarrierReview = dslContext.newRecord(Tables.CARRIERREVIEW);
+                newCarrierReview.setRoundId(roundIdOldNew.get(carrierReview.getRoundId()));
+                newCarrierReview.setCarrierId(carrierIdOldNew.get(carrierReview.getCarrierId()));
+                newCarrierReview.setOverallstars(carrierReview.getOverallstars());
+                newCarrierReview.store();
+            }
+        }
+
+        return newGame.getId();
+
+    }
+
+    private static void testCloneCarrier(DSLContext dslContext, Integer carrierId, Map<Integer, Integer> carrierIdOldNew) {
+        if (!carrierIdOldNew.containsKey(carrierId)) {
+            CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
+                    .where(Tables.CARRIER.ID.eq(carrierId)).fetchOne();
+            CarrierRecord newCarrier = dslContext.newRecord(Tables.CARRIER);
+            newCarrier.setName(carrier.getName().substring(0, Math.min(carrier.getName().length(), 35)) + " (copy)");
+            newCarrier.setSlogan(carrier.getSlogan());
+            newCarrier.setLogo(carrier.getLogo());
+            newCarrier.setService(carrier.getService());
+            newCarrier.setSustainability(carrier.getSustainability());
+            newCarrier.setCompanydescription(carrier.getCompanydescription());
+            newCarrier.setWebsiteurl(carrier.getWebsiteurl());
+            newCarrier.setOfficialreportdescription(carrier.getOfficialreportdescription());
+            newCarrier.setOfficialreport(carrier.getOfficialreport());
+            newCarrier.setCarriertype(carrier.getCarriertype());
+            newCarrier.setGooglepage(carrier.getGooglepage());
+            newCarrier.setGoogleimage(carrier.getGoogleimage());
+            newCarrier.setCarrierwebpage(carrier.getCarrierwebpage());
+            newCarrier.setCarrierwebimage(carrier.getCarrierwebimage());
+            newCarrier.store();
+            carrierIdOldNew.put(carrierId, newCarrier.getId());
+            
+            FbreportRecord fbReport = dslContext.selectFrom(Tables.FBREPORT)
+                    .where(Tables.FBREPORT.CARRIER_ID.eq(carrierId)).fetchOne();
+            FbreportRecord newFB = dslContext.newRecord(Tables.FBREPORT);
+            newFB.setCarrierId(newCarrier.getId());
+            newFB.setFbregistration(fbReport.getFbregistration());
+            newFB.setCountrycode(fbReport.getCountrycode());
+            newFB.setAddress(fbReport.getAddress());
+            newFB.setFbmembersince(fbReport.getFbmembersince());
+            newFB.setServiceontime(fbReport.getServiceontime());
+            newFB.setServicesatisfaction(fbReport.getServicesatisfaction());
+            newFB.setTechnicalfleet(fbReport.getTechnicalfleet());
+            newFB.setTechnicalgreen(fbReport.getTechnicalgreen());
+            newFB.store();
+        }
+    }
     /* ********************************************************************************************************* */
     /* ***************************************** ROUND ********************************************************* */
     /* ********************************************************************************************************* */

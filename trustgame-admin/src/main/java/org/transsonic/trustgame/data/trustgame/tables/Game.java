@@ -60,9 +60,9 @@ public class Game extends TableImpl<GameRecord> {
     public final TableField<GameRecord, String> NAME = createField(DSL.name("Name"), SQLDataType.VARCHAR(45).nullable(false), this, "");
 
     /**
-     * The column <code>trustgame.game.Organization_ID</code>.
+     * The column <code>trustgame.game.Mission_ID</code>.
      */
-    public final TableField<GameRecord, Integer> ORGANIZATION_ID = createField(DSL.name("Organization_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<GameRecord, Integer> MISSION_ID = createField(DSL.name("Mission_ID"), SQLDataType.INTEGER.nullable(false), this, "");
 
     private Game(Name alias, Table<GameRecord> aliased) {
         this(alias, aliased, null);
@@ -104,7 +104,7 @@ public class Game extends TableImpl<GameRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.GAME_FK_GAME_ORGANIZATION1_IDX);
+        return Arrays.<Index>asList(Indexes.GAME_FK_GAME_MISSION1_IDX);
     }
 
     @Override
@@ -124,16 +124,16 @@ public class Game extends TableImpl<GameRecord> {
 
     @Override
     public List<ForeignKey<GameRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<GameRecord, ?>>asList(Keys.FK_GAME_ORGANIZATION1);
+        return Arrays.<ForeignKey<GameRecord, ?>>asList(Keys.FK_GAME_MISSION1);
     }
 
-    private transient Playerorganization _playerorganization;
+    private transient Mission _mission;
 
-    public Playerorganization playerorganization() {
-        if (_playerorganization == null)
-            _playerorganization = new Playerorganization(this, Keys.FK_GAME_ORGANIZATION1);
+    public Mission mission() {
+        if (_mission == null)
+            _mission = new Mission(this, Keys.FK_GAME_MISSION1);
 
-        return _playerorganization;
+        return _mission;
     }
 
     @Override

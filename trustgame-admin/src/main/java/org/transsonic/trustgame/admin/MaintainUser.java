@@ -21,7 +21,7 @@ import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UsergroupRecord;
 
-public class UserUtils {
+public class MaintainUser {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();

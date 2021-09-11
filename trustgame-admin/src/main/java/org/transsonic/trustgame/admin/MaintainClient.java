@@ -16,7 +16,7 @@ import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
 
-public class ClientUtils {
+public class MaintainClient {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();

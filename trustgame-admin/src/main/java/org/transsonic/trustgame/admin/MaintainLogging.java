@@ -24,7 +24,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.GameuserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
 
-public class LoggingUtils {
+public class MaintainLogging {
 
     public static void handleMenu(HttpServletRequest request, HttpServletResponse response, String click,
             int recordNr) {

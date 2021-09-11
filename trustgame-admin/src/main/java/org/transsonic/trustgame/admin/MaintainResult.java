@@ -26,7 +26,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.GameplayRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameuserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrdercarrierRecord;
-import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.MissionRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.RoundRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.SelectedcarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
@@ -35,7 +35,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserorderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserroundRecord;
 
-public class ResultUtils {
+public class MaintainResult {
 
     public static void handleMenu(HttpServletRequest request, HttpServletResponse response, String click,
             int recordNr) {
@@ -222,8 +222,8 @@ public class ResultUtils {
         GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY)
                 .where(Tables.GAMEPLAY.ID.eq(gameUser.getGameplayId())).fetchAny();
         GameRecord game = SqlUtils.readGameFromGameId(data, gamePlay.getGameId());
-        PlayerorganizationRecord organization = dslContext.selectFrom(Tables.PLAYERORGANIZATION)
-                .where(Tables.PLAYERORGANIZATION.ID.eq(game.getOrganizationId())).fetchAny();
+        MissionRecord mission = dslContext.selectFrom(Tables.MISSION)
+                .where(Tables.MISSION.ID.eq(game.getMissionId())).fetchAny();
         List<UsercarrierRecord> userCarriers = dslContext.selectFrom(Tables.USERCARRIER)
                 .where(Tables.USERCARRIER.GAMEUSER_ID.eq(gameUser.getId())).fetch(); // bought reports
 
@@ -254,11 +254,11 @@ public class ResultUtils {
         s.append("    <tbody>\n");
 
         s.append("           <tr><td>Start</td><td>&nbsp;</td><td>&nbsp;</td><td>");
-        s.append(organization.getStartprofit());
+        s.append(mission.getStartprofit());
         s.append("</td><td>");
-        s.append(organization.getStartsatisfaction());
+        s.append(mission.getStartsatisfaction());
         s.append("</td><td>");
-        s.append(organization.getStartsustainability());
+        s.append(mission.getStartsustainability());
         s.append("</td></tr>\n");
 
         for (int round = 1; round < highestRoundNumber; round++) {
@@ -381,8 +381,8 @@ public class ResultUtils {
         GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY).where(Tables.GAMEPLAY.ID.eq(gamePlayId))
                 .fetchAny();
         GameRecord game = SqlUtils.readGameFromGameId(data, gamePlay.getGameId());
-        PlayerorganizationRecord organization = dslContext.selectFrom(Tables.PLAYERORGANIZATION)
-                .where(Tables.PLAYERORGANIZATION.ID.eq(game.getOrganizationId())).fetchAny();
+        MissionRecord mission = dslContext.selectFrom(Tables.MISSION)
+                .where(Tables.MISSION.ID.eq(game.getMissionId())).fetchAny();
 
         // rounds
         List<RoundRecord> roundRecords = dslContext.selectFrom(Tables.ROUND)
@@ -416,8 +416,8 @@ public class ResultUtils {
                     int highestRoundNumber = gameUser.getRoundnumber().intValue();
 
                     bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed, "Start", false, "", "",
-                            organization.getStartprofit(), organization.getStartsatisfaction(),
-                            organization.getStartsustainability()));
+                            mission.getStartprofit(), mission.getStartsatisfaction(),
+                            mission.getStartsustainability()));
 
                     for (int round = 1; round < highestRoundNumber; round++) {
                         UserroundRecord userRound = dslContext.selectFrom(Tables.USERROUND)

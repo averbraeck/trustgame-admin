@@ -63,7 +63,7 @@ public class AdminServlet extends HttpServlet {
         case "generateUsers":
         case "generateUserParameters":
             data.setMenuChoice("user");
-            UserUtils.handleMenu(request, click, recordNr);
+            MaintainUser.handleMenu(request, click, recordNr);
             break;
 
         case "carrier":
@@ -74,7 +74,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteCarrierOk":
         case "newCarrier":
             data.setMenuChoice("carrier");
-            CarrierUtils.handleMenu(request, click, recordNr);
+            MaintainCarrier.handleMenu(request, click, recordNr);
             break;
 
         case "fbreport":
@@ -85,7 +85,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteFBReportOk":
         case "newFBReport":
             data.setMenuChoice("fbreport");
-            FBReportUtils.handleMenu(request, click, recordNr);
+            MaintainFBReport.handleMenu(request, click, recordNr);
             break;
 
         case "client":
@@ -96,7 +96,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteClientOk":
         case "newClient":
             data.setMenuChoice("client");
-            ClientUtils.handleMenu(request, click, recordNr);
+            MaintainClient.handleMenu(request, click, recordNr);
             break;
 
         case "mission":
@@ -107,7 +107,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteMissionOk":
         case "newMission":
             data.setMenuChoice("mission");
-            MissionUtils.handleMenu(request, click, recordNr);
+            MaintainMission.handleMenu(request, click, recordNr);
             break;
 
         case "game":
@@ -117,6 +117,8 @@ public class AdminServlet extends HttpServlet {
         case "deleteGame":
         case "deleteGameOk":
         case "newGame":
+        case "cloneGame":
+        case "cloneAll":
         case "showRounds":
         case "viewRound":
         case "editRound":
@@ -139,7 +141,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteOrderCarrierOk":
         case "newOrderCarrier":
             data.setMenuChoice("game");
-            GameUtils.handleMenu(request, click, recordNr);
+            MaintainGame.handleMenu(request, click, recordNr);
             break;
 
         case "review":
@@ -158,7 +160,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteCarrierReviewOk":
         case "newCarrierReview":
             data.setMenuChoice("review");
-            ReviewUtils.handleMenu(request, click, recordNr);
+            MaintainReview.handleMenu(request, click, recordNr);
             break;
 
         case "briefing":
@@ -169,7 +171,7 @@ public class AdminServlet extends HttpServlet {
         case "deleteBriefingOk":
         case "newBriefing":
             data.setMenuChoice("briefing");
-            BriefingUtils.handleMenu(request, click, recordNr);
+            MaintainBriefing.handleMenu(request, click, recordNr);
             break;
 
         case "gameplay":
@@ -190,7 +192,7 @@ public class AdminServlet extends HttpServlet {
         case "confirmGameUserGroup":
         case "addGameUserGroup":
             data.setMenuChoice("gameplay");
-            GamePlayUtils.handleMenu(request, click, recordNr);
+            MaintainGamePlay.handleMenu(request, click, recordNr);
             break;
 
         case "result":
@@ -198,13 +200,13 @@ public class AdminServlet extends HttpServlet {
         case "resultGameUsers":
         case "resultGameUserDetail":
             data.setMenuChoice("result");
-            ResultUtils.handleMenu(request, response, click, recordNr);
+            MaintainResult.handleMenu(request, response, click, recordNr);
             break;
 
         case "csvResultGamePlay":
         case "tsvResultGamePlay":
             data.setMenuChoice("result");
-            ResultUtils.handleMenu(request, response, click, recordNr);
+            MaintainResult.handleMenu(request, response, click, recordNr);
             return;
             
         case "logging":
@@ -212,7 +214,7 @@ public class AdminServlet extends HttpServlet {
         case "loggingGameUsers":
         case "loggingGameUserLogs":
             data.setMenuChoice("logging");
-            LoggingUtils.handleMenu(request, response, click, recordNr); 
+            MaintainLogging.handleMenu(request, response, click, recordNr); 
             break;
 
         case "csvGamePlayLogs":
@@ -220,7 +222,7 @@ public class AdminServlet extends HttpServlet {
         case "tsvGamePlayLogs":
         case "tsvGameUserLogs":
             data.setMenuChoice("logging");
-            LoggingUtils.handleMenu(request, response, click, recordNr); 
+            MaintainLogging.handleMenu(request, response, click, recordNr); 
             return;
 
         default:

@@ -19,7 +19,7 @@ import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameplayRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrdercarrierRecord;
-import org.transsonic.trustgame.data.trustgame.tables.records.PlayerorganizationRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.MissionRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ReviewRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.RoundRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
@@ -61,11 +61,11 @@ public final class SqlUtils {
         return dslContext.selectFrom(Tables.ORDERCARRIER).where(Tables.ORDERCARRIER.ID.eq(orderCarrierId)).fetchAny();
     }
 
-    public static PlayerorganizationRecord readPlayerOrganizationFromId(final AdminData data,
-            final Integer playerOrganizationId) {
+    public static MissionRecord readPlayerMissionFromId(final AdminData data,
+            final Integer missionId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.PLAYERORGANIZATION)
-                .where(Tables.PLAYERORGANIZATION.ID.eq(playerOrganizationId)).fetchAny();
+        return dslContext.selectFrom(Tables.MISSION)
+                .where(Tables.MISSION.ID.eq(missionId)).fetchAny();
     }
 
     public static GameplayRecord readGamePlayFromGamePlayId(final AdminData data, final Integer gamePlayId) {

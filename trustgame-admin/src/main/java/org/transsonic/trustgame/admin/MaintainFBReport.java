@@ -18,7 +18,7 @@ import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.FbreportRecord;
 
-public class FBReportUtils {
+public class MaintainFBReport {
 
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();

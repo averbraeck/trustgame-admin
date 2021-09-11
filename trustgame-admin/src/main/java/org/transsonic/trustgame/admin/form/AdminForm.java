@@ -25,6 +25,8 @@ public class AdminForm {
     private String deleteMethod = "";
     private String deleteButton = "Delete";
     private String deleteText = "";
+    private List<String> additionalButtons = new ArrayList<>();
+    private List<String> additionalMethods = new ArrayList<>();
     List<AbstractFormEntry<?, ?>> entries = new ArrayList<>();
     private boolean multipart;
     private boolean edit;
@@ -115,6 +117,16 @@ public class AdminForm {
                 s.append("<i>&nbsp; &nbsp; " + this.deleteText + "</i>");
         }
         s.append("    </div>\n");
+        
+        for (int i = 0; i < this.additionalButtons.size(); i++) {
+            s.append("<br/>      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");
+            s.append(this.additionalMethods.get(i));
+            s.append("', ");
+            s.append(this.recordNr);
+            s.append("); return false;\">");
+            s.append(this.additionalButtons.get(i));
+            s.append("</a></span>\n");
+        }
     }
     
     public AdminForm addEntry(AbstractFormEntry<?, ?> entry) {
@@ -162,20 +174,25 @@ public class AdminForm {
         return this;
     }
 
-    public AdminForm setDeleteMethod(String deleteeMethod, String deleteButton) {
-        this.deleteMethod = deleteeMethod;
+    public AdminForm setDeleteMethod(String deleteMethod, String deleteButton) {
+        this.deleteMethod = deleteMethod;
         this.deleteButton = deleteButton;
         this.deleteText = "";
         return this;
     }
 
-    public AdminForm setDeleteMethod(String deleteeMethod, String deleteButton, String deleteText) {
-        this.deleteMethod = deleteeMethod;
+    public AdminForm setDeleteMethod(String deleteMethod, String deleteButton, String deleteText) {
+        this.deleteMethod = deleteMethod;
         this.deleteButton = deleteButton;
         this.deleteText = deleteText;
         return this;
     }
 
+    public AdminForm addAddtionalButton(String method, String buttonText) {
+        this.additionalButtons.add(buttonText);
+        this.additionalMethods.add(method);
+        return this;
+    }
     public AdminForm setRecordNr(int recordNr) {
         this.recordNr = recordNr;
         return this;
