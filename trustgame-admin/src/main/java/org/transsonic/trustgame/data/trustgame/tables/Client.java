@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -67,6 +67,16 @@ public class Client extends TableImpl<ClientRecord> {
      */
     public final TableField<ClientRecord, String> TYPE = createField(DSL.name("Type"), SQLDataType.CLOB.nullable(false), this, "");
 
+    /**
+     * The column <code>trustgame.client.Version</code>.
+     */
+    public final TableField<ClientRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.client.Vname</code>.
+     */
+    public final TableField<ClientRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
+
     private Client(Name alias, Table<ClientRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -117,7 +127,7 @@ public class Client extends TableImpl<ClientRecord> {
 
     @Override
     public List<UniqueKey<ClientRecord>> getKeys() {
-        return Arrays.<UniqueKey<ClientRecord>>asList(Keys.KEY_CLIENT_PRIMARY, Keys.KEY_CLIENT_ID_UNIQUE, Keys.KEY_CLIENT_NAME_UNIQUE);
+        return Arrays.<UniqueKey<ClientRecord>>asList(Keys.KEY_CLIENT_PRIMARY, Keys.KEY_CLIENT_ID_UNIQUE, Keys.KEY_CLIENT_VNAME_UNIQUE);
     }
 
     @Override
@@ -147,11 +157,11 @@ public class Client extends TableImpl<ClientRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Integer, String, byte[], String> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row6<Integer, String, byte[], String, String, String> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }

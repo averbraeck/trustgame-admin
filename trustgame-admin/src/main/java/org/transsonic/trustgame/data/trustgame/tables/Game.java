@@ -13,7 +13,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row3;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -63,6 +63,31 @@ public class Game extends TableImpl<GameRecord> {
      * The column <code>trustgame.game.Mission_ID</code>.
      */
     public final TableField<GameRecord, Integer> MISSION_ID = createField(DSL.name("Mission_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.game.TextFinishDay</code>.
+     */
+    public final TableField<GameRecord, String> TEXTFINISHDAY = createField(DSL.name("TextFinishDay"), SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.game.TextReview</code>.
+     */
+    public final TableField<GameRecord, String> TEXTREVIEW = createField(DSL.name("TextReview"), SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.game.TextAllReviews</code>.
+     */
+    public final TableField<GameRecord, String> TEXTALLREVIEWS = createField(DSL.name("TextAllReviews"), SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.game.Version</code>.
+     */
+    public final TableField<GameRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.game.Vname</code>.
+     */
+    public final TableField<GameRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
 
     private Game(Name alias, Table<GameRecord> aliased) {
         this(alias, aliased, null);
@@ -119,7 +144,7 @@ public class Game extends TableImpl<GameRecord> {
 
     @Override
     public List<UniqueKey<GameRecord>> getKeys() {
-        return Arrays.<UniqueKey<GameRecord>>asList(Keys.KEY_GAME_PRIMARY, Keys.KEY_GAME_IDGAME_UNIQUE, Keys.KEY_GAME_NAME_UNIQUE);
+        return Arrays.<UniqueKey<GameRecord>>asList(Keys.KEY_GAME_PRIMARY, Keys.KEY_GAME_IDGAME_UNIQUE, Keys.KEY_GAME_VERSION_UNIQUE, Keys.KEY_GAME_VNAME_UNIQUE);
     }
 
     @Override
@@ -163,11 +188,11 @@ public class Game extends TableImpl<GameRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row3 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row3<Integer, String, Integer> fieldsRow() {
-        return (Row3) super.fieldsRow();
+    public Row8<Integer, String, Integer, String, String, String, String, String> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }

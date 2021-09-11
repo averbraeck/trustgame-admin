@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row15;
+import org.jooq.Row17;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -124,6 +124,16 @@ public class Carrier extends TableImpl<CarrierRecord> {
      */
     public final TableField<CarrierRecord, byte[]> CARRIERWEBIMAGE = createField(DSL.name("CarrierWebImage"), SQLDataType.BLOB.defaultValue(DSL.field("NULL", SQLDataType.BLOB)), this, "");
 
+    /**
+     * The column <code>trustgame.carrier.Version</code>.
+     */
+    public final TableField<CarrierRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.carrier.Vname</code>.
+     */
+    public final TableField<CarrierRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
+
     private Carrier(Name alias, Table<CarrierRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -174,7 +184,7 @@ public class Carrier extends TableImpl<CarrierRecord> {
 
     @Override
     public List<UniqueKey<CarrierRecord>> getKeys() {
-        return Arrays.<UniqueKey<CarrierRecord>>asList(Keys.KEY_CARRIER_PRIMARY, Keys.KEY_CARRIER_ID_UNIQUE, Keys.KEY_CARRIER_NAME_UNIQUE);
+        return Arrays.<UniqueKey<CarrierRecord>>asList(Keys.KEY_CARRIER_PRIMARY, Keys.KEY_CARRIER_ID_UNIQUE, Keys.KEY_CARRIER_VNAME_UNIQUE);
     }
 
     @Override
@@ -204,11 +214,11 @@ public class Carrier extends TableImpl<CarrierRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row15 type methods
+    // Row17 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row15<Integer, String, String, byte[], CarrierService, CarrierSustainability, String, String, String, String, String, String, byte[], String, byte[]> fieldsRow() {
-        return (Row15) super.fieldsRow();
+    public Row17<Integer, String, String, byte[], CarrierService, CarrierSustainability, String, String, String, String, String, String, byte[], String, byte[], String, String> fieldsRow() {
+        return (Row17) super.fieldsRow();
     }
 }

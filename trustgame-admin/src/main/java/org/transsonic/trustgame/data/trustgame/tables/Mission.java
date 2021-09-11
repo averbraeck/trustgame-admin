@@ -12,7 +12,7 @@ import org.jooq.ForeignKey;
 import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -107,6 +107,16 @@ public class Mission extends TableImpl<MissionRecord> {
      */
     public final TableField<MissionRecord, Integer> MAXSUSTAINABILITY = createField(DSL.name("MaxSustainability"), SQLDataType.INTEGER.nullable(false), this, "Top of the score chart");
 
+    /**
+     * The column <code>trustgame.mission.Version</code>.
+     */
+    public final TableField<MissionRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.mission.Vname</code>.
+     */
+    public final TableField<MissionRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
+
     private Mission(Name alias, Table<MissionRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -157,7 +167,7 @@ public class Mission extends TableImpl<MissionRecord> {
 
     @Override
     public List<UniqueKey<MissionRecord>> getKeys() {
-        return Arrays.<UniqueKey<MissionRecord>>asList(Keys.KEY_MISSION_PRIMARY, Keys.KEY_MISSION_ID_UNIQUE, Keys.KEY_MISSION_NAME_UNIQUE);
+        return Arrays.<UniqueKey<MissionRecord>>asList(Keys.KEY_MISSION_PRIMARY, Keys.KEY_MISSION_ID_UNIQUE, Keys.KEY_MISSION_VERSION_UNIQUE, Keys.KEY_MISSION_VNAME_UNIQUE);
     }
 
     @Override
@@ -187,11 +197,11 @@ public class Mission extends TableImpl<MissionRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Integer, String, String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row14<Integer, String, String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, String, String> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }
