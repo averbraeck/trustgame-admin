@@ -61,11 +61,14 @@ public final class SqlUtils {
         return dslContext.selectFrom(Tables.ORDERCARRIER).where(Tables.ORDERCARRIER.ID.eq(orderCarrierId)).fetchAny();
     }
 
-    public static MissionRecord readPlayerMissionFromId(final AdminData data,
-            final Integer missionId) {
+    public static MissionRecord readMissionFromGameId(final AdminData data, final Integer gameId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        return dslContext.selectFrom(Tables.MISSION)
-                .where(Tables.MISSION.ID.eq(missionId)).fetchAny();
+        return dslContext.selectFrom(Tables.MISSION).where(Tables.MISSION.GAME_ID.eq(gameId)).fetchAny();
+    }
+
+    public static MissionRecord readMissionFromMissionId(final AdminData data, final Integer missionId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        return dslContext.selectFrom(Tables.MISSION).where(Tables.MISSION.ID.eq(missionId)).fetchAny();
     }
 
     public static GameplayRecord readGamePlayFromGamePlayId(final AdminData data, final Integer gamePlayId) {

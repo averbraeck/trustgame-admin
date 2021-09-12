@@ -21,23 +21,35 @@ public class MaintainClient {
     public static void handleMenu(HttpServletRequest request, String click, int recordNr) {
         HttpSession session = request.getSession();
         AdminData data = SessionUtils.getData(session);
-        
+
         switch (click) {
-        
+
         case "client": {
-            data.clearColumns("40%", "Client");
-            data.clearFormColumn("60%", "Edit Properties");
-            showClients(session, data, true, 0);
+            data.clearColumns("25%", "Game", "25%", "Client");
+            data.clearFormColumn("50%", "Edit Properties");
+            SessionUtils.showGames(session, data, 0, "Client", "showClient");
+            break;
+        }
+
+        case "showClient": {
+            SessionUtils.showGames(session, data, recordNr, "Client", "showClient");
+            if (recordNr == 0)
+                data.resetColumn(1);
+            else
+                showClients(session, data, true, 0);
+            data.resetFormColumn();
             break;
         }
 
         case "viewClient": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Client", "showClient");
             showClients(session, data, true, recordNr);
             editClient(session, data, recordNr, false);
             break;
         }
 
         case "editClient": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Client", "showClient");
             showClients(session, data, true, recordNr);
             editClient(session, data, recordNr, true);
             break;
@@ -45,6 +57,7 @@ public class MaintainClient {
 
         case "saveClient": {
             recordNr = saveClient(request, data, recordNr);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Client", "showClient");
             showClients(session, data, true, 0);
             data.resetFormColumn();
             break;
@@ -57,6 +70,7 @@ public class MaintainClient {
                     "clickRecordId('deleteClientOk', " + recordNr + ")", "Cancel", "clickMenu('client')",
                     "clickMenu('client')");
             data.setShowModalWindow(1);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Client", "showClient");
             showClients(session, data, true, 0);
             data.resetFormColumn();
             break;
@@ -70,12 +84,14 @@ public class MaintainClient {
                 ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('client')");
             }
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Client", "showClient");
             showClients(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
         case "newClient": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Client", "showClient");
             showClients(session, data, true, 0);
             editClient(session, data, 0, true);
             break;
@@ -88,10 +104,15 @@ public class MaintainClient {
         AdminServlet.makeColumnContent(data);
     }
 
+    /* ********************************************************************************************************* */
+    /* ******************************************* CLIENT ****************************************************** */
+    /* ********************************************************************************************************* */
+
     public static void showClients(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<ClientRecord> clientRecords = dslContext.selectFrom(Tables.CLIENT).fetch();
+        List<ClientRecord> clientRecords = dslContext.selectFrom(Tables.CLIENT)
+                .where(Tables.CLIENT.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
 
         s.append(AdminTable.startTable());
         for (ClientRecord client : clientRecords) {
@@ -101,12 +122,12 @@ public class MaintainClient {
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
-        
+
         if (editButton)
             s.append(AdminTable.finalButton("New Client", "newClient"));
 
-        data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
-        data.getColumn(0).setContent(s.toString());
+        data.getColumn(1).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(1).setContent(s.toString());
     }
 
     public static void editClient(HttpSession session, AdminData data, int clientId, boolean edit) {
@@ -128,6 +149,7 @@ public class MaintainClient {
                         .setLabel("Client name")
                         .setMaxChars(45))
                 .addEntry(new FormEntryImage(Tables.CLIENT.LOGO)
+                        .setRequired()
                         .setInitialValue(client.getLogo())
                         .setLabel("Client logo")
                         .setImageServlet("imageClient")
@@ -146,6 +168,7 @@ public class MaintainClient {
         ClientRecord client = clientId == 0 ? dslContext.newRecord(Tables.CLIENT)
                 : dslContext.selectFrom(Tables.CLIENT).where(Tables.CLIENT.ID.eq(clientId)).fetchOne();
         String errors = data.getFormColumn().getForm().setFields(client, request, data);
+        client.setGameId(data.getColumn(0).getSelectedRecordNr());
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('client')");
             return -1;

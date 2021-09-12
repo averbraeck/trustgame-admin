@@ -500,7 +500,7 @@ public class MaintainGamePlay {
         int gameId = data.getColumn(0).getSelectedRecordNr();
         GameRecord game = SqlUtils.readGameFromGameId(data, gameId);
         gameUser.setGameplayId(gamePlayId);
-        MissionRecord mission = SqlUtils.readPlayerMissionFromId(data, game.getMissionId());
+        MissionRecord mission = SqlUtils.readMissionFromGameId(data, game.getId());
         gameUser.setScoreprofit(mission.getStartprofit());
         gameUser.setScoresatisfaction(mission.getStartsatisfaction());
         gameUser.setScoresustainability(mission.getStartsustainability());

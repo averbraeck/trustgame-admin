@@ -17,7 +17,6 @@ import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierreviewRecord;
-import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ReviewRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.RoundRecord;
 
@@ -34,14 +33,14 @@ public class MaintainReview {
         case "review": {
             data.clearColumns("20%", "Game", "10%", "Round", "20%", "Review", "20%", "OverallReview");
             data.clearFormColumn("30%", "Edit Properties");
-            showGames(session, data, 0);
+            SessionUtils.showGames(session, data, 0, "Rounds", "showReviewRounds");
             break;
         }
 
         // Round
 
         case "showReviewRounds": {
-            showGames(session, data, recordNr); // view the list of games for editing, highlight selected one
+            SessionUtils.showGames(session, data, recordNr, "Rounds", "showReviewRounds");
             if (recordNr == 0)
                 data.resetColumn(1); // to solve 'cancel' for new round
             else
@@ -55,7 +54,8 @@ public class MaintainReview {
         // Review
 
         case "showReviews": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, recordNr);
             if (recordNr == 0) {
                 data.resetColumn(2); // to solve 'cancel' for new review
@@ -69,7 +69,8 @@ public class MaintainReview {
         }
 
         case "viewReview": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, recordNr);
             showCarrierReviews(session, data, true, 0);
@@ -78,7 +79,8 @@ public class MaintainReview {
         }
 
         case "editReview": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, recordNr);
             showCarrierReviews(session, data, true, 0);
@@ -88,7 +90,8 @@ public class MaintainReview {
 
         case "saveReview": {
             recordNr = saveReview(request, data, recordNr);
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, recordNr);
             showCarrierReviews(session, data, true, 0);
@@ -105,7 +108,8 @@ public class MaintainReview {
                     "DELETE", "clickRecordId('deleteReviewOk', " + recordNr + ")", "Cancel", "clickMenu('review')",
                     "clickMenu('review')");
             data.setShowModalWindow(1);
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, 0);
@@ -121,7 +125,8 @@ public class MaintainReview {
                 ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('review')");
             }
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, 0);
@@ -130,7 +135,8 @@ public class MaintainReview {
         }
 
         case "newReview": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, 0);
@@ -141,7 +147,8 @@ public class MaintainReview {
         // CarrierReview
 
         case "viewCarrierReview": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, recordNr);
@@ -150,7 +157,8 @@ public class MaintainReview {
         }
 
         case "editCarrierReview": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, recordNr);
@@ -160,7 +168,8 @@ public class MaintainReview {
 
         case "saveCarrierReview": {
             recordNr = saveCarrierReview(request, data, recordNr);
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, recordNr);
@@ -173,11 +182,13 @@ public class MaintainReview {
             CarrierRecord carrier = SqlUtils.readCarrierFromCarrierId(data, carrierReview.getCarrierId());
             RoundRecord round = SqlUtils.readRoundFromRoundId(data, carrierReview.getRoundId());
             ModalWindowUtils.make2ButtonModalWindow(data, "Delete Carrier Review",
-                    "<p>Delete carrier review for " + carrier.getName() + " in round " + round.getRoundnumber() + "?</p>",
-                    "DELETE", "clickRecordId('deleteCarrierReviewOk', " + recordNr + ")", "Cancel", "clickMenu('review')",
-                    "clickMenu('review')");
+                    "<p>Delete carrier review for " + carrier.getName() + " in round " + round.getRoundnumber()
+                            + "?</p>",
+                    "DELETE", "clickRecordId('deleteCarrierReviewOk', " + recordNr + ")", "Cancel",
+                    "clickMenu('review')", "clickMenu('review')");
             data.setShowModalWindow(1);
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, 0);
@@ -193,7 +204,8 @@ public class MaintainReview {
                 ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('review')");
             }
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, 0);
@@ -202,7 +214,8 @@ public class MaintainReview {
         }
 
         case "newCarrierReview": {
-            showGames(session, data, data.getColumn(0).getSelectedRecordNr());
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Rounds",
+                    "showReviewRounds");
             showReviewRounds(session, data, data.getColumn(1).getSelectedRecordNr());
             showReviews(session, data, true, 0);
             showCarrierReviews(session, data, true, 0);
@@ -215,27 +228,6 @@ public class MaintainReview {
         }
 
         AdminServlet.makeColumnContent(data);
-    }
-
-    /* ********************************************************************************************************* */
-    /* ****************************************** GAME ********************************************************* */
-    /* ********************************************************************************************************* */
-
-    public static void showGames(HttpSession session, AdminData data, int selectedGameRecordNr) {
-        StringBuffer s = new StringBuffer();
-        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
-
-        s.append(AdminTable.startTable());
-        for (GameRecord game : gameRecords) {
-            TableRow tableRow = new TableRow(game.getId(), selectedGameRecordNr, game.getName(), "showReviewRounds");
-            tableRow.addButton("Rounds", "showReviewRounds");
-            s.append(tableRow.process());
-        }
-        s.append(AdminTable.endTable());
-
-        data.getColumn(0).setSelectedRecordNr(selectedGameRecordNr);
-        data.getColumn(0).setContent(s.toString());
     }
 
     /* ********************************************************************************************************* */
@@ -307,7 +299,8 @@ public class MaintainReview {
                         .setRequired()
                         .setLabel("Carrier")
                         .setInitialValue(review.getCarrierId() == null ? 0 : review.getCarrierId())
-                        .setPickTable(data, Tables.CARRIER, Tables.CARRIER.ID, Tables.CARRIER.NAME))
+                        .setPickTable(data, Tables.CARRIER, Tables.CARRIER.ID, Tables.CARRIER.NAME,
+                                Tables.CARRIER.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())))
                 .addEntry(new FormEntryDouble(Tables.REVIEW.STARS)
                         .setRequired()
                         .setLabel("Number of stars")
@@ -395,7 +388,8 @@ public class MaintainReview {
                         .setInitialValue(carrierReview.getCarrierId() == null ? 0 : carrierReview.getCarrierId())
                         .setLabel("Carrier")
                         .setRequired()
-                        .setPickTable(data, Tables.CARRIER, Tables.CARRIER.ID, Tables.CARRIER.NAME))
+                        .setPickTable(data, Tables.CARRIER, Tables.CARRIER.ID, Tables.CARRIER.NAME,
+                                Tables.CARRIER.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())))
                 .addEntry(new FormEntryDouble(Tables.CARRIERREVIEW.OVERALLSTARS)
                         .setRequired()
                         .setLabel("Overall nr stars")

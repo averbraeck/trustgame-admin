@@ -158,7 +158,7 @@ public class MaintainLogging {
         s.append(AdminTable.startTable());
         for (GameuserRecord gameUser : gameUserRecords) {
             UserRecord user = SqlUtils.readUserFromUserId(data, gameUser.getUserId());
-            TableRow tableRow = new TableRow(gameUser.getId(), selectedGameuserRecordNr, user.getName(),
+            TableRow tableRow = new TableRow(gameUser.getId(), selectedGameuserRecordNr, user.getUsername(),
                     "loggingGameUserLogs");
             tableRow.addButton("csv", "csvGameUserLogs");
             tableRow.addButton("tsv", "tsvGameUserLogs");
@@ -211,7 +211,7 @@ public class MaintainLogging {
         s.append("  </table>\n");
         s.append("</div>\n"); // tg-logging
 
-        data.getColumn(3).setHeader("Log records for " + user.getName());
+        data.getColumn(3).setHeader("Log records for " + user.getUsername());
         data.getColumn(3).setContent(s.toString());
     }
 
@@ -219,6 +219,7 @@ public class MaintainLogging {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         GameuserRecord gameUser = dslContext.selectFrom(Tables.GAMEUSER).where(Tables.GAMEUSER.ID.eq(gameUserId))
                 .fetchAny();
+        UserRecord user = dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(gameUser.getUserId())).fetchAny();
         GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY)
                 .where(Tables.GAMEPLAY.ID.eq(data.getColumn(1).getSelectedRecordNr())).fetchAny();
         List<UserclickRecord> userClicks = dslContext.selectFrom(Tables.USERCLICK)
@@ -229,7 +230,7 @@ public class MaintainLogging {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
                 bw.write(csvHeader(tab));
                 for (UserclickRecord userClick : userClicks) {
-                    bw.write(csvLine(gamePlay, userClick, tab));
+                    bw.write(csvLine(gamePlay, userClick, user, tab));
                 }
             } catch (IOException exception) {
                 ModalWindowUtils.popup(data, "Error writing to temporary file", "<p>" + exception.getMessage() + "</p>",
@@ -262,18 +263,21 @@ public class MaintainLogging {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameuserRecord> gameUserRecords = dslContext.selectFrom(Tables.GAMEUSER)
                 .where(Tables.GAMEUSER.GAMEPLAY_ID.eq(gamePlayId)).fetch();
-        GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY)
-                .where(Tables.GAMEPLAY.ID.eq(gamePlayId)).fetchAny();
+        GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY).where(Tables.GAMEPLAY.ID.eq(gamePlayId))
+                .fetchAny();
         try {
             File tempFile = File.createTempFile("trustgame-", tab ? ".xls" : ".csv");
             tempFile.deleteOnExit();
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
                 bw.write(csvHeader(tab));
                 for (GameuserRecord gameUser : gameUserRecords) {
+                    UserRecord user = dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(gameUser.getUserId()))
+                            .fetchAny();
                     List<UserclickRecord> userClicks = dslContext.selectFrom(Tables.USERCLICK)
-                            .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetch().sortAsc(Tables.USERCLICK.TIMESTAMP);
+                            .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetch()
+                            .sortAsc(Tables.USERCLICK.TIMESTAMP);
                     for (UserclickRecord userClick : userClicks) {
-                        bw.write(csvLine(gamePlay, userClick, tab));
+                        bw.write(csvLine(gamePlay, userClick, user, tab));
                     }
                 }
             } catch (IOException exception) {
@@ -305,12 +309,16 @@ public class MaintainLogging {
 
     public static String csvHeader(boolean tab) {
         StringBuffer s = new StringBuffer();
-        String sep = tab ? "\t" : ","; 
+        String sep = tab ? "\t" : ",";
         s.append("gameNr");
         s.append(sep);
         s.append("gamePlayNr");
         s.append(sep);
         s.append("gameUserNr");
+        s.append(sep);
+        s.append("userCode");
+        s.append(sep);
+        s.append("userName");
         s.append(sep);
         s.append("time");
         s.append(sep);
@@ -331,14 +339,18 @@ public class MaintainLogging {
 
     private static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
-    public static String csvLine(GameplayRecord gamePlay, UserclickRecord userClick, boolean tab) {
+    public static String csvLine(GameplayRecord gamePlay, UserclickRecord userClick, UserRecord user, boolean tab) {
         StringBuffer s = new StringBuffer();
-        String sep = tab ? "\t" : ","; 
+        String sep = tab ? "\t" : ",";
         s.append(gamePlay.getGameId());
         s.append(sep);
         s.append(gamePlay.getId());
         s.append(sep);
         s.append(userClick.getGameuserId());
+        s.append(sep);
+        s.append(user.getUsercode());
+        s.append(sep);
+        s.append(user.getUsername());
         s.append(sep);
         s.append(csvString(userClick.getTimestamp().format(DATE_TIME_FORMATTER)));
         s.append(sep);

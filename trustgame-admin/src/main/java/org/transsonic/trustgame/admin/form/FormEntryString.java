@@ -45,6 +45,8 @@ public class FormEntryString extends AbstractFormEntry<FormEntryString, String> 
         s.append("    <tr>\n");
         s.append("      <td width=\"25%\">");
         s.append(getLabel());
+        if (isRequired())
+            s.append(" *");
         s.append("      </td>");
         s.append("      <td width=\"75%\">");
         s.append("<input type=\"text\" style=\"width:97%;\" maxlength=\"");

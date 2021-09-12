@@ -10,10 +10,9 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
-import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row7;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -22,7 +21,6 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
-import org.transsonic.trustgame.data.trustgame.Indexes;
 import org.transsonic.trustgame.data.trustgame.Keys;
 import org.transsonic.trustgame.data.trustgame.Trustgame;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
@@ -55,14 +53,19 @@ public class Game extends TableImpl<GameRecord> {
     public final TableField<GameRecord, Integer> ID = createField(DSL.name("ID"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
+     * The column <code>trustgame.game.Code</code>.
+     */
+    public final TableField<GameRecord, String> CODE = createField(DSL.name("Code"), SQLDataType.VARCHAR(24).nullable(false), this, "");
+
+    /**
      * The column <code>trustgame.game.Name</code>.
      */
     public final TableField<GameRecord, String> NAME = createField(DSL.name("Name"), SQLDataType.VARCHAR(45).nullable(false), this, "");
 
     /**
-     * The column <code>trustgame.game.Mission_ID</code>.
+     * The column <code>trustgame.game.Description</code>.
      */
-    public final TableField<GameRecord, Integer> MISSION_ID = createField(DSL.name("Mission_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<GameRecord, String> DESCRIPTION = createField(DSL.name("Description"), SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>trustgame.game.TextFinishDay</code>.
@@ -78,16 +81,6 @@ public class Game extends TableImpl<GameRecord> {
      * The column <code>trustgame.game.TextAllReviews</code>.
      */
     public final TableField<GameRecord, String> TEXTALLREVIEWS = createField(DSL.name("TextAllReviews"), SQLDataType.CLOB.nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.game.Version</code>.
-     */
-    public final TableField<GameRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.game.Vname</code>.
-     */
-    public final TableField<GameRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
 
     private Game(Name alias, Table<GameRecord> aliased) {
         this(alias, aliased, null);
@@ -128,11 +121,6 @@ public class Game extends TableImpl<GameRecord> {
     }
 
     @Override
-    public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.GAME_FK_GAME_MISSION1_IDX);
-    }
-
-    @Override
     public Identity<GameRecord, Integer> getIdentity() {
         return (Identity<GameRecord, Integer>) super.getIdentity();
     }
@@ -144,21 +132,7 @@ public class Game extends TableImpl<GameRecord> {
 
     @Override
     public List<UniqueKey<GameRecord>> getKeys() {
-        return Arrays.<UniqueKey<GameRecord>>asList(Keys.KEY_GAME_PRIMARY, Keys.KEY_GAME_IDGAME_UNIQUE, Keys.KEY_GAME_VERSION_UNIQUE, Keys.KEY_GAME_VNAME_UNIQUE);
-    }
-
-    @Override
-    public List<ForeignKey<GameRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<GameRecord, ?>>asList(Keys.FK_GAME_MISSION1);
-    }
-
-    private transient Mission _mission;
-
-    public Mission mission() {
-        if (_mission == null)
-            _mission = new Mission(this, Keys.FK_GAME_MISSION1);
-
-        return _mission;
+        return Arrays.<UniqueKey<GameRecord>>asList(Keys.KEY_GAME_PRIMARY, Keys.KEY_GAME_IDGAME_UNIQUE, Keys.KEY_GAME_CODE_UNIQUE);
     }
 
     @Override
@@ -188,11 +162,11 @@ public class Game extends TableImpl<GameRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row7 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Integer, String, Integer, String, String, String, String, String> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row7<Integer, String, String, String, String, String, String> fieldsRow() {
+        return (Row7) super.fieldsRow();
     }
 }

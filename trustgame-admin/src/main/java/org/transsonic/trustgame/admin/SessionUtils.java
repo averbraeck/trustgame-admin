@@ -1,11 +1,18 @@
 package org.transsonic.trustgame.admin;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.transsonic.trustgame.data.trustgame.Tables;
+import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 
 public final class SessionUtils {
 
@@ -31,6 +38,25 @@ public final class SessionUtils {
             return false;
         }
         return true;
+    }
+
+    public static void showGames(HttpSession session, AdminData data, int selectedGameRecordNr, String showText,
+            String showMethod) {
+        StringBuffer s = new StringBuffer();
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
+
+        s.append(AdminTable.startTable());
+        for (GameRecord game : gameRecords) {
+            TableRow tableRow = new TableRow(game.getId(), selectedGameRecordNr,
+                    game.getCode() + " : " + game.getName(), showMethod);
+            tableRow.addButton(showText, showMethod);
+            s.append(tableRow.process());
+        }
+        s.append(AdminTable.endTable());
+
+        data.getColumn(0).setSelectedRecordNr(selectedGameRecordNr);
+        data.getColumn(0).setContent(s.toString());
     }
 
 }

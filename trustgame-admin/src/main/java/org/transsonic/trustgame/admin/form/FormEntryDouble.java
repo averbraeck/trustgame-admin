@@ -76,6 +76,8 @@ public class FormEntryDouble extends AbstractFormEntry<FormEntryDouble, Double> 
         s.append("    <tr>\n");
         s.append("      <td width=\"25%\">");
         s.append(getLabel());
+        if (isRequired())
+            s.append(" *");
         s.append("      </td>");
         s.append("      <td width=\"75%\">");
         s.append("<input type=\"number\" min=\"");

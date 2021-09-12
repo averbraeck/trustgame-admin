@@ -10,9 +10,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row14;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -21,6 +22,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.transsonic.trustgame.data.trustgame.Indexes;
 import org.transsonic.trustgame.data.trustgame.Keys;
 import org.transsonic.trustgame.data.trustgame.Trustgame;
 import org.transsonic.trustgame.data.trustgame.tables.records.MissionRecord;
@@ -51,6 +53,11 @@ public class Mission extends TableImpl<MissionRecord> {
      * The column <code>trustgame.mission.ID</code>.
      */
     public final TableField<MissionRecord, Integer> ID = createField(DSL.name("ID"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
+    /**
+     * The column <code>trustgame.mission.Game_ID</code>.
+     */
+    public final TableField<MissionRecord, Integer> GAME_ID = createField(DSL.name("Game_ID"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>trustgame.mission.Name</code>.
@@ -107,16 +114,6 @@ public class Mission extends TableImpl<MissionRecord> {
      */
     public final TableField<MissionRecord, Integer> MAXSUSTAINABILITY = createField(DSL.name("MaxSustainability"), SQLDataType.INTEGER.nullable(false), this, "Top of the score chart");
 
-    /**
-     * The column <code>trustgame.mission.Version</code>.
-     */
-    public final TableField<MissionRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.mission.Vname</code>.
-     */
-    public final TableField<MissionRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
-
     private Mission(Name alias, Table<MissionRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -156,6 +153,11 @@ public class Mission extends TableImpl<MissionRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.MISSION_FK_MISSION_GAME1_IDX);
+    }
+
+    @Override
     public Identity<MissionRecord, Integer> getIdentity() {
         return (Identity<MissionRecord, Integer>) super.getIdentity();
     }
@@ -167,7 +169,21 @@ public class Mission extends TableImpl<MissionRecord> {
 
     @Override
     public List<UniqueKey<MissionRecord>> getKeys() {
-        return Arrays.<UniqueKey<MissionRecord>>asList(Keys.KEY_MISSION_PRIMARY, Keys.KEY_MISSION_ID_UNIQUE, Keys.KEY_MISSION_VERSION_UNIQUE, Keys.KEY_MISSION_VNAME_UNIQUE);
+        return Arrays.<UniqueKey<MissionRecord>>asList(Keys.KEY_MISSION_PRIMARY, Keys.KEY_MISSION_ID_UNIQUE, Keys.KEY_MISSION_GAME_ID_UNIQUE);
+    }
+
+    @Override
+    public List<ForeignKey<MissionRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<MissionRecord, ?>>asList(Keys.FK_MISSION_GAME1);
+    }
+
+    private transient Game _game;
+
+    public Game game() {
+        if (_game == null)
+            _game = new Game(this, Keys.FK_MISSION_GAME1);
+
+        return _game;
     }
 
     @Override
@@ -197,11 +213,11 @@ public class Mission extends TableImpl<MissionRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row14 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row14<Integer, String, String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, String, String> fieldsRow() {
-        return (Row14) super.fieldsRow();
+    public Row13<Integer, Integer, String, String, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

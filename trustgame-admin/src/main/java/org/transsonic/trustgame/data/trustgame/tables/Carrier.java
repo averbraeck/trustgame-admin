@@ -10,9 +10,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row17;
+import org.jooq.Row16;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -21,6 +22,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.transsonic.trustgame.data.trustgame.Indexes;
 import org.transsonic.trustgame.data.trustgame.Keys;
 import org.transsonic.trustgame.data.trustgame.Trustgame;
 import org.transsonic.trustgame.data.trustgame.enums.CarrierService;
@@ -53,6 +55,11 @@ public class Carrier extends TableImpl<CarrierRecord> {
      * The column <code>trustgame.carrier.ID</code>.
      */
     public final TableField<CarrierRecord, Integer> ID = createField(DSL.name("ID"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
+
+    /**
+     * The column <code>trustgame.carrier.Game_ID</code>.
+     */
+    public final TableField<CarrierRecord, Integer> GAME_ID = createField(DSL.name("Game_ID"), SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>trustgame.carrier.Name</code>.
@@ -124,16 +131,6 @@ public class Carrier extends TableImpl<CarrierRecord> {
      */
     public final TableField<CarrierRecord, byte[]> CARRIERWEBIMAGE = createField(DSL.name("CarrierWebImage"), SQLDataType.BLOB.defaultValue(DSL.field("NULL", SQLDataType.BLOB)), this, "");
 
-    /**
-     * The column <code>trustgame.carrier.Version</code>.
-     */
-    public final TableField<CarrierRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.carrier.Vname</code>.
-     */
-    public final TableField<CarrierRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
-
     private Carrier(Name alias, Table<CarrierRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -173,6 +170,11 @@ public class Carrier extends TableImpl<CarrierRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.CARRIER_FK_CARRIER_GAME1_IDX);
+    }
+
+    @Override
     public Identity<CarrierRecord, Integer> getIdentity() {
         return (Identity<CarrierRecord, Integer>) super.getIdentity();
     }
@@ -184,7 +186,21 @@ public class Carrier extends TableImpl<CarrierRecord> {
 
     @Override
     public List<UniqueKey<CarrierRecord>> getKeys() {
-        return Arrays.<UniqueKey<CarrierRecord>>asList(Keys.KEY_CARRIER_PRIMARY, Keys.KEY_CARRIER_ID_UNIQUE, Keys.KEY_CARRIER_VNAME_UNIQUE);
+        return Arrays.<UniqueKey<CarrierRecord>>asList(Keys.KEY_CARRIER_PRIMARY, Keys.KEY_CARRIER_ID_UNIQUE);
+    }
+
+    @Override
+    public List<ForeignKey<CarrierRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<CarrierRecord, ?>>asList(Keys.FK_CARRIER_GAME1);
+    }
+
+    private transient Game _game;
+
+    public Game game() {
+        if (_game == null)
+            _game = new Game(this, Keys.FK_CARRIER_GAME1);
+
+        return _game;
     }
 
     @Override
@@ -214,11 +230,11 @@ public class Carrier extends TableImpl<CarrierRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row17 type methods
+    // Row16 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row17<Integer, String, String, byte[], CarrierService, CarrierSustainability, String, String, String, String, String, String, byte[], String, byte[], String, String> fieldsRow() {
-        return (Row17) super.fieldsRow();
+    public Row16<Integer, Integer, String, String, byte[], CarrierService, CarrierSustainability, String, String, String, String, String, String, byte[], String, byte[]> fieldsRow() {
+        return (Row16) super.fieldsRow();
     }
 }

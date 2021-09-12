@@ -87,6 +87,8 @@ public class FormEntryInt extends AbstractFormEntry<FormEntryInt, Integer> {
         s.append("    <tr>\n");
         s.append("      <td width=\"25%\">");
         s.append(getLabel());
+        if (isRequired())
+            s.append(" *");
         s.append("      </td>");
         s.append("      <td width=\"75%\">");
         s.append("<input type=\"number\" min=\"");

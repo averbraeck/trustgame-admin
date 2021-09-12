@@ -25,25 +25,38 @@ public class MaintainMission {
         switch (click) {
 
         case "mission": {
-            data.clearColumns("40%", "Mission");
-            data.clearFormColumn("60%", "Edit Properties");
-            showMissions(session, data, true, 0);
+            data.clearColumns("25%", "Game", "25%", "Mission");
+            data.clearFormColumn("50%", "Edit Properties");
+            SessionUtils.showGames(session, data, 0, "Mission", "showMission");
+            break;
+        }
+
+        case "showMission": {
+            SessionUtils.showGames(session, data, recordNr, "Mission", "showMission");
+            if (recordNr == 0)
+                data.resetColumn(1);
+            else
+                showMissions(session, data, true, 0);
+            data.resetFormColumn();
             break;
         }
 
         case "editMission": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Mission", "showMission");
             showMissions(session, data, true, recordNr);
             editMission(session, data, recordNr, true);
             break;
         }
 
         case "viewMission": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Mission", "showMission");
             showMissions(session, data, true, recordNr);
             editMission(session, data, recordNr, false);
             break;
         }
 
         case "saveMission": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Mission", "showMission");
             recordNr = saveMission(request, data, recordNr);
             showMissions(session, data, true, 0);
             data.resetFormColumn();
@@ -51,31 +64,34 @@ public class MaintainMission {
         }
 
         case "deleteMission": {
-            MissionRecord mission = SqlUtils.readPlayerMissionFromId(data, recordNr);
+            MissionRecord mission = SqlUtils.readMissionFromMissionId(data, recordNr);
             ModalWindowUtils.make2ButtonModalWindow(data, "Delete Mission",
                     "<p>Delete mission " + mission.getName() + "?</p>", "DELETE",
                     "clickRecordId('deleteMissionOk', " + recordNr + ")", "Cancel", "clickMenu('mission')",
                     "clickMenu('mission')");
             data.setShowModalWindow(1);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Mission", "showMission");
             showMissions(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
         case "deleteMissionOk": {
-            MissionRecord mission = SqlUtils.readPlayerMissionFromId(data, recordNr);
+            MissionRecord mission = SqlUtils.readMissionFromMissionId(data, recordNr);
             try {
                 mission.delete();
             } catch (Exception exception) {
                 ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('mission')");
             }
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Mission", "showMission");
             showMissions(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
         case "newMission": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Mission", "showMission");
             showMissions(session, data, true, 0);
             editMission(session, data, 0, true);
             break;
@@ -88,34 +104,36 @@ public class MaintainMission {
         AdminServlet.makeColumnContent(data);
     }
 
+    /* ********************************************************************************************************* */
+    /* ****************************************** MISSION ****************************************************** */
+    /* ********************************************************************************************************* */
+
     public static void showMissions(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<MissionRecord> missionRecords = dslContext.selectFrom(Tables.MISSION)
-                .fetch();
+                .where(Tables.MISSION.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
 
         s.append(AdminTable.startTable());
         for (MissionRecord mission : missionRecords) {
-            TableRow tableRow = new TableRow(mission.getId(), selectedRecordNr, mission.getName(),
-                    "viewMission");
+            TableRow tableRow = new TableRow(mission.getId(), selectedRecordNr, mission.getName(), "viewMission");
             if (editButton)
                 tableRow.addButton("Edit", "editMission");
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
 
-        if (editButton)
+        if (editButton && missionRecords.size() == 0)
             s.append(AdminTable.finalButton("New Mission", "newMission"));
 
-        data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
-        data.getColumn(0).setContent(s.toString());
+        data.getColumn(1).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(1).setContent(s.toString());
     }
 
     public static void editMission(HttpSession session, AdminData data, int missionId, boolean edit) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         MissionRecord mission = missionId == 0 ? dslContext.newRecord(Tables.MISSION)
-                : dslContext.selectFrom(Tables.MISSION)
-                        .where(Tables.MISSION.ID.eq(missionId)).fetchOne();
+                : dslContext.selectFrom(Tables.MISSION).where(Tables.MISSION.ID.eq(missionId)).fetchOne();
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)
@@ -187,9 +205,9 @@ public class MaintainMission {
     public static int saveMission(HttpServletRequest request, AdminData data, int missionId) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         MissionRecord mission = missionId == 0 ? dslContext.newRecord(Tables.MISSION)
-                : dslContext.selectFrom(Tables.MISSION)
-                        .where(Tables.MISSION.ID.eq(missionId)).fetchOne();
+                : dslContext.selectFrom(Tables.MISSION).where(Tables.MISSION.ID.eq(missionId)).fetchOne();
         String errors = data.getFormColumn().getForm().setFields(mission, request, data);
+        mission.setGameId(data.getColumn(0).getSelectedRecordNr());
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('mission')");
             return -1;

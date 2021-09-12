@@ -10,9 +10,10 @@ import java.util.List;
 import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Identity;
+import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row6;
+import org.jooq.Row5;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -21,6 +22,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import org.transsonic.trustgame.data.trustgame.Indexes;
 import org.transsonic.trustgame.data.trustgame.Keys;
 import org.transsonic.trustgame.data.trustgame.Trustgame;
 import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
@@ -53,6 +55,11 @@ public class Client extends TableImpl<ClientRecord> {
     public final TableField<ClientRecord, Integer> ID = createField(DSL.name("ID"), SQLDataType.INTEGER.nullable(false).identity(true), this, "");
 
     /**
+     * The column <code>trustgame.client.Game_ID</code>.
+     */
+    public final TableField<ClientRecord, Integer> GAME_ID = createField(DSL.name("Game_ID"), SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
      * The column <code>trustgame.client.Name</code>.
      */
     public final TableField<ClientRecord, String> NAME = createField(DSL.name("Name"), SQLDataType.VARCHAR(45).nullable(false), this, "");
@@ -66,16 +73,6 @@ public class Client extends TableImpl<ClientRecord> {
      * The column <code>trustgame.client.Type</code>.
      */
     public final TableField<ClientRecord, String> TYPE = createField(DSL.name("Type"), SQLDataType.CLOB.nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.client.Version</code>.
-     */
-    public final TableField<ClientRecord, String> VERSION = createField(DSL.name("Version"), SQLDataType.VARCHAR(8).nullable(false), this, "");
-
-    /**
-     * The column <code>trustgame.client.Vname</code>.
-     */
-    public final TableField<ClientRecord, String> VNAME = createField(DSL.name("Vname"), SQLDataType.VARCHAR(55).nullable(false), this, "");
 
     private Client(Name alias, Table<ClientRecord> aliased) {
         this(alias, aliased, null);
@@ -116,6 +113,11 @@ public class Client extends TableImpl<ClientRecord> {
     }
 
     @Override
+    public List<Index> getIndexes() {
+        return Arrays.<Index>asList(Indexes.CLIENT_FK_CLIENT_GAME1_IDX);
+    }
+
+    @Override
     public Identity<ClientRecord, Integer> getIdentity() {
         return (Identity<ClientRecord, Integer>) super.getIdentity();
     }
@@ -127,7 +129,21 @@ public class Client extends TableImpl<ClientRecord> {
 
     @Override
     public List<UniqueKey<ClientRecord>> getKeys() {
-        return Arrays.<UniqueKey<ClientRecord>>asList(Keys.KEY_CLIENT_PRIMARY, Keys.KEY_CLIENT_ID_UNIQUE, Keys.KEY_CLIENT_VNAME_UNIQUE);
+        return Arrays.<UniqueKey<ClientRecord>>asList(Keys.KEY_CLIENT_PRIMARY, Keys.KEY_CLIENT_ID_UNIQUE);
+    }
+
+    @Override
+    public List<ForeignKey<ClientRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<ClientRecord, ?>>asList(Keys.FK_CLIENT_GAME1);
+    }
+
+    private transient Game _game;
+
+    public Game game() {
+        if (_game == null)
+            _game = new Game(this, Keys.FK_CLIENT_GAME1);
+
+        return _game;
     }
 
     @Override
@@ -157,11 +173,11 @@ public class Client extends TableImpl<ClientRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row6 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row6<Integer, String, byte[], String, String, String> fieldsRow() {
-        return (Row6) super.fieldsRow();
+    public Row5<Integer, Integer, String, byte[], String> fieldsRow() {
+        return (Row5) super.fieldsRow();
     }
 }

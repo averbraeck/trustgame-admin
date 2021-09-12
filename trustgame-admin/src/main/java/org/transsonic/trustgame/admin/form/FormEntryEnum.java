@@ -42,6 +42,8 @@ public class FormEntryEnum<T extends EnumType> extends AbstractFormEntry<FormEnt
         s.append("    <tr>\n");
         s.append("      <td width=\"25%\">");
         s.append(getLabel());
+        if (isRequired())
+            s.append(" *");
         s.append("      </td>");
         s.append("      <td width=\"75%\">\n");
         s.append("        <select ");

@@ -67,6 +67,7 @@ public class AdminServlet extends HttpServlet {
             break;
 
         case "carrier":
+        case "showCarrier":
         case "viewCarrier":
         case "editCarrier":
         case "saveCarrier":
@@ -78,6 +79,7 @@ public class AdminServlet extends HttpServlet {
             break;
 
         case "fbreport":
+        case "showFBReport":
         case "viewFBReport":
         case "editFBReport":
         case "saveFBReport":
@@ -89,6 +91,7 @@ public class AdminServlet extends HttpServlet {
             break;
 
         case "client":
+        case "showClient":
         case "viewClient":
         case "editClient":
         case "saveClient":
@@ -100,6 +103,7 @@ public class AdminServlet extends HttpServlet {
             break;
 
         case "mission":
+        case "showMission":
         case "viewMission":
         case "editMission":
         case "saveMission":
@@ -118,7 +122,6 @@ public class AdminServlet extends HttpServlet {
         case "deleteGameOk":
         case "newGame":
         case "cloneGame":
-        case "cloneAll":
         case "showRounds":
         case "viewRound":
         case "editRound":

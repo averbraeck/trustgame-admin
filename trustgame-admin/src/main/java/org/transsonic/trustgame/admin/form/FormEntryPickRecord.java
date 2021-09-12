@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.SQLDialect;
@@ -42,12 +43,24 @@ public class FormEntryPickRecord extends AbstractFormEntry<FormEntryPickRecord, 
         return this;
     }
 
+    public FormEntryPickRecord setPickTable(AdminData data, Table<?> table, TableField<?, Integer> id, TableField<?, String> name,
+            Condition condition) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        List<? extends Record> tableRecords = dslContext.selectFrom(table).where(condition).fetch();
+        for (Record record : tableRecords) {
+            this.records.put(record.get(name), record.get(id));
+        }
+        return this;
+    }
+
     @Override
     public String makeHtml() {
         StringBuilder s = new StringBuilder();
         s.append("    <tr>\n");
         s.append("      <td width=\"25%\">");
         s.append(getLabel());
+        if (isRequired())
+            s.append(" *");
         s.append("      </td>");
         s.append("      <td width=\"75%\">\n");
         s.append("        <select ");

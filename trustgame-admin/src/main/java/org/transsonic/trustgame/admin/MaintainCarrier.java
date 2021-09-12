@@ -28,19 +28,31 @@ public class MaintainCarrier {
         switch (click) {
 
         case "carrier": {
-            data.clearColumns("40%", "Carrier");
-            data.clearFormColumn("60%", "Edit Properties");
-            showCarriers(session, data, true, 0);
+            data.clearColumns("25%", "Game", "25%", "Carrier");
+            data.clearFormColumn("50%", "Edit Properties");
+            SessionUtils.showGames(session, data, 0, "Carrier", "showCarrier");
+            break;
+        }
+
+        case "showCarrier": {
+            SessionUtils.showGames(session, data, recordNr, "Carrier", "showCarrier");
+            if (recordNr == 0)
+                data.resetColumn(1);
+            else
+                showCarriers(session, data, true, 0);
+            data.resetFormColumn();
             break;
         }
 
         case "editCarrier": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Carrier", "showCarrier");
             showCarriers(session, data, true, recordNr);
             editCarrier(session, data, recordNr, true);
             break;
         }
 
         case "viewCarrier": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Carrier", "showCarrier");
             showCarriers(session, data, true, recordNr);
             editCarrier(session, data, recordNr, false);
             break;
@@ -48,6 +60,7 @@ public class MaintainCarrier {
 
         case "saveCarrier": {
             recordNr = saveCarrier(request, data, recordNr);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Carrier", "showCarrier");
             showCarriers(session, data, true, 0);
             data.resetFormColumn();
             break;
@@ -60,6 +73,7 @@ public class MaintainCarrier {
                     "clickRecordId('deleteCarrierOk', " + recordNr + ")", "Cancel", "clickMenu('carrier')",
                     "clickMenu('carrier')");
             data.setShowModalWindow(1);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Carrier", "showCarrier");
             showCarriers(session, data, true, 0);
             data.resetFormColumn();
             break;
@@ -73,12 +87,14 @@ public class MaintainCarrier {
                 ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('carrier')");
             }
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Carrier", "showCarrier");
             showCarriers(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
         case "newCarrier": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "Carrier", "showCarrier");
             showCarriers(session, data, true, 0);
             editCarrier(session, data, 0, true);
             break;
@@ -91,10 +107,15 @@ public class MaintainCarrier {
         AdminServlet.makeColumnContent(data);
     }
 
+    /* ********************************************************************************************************* */
+    /* ******************************************* CLIENT ****************************************************** */
+    /* ********************************************************************************************************* */
+
     public static void showCarriers(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        List<CarrierRecord> carrierRecords = dslContext.selectFrom(Tables.CARRIER).fetch();
+        List<CarrierRecord> carrierRecords = dslContext.selectFrom(Tables.CARRIER)
+                .where(Tables.CARRIER.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
 
         s.append(AdminTable.startTable());
         for (CarrierRecord carrier : carrierRecords) {
@@ -104,12 +125,12 @@ public class MaintainCarrier {
             s.append(tableRow.process());
         }
         s.append(AdminTable.endTable());
-        
+
         if (editButton)
             s.append(AdminTable.finalButton("New Carrier", "newCarrier"));
 
-        data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
-        data.getColumn(0).setContent(s.toString());
+        data.getColumn(1).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(1).setContent(s.toString());
     }
 
     public static void editCarrier(HttpSession session, AdminData data, int carrierId, boolean edit) {
@@ -203,6 +224,7 @@ public class MaintainCarrier {
         CarrierRecord carrier = carrierId == 0 ? dslContext.newRecord(Tables.CARRIER)
                 : dslContext.selectFrom(Tables.CARRIER).where(Tables.CARRIER.ID.eq(carrierId)).fetchOne();
         String errors = data.getFormColumn().getForm().setFields(carrier, request, data);
+        carrier.setGameId(data.getColumn(0).getSelectedRecordNr());
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('carrier')");
             return -1;

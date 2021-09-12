@@ -183,7 +183,7 @@ public class MaintainResult {
             s.append("',");
             s.append(gameUser.getId());
             s.append("); return false;\">");
-            s.append(user.getName());
+            s.append(user.getUsername());
             s.append("</a></span>\n"); // tg-admin-line-field
             s.append("                </span>\n"); // tg-admin-line
             s.append("</td>\n");
@@ -222,8 +222,8 @@ public class MaintainResult {
         GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY)
                 .where(Tables.GAMEPLAY.ID.eq(gameUser.getGameplayId())).fetchAny();
         GameRecord game = SqlUtils.readGameFromGameId(data, gamePlay.getGameId());
-        MissionRecord mission = dslContext.selectFrom(Tables.MISSION)
-                .where(Tables.MISSION.ID.eq(game.getMissionId())).fetchAny();
+        MissionRecord mission = dslContext.selectFrom(Tables.MISSION).where(Tables.MISSION.GAME_ID.eq(game.getId()))
+                .fetchAny();
         List<UsercarrierRecord> userCarriers = dslContext.selectFrom(Tables.USERCARRIER)
                 .where(Tables.USERCARRIER.GAMEUSER_ID.eq(gameUser.getId())).fetch(); // bought reports
 
@@ -351,7 +351,7 @@ public class MaintainResult {
         s.append("  </table>\n");
         s.append("</div>\n"); // tg-detail-score
 
-        data.getColumn(3).setHeader("Detailed Scores for " + user.getName());
+        data.getColumn(3).setHeader("Detailed Scores for " + user.getUsername());
         data.getColumn(3).setContent(s.toString());
     }
 
@@ -381,8 +381,8 @@ public class MaintainResult {
         GameplayRecord gamePlay = dslContext.selectFrom(Tables.GAMEPLAY).where(Tables.GAMEPLAY.ID.eq(gamePlayId))
                 .fetchAny();
         GameRecord game = SqlUtils.readGameFromGameId(data, gamePlay.getGameId());
-        MissionRecord mission = dslContext.selectFrom(Tables.MISSION)
-                .where(Tables.MISSION.ID.eq(game.getMissionId())).fetchAny();
+        MissionRecord mission = dslContext.selectFrom(Tables.MISSION).where(Tables.MISSION.GAME_ID.eq(game.getId()))
+                .fetchAny();
 
         // rounds
         List<RoundRecord> roundRecords = dslContext.selectFrom(Tables.ROUND)
@@ -415,8 +415,8 @@ public class MaintainResult {
                     // highest rounds number for user
                     int highestRoundNumber = gameUser.getRoundnumber().intValue();
 
-                    bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed, "Start", false, "", "",
-                            mission.getStartprofit(), mission.getStartsatisfaction(),
+                    bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(), user.getUsername(), hasPlayed,
+                            "Start", false, "", "", mission.getStartprofit(), mission.getStartsatisfaction(),
                             mission.getStartsustainability()));
 
                     for (int round = 1; round < highestRoundNumber; round++) {
@@ -431,8 +431,8 @@ public class MaintainResult {
                             if (userCarrier.getRoundnumber() == round) {
                                 CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
                                         .where(Tables.CARRIER.ID.eq(userCarrier.getCarrierId())).fetchAny();
-                                bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed,
-                                        Integer.toString(round), true, "", carrier.getName(), -5, 0, 0));
+                                bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(), user.getUsername(),
+                                        hasPlayed, Integer.toString(round), true, "", carrier.getName(), -5, 0, 0));
                             }
                         }
 
@@ -457,16 +457,16 @@ public class MaintainResult {
 
                             int profit = order.getTransportearnings() - orderCarrier.getQuoteoffer()
                                     + orderCarrier.getExtraprofit();
-                            bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed,
-                                    Integer.toString(round), false, Integer.toString(order.getOrdernumber().intValue()),
-                                    carrier.getName(), profit, orderCarrier.getOutcomesatisfaction(),
-                                    orderCarrier.getOutcomesustainability()));
+                            bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(), user.getUsername(),
+                                    hasPlayed, Integer.toString(round), false,
+                                    Integer.toString(order.getOrdernumber().intValue()), carrier.getName(), profit,
+                                    orderCarrier.getOutcomesatisfaction(), orderCarrier.getOutcomesustainability()));
 
                         }
                     }
 
-                    bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getName(), hasPlayed, "Total", false, "", "",
-                            gameUser.getScoreprofit(), gameUser.getScoresatisfaction(),
+                    bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(), user.getUsername(), hasPlayed,
+                            "Total", false, "", "", gameUser.getScoreprofit(), gameUser.getScoresatisfaction(),
                             gameUser.getScoresustainability()));
                 }
             } catch (IOException exception) {
@@ -505,6 +505,8 @@ public class MaintainResult {
         s.append(sep);
         s.append("gameUserNr");
         s.append(sep);
+        s.append("userCode");
+        s.append(sep);
         s.append("userName");
         s.append(sep);
         s.append("played");
@@ -526,9 +528,9 @@ public class MaintainResult {
         return s.toString();
     }
 
-    private static String csvLine(boolean tab, GameplayRecord gamePlay, int gameUserNr, String userName, boolean played,
-            String roundNr, boolean boughtReport, String orderNr, String carrierName, int profit, int satisfaction,
-            int sustainability) {
+    private static String csvLine(boolean tab, GameplayRecord gamePlay, int gameUserNr, String userCode,
+            String userName, boolean played, String roundNr, boolean boughtReport, String orderNr, String carrierName,
+            int profit, int satisfaction, int sustainability) {
         StringBuffer s = new StringBuffer();
         String sep = tab ? "\t" : ",";
         s.append(gamePlay.getGameId());
@@ -536,6 +538,8 @@ public class MaintainResult {
         s.append(gamePlay.getId());
         s.append(sep);
         s.append(gameUserNr);
+        s.append(sep);
+        s.append(csvString(userCode));
         s.append(sep);
         s.append(csvString(userName));
         s.append(sep);

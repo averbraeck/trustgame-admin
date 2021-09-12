@@ -1,6 +1,8 @@
 package org.transsonic.trustgame.admin;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -27,19 +29,31 @@ public class MaintainFBReport {
         switch (click) {
 
         case "fbreport": {
-            data.clearColumns("40%", "FBReport");
-            data.clearFormColumn("60%", "Edit Properties");
-            showFBReports(session, data, true, 0);
+            data.clearColumns("25%", "Game", "25%", "FBReport");
+            data.clearFormColumn("50%", "Edit Properties");
+            SessionUtils.showGames(session, data, 0, "FBReport", "showFBReport");
+            break;
+        }
+
+        case "showFBReport": {
+            SessionUtils.showGames(session, data, recordNr, "FBReport", "showFBReport");
+            if (recordNr == 0)
+                data.resetColumn(1);
+            else
+                showFBReports(session, data, true, 0);
+            data.resetFormColumn();
             break;
         }
 
         case "viewFBReport": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "FBReport", "showFBReport");
             showFBReports(session, data, true, recordNr);
             editFBReport(session, data, recordNr, false);
             break;
         }
 
         case "editFBReport": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "FBReport", "showFBReport");
             showFBReports(session, data, true, recordNr);
             editFBReport(session, data, recordNr, true);
             break;
@@ -47,6 +61,7 @@ public class MaintainFBReport {
 
         case "saveFBReport": {
             recordNr = saveFBReport(request, data, recordNr);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "FBReport", "showFBReport");
             showFBReports(session, data, true, 0);
             data.resetFormColumn();
             break;
@@ -60,6 +75,7 @@ public class MaintainFBReport {
                     "clickRecordId('deleteFBReportOk', " + recordNr + ")", "Cancel", "clickMenu('fbreport')",
                     "clickMenu('fbreport')");
             data.setShowModalWindow(1);
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "FBReport", "showFBReport");
             showFBReports(session, data, true, 0);
             data.resetFormColumn();
             break;
@@ -73,12 +89,14 @@ public class MaintainFBReport {
                 ModalWindowUtils.popup(data, "Error deleting record", "<p>" + exception.getMessage() + "</p>",
                         "clickMenu('fbreport')");
             }
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "FBReport", "showFBReport");
             showFBReports(session, data, true, 0);
             data.resetFormColumn();
             break;
         }
 
         case "newFBReport": {
+            SessionUtils.showGames(session, data, data.getColumn(0).getSelectedRecordNr(), "FBReport", "showFBReport");
             showFBReports(session, data, true, 0);
             editFBReport(session, data, 0, true);
             break;
@@ -91,26 +109,40 @@ public class MaintainFBReport {
         AdminServlet.makeColumnContent(data);
     }
 
+    /* ********************************************************************************************************* */
+    /* ******************************************* FBREPORT **************************************************** */
+    /* ********************************************************************************************************* */
+
     public static void showFBReports(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
         StringBuffer s = new StringBuffer();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+
+        List<CarrierRecord> carriers = dslContext.selectFrom(Tables.CARRIER)
+                .where(Tables.CARRIER.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
+        Set<Integer> carrierIdsForGame = new HashSet<>();
+        for (CarrierRecord carrier : carriers) {
+            carrierIdsForGame.add(carrier.getId());
+        }
+
         List<FbreportRecord> FbreportRecords = dslContext.selectFrom(Tables.FBREPORT).fetch();
 
         s.append(AdminTable.startTable());
         for (FbreportRecord fbReport : FbreportRecords) {
-            TableRow tableRow = new TableRow(fbReport.getId(), selectedRecordNr,
-                    makeCarrierString(data, fbReport, "Report for carrier: "), "viewFBReport");
-            if (editButton)
-                tableRow.addButton("Edit", "editFBReport");
-            s.append(tableRow.process());
+            if (carrierIdsForGame.contains(fbReport.getCarrierId())) {
+                TableRow tableRow = new TableRow(fbReport.getId(), selectedRecordNr,
+                        makeCarrierString(data, fbReport, "Report for carrier: "), "viewFBReport");
+                if (editButton)
+                    tableRow.addButton("Edit", "editFBReport");
+                s.append(tableRow.process());
+            }
         }
         s.append(AdminTable.endTable());
 
         if (editButton)
             s.append(AdminTable.finalButton("New FBReport", "newFBReport"));
 
-        data.getColumn(0).setSelectedRecordNr(selectedRecordNr);
-        data.getColumn(0).setContent(s.toString());
+        data.getColumn(1).setSelectedRecordNr(selectedRecordNr);
+        data.getColumn(1).setContent(s.toString());
     }
 
     private static String makeCarrierString(AdminData data, FbreportRecord fbReport, String title) {
@@ -143,7 +175,8 @@ public class MaintainFBReport {
                         .setInitialValue(fbReport.getCarrierId() == null ? 0 : fbReport.getCarrierId())
                         .setLabel("Carrier")
                         .setRequired()
-                        .setPickTable(data, Tables.CARRIER, Tables.CARRIER.ID, Tables.CARRIER.NAME))
+                        .setPickTable(data, Tables.CARRIER, Tables.CARRIER.ID, Tables.CARRIER.NAME,
+                                Tables.CARRIER.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())))
                 .addEntry(new FormEntryString(Tables.FBREPORT.FBREGISTRATION)
                         .setRequired()
                         .setInitialValue(fbReport.getFbregistration())
@@ -167,7 +200,6 @@ public class MaintainFBReport {
                         .setMin(1980))
                 .addEntry(new FormEntryImage(Tables.FBREPORT.SERVICEONTIME)
                         .setInitialValue(fbReport.getServiceontime())
-                        .setRequired()
                         .setLabel("Service on-time")
                         .setLargeImage()
                         .setImageServlet("imageFB")
@@ -175,7 +207,6 @@ public class MaintainFBReport {
                         .setImageNr(1))
                 .addEntry(new FormEntryImage(Tables.FBREPORT.SERVICESATISFACTION)
                         .setInitialValue(fbReport.getServicesatisfaction())
-                        .setRequired()
                         .setLabel("Service satisfaction")
                         .setLargeImage()
                         .setImageServlet("imageFB")
@@ -183,7 +214,6 @@ public class MaintainFBReport {
                         .setImageNr(2))
                 .addEntry(new FormEntryImage(Tables.FBREPORT.TECHNICALFLEET)
                         .setInitialValue(fbReport.getTechnicalfleet())
-                        .setRequired()
                         .setLabel("Truck fleet")
                         .setLargeImage()
                         .setImageServlet("imageFB")
@@ -191,7 +221,6 @@ public class MaintainFBReport {
                         .setImageNr(3))
                 .addEntry(new FormEntryImage(Tables.FBREPORT.TECHNICALGREEN)
                         .setInitialValue(fbReport.getTechnicalgreen())
-                        .setRequired()
                         .setLabel("Percent green")
                         .setLargeImage()
                         .setImageServlet("imageFB")
