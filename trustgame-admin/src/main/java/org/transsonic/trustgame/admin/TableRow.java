@@ -25,7 +25,7 @@ public class TableRow {
     }
     
     public String process() {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         if (this.id == this.selectedId)
             s.append("        <div class=\"tg-admin-line-selected\">\n");
         else

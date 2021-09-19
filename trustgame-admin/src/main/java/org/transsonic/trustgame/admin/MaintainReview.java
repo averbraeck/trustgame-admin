@@ -235,7 +235,7 @@ public class MaintainReview {
     /* ********************************************************************************************************* */
 
     public static void showReviewRounds(HttpSession session, AdminData data, int selectedRoundRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<RoundRecord> roundRecords = dslContext.selectFrom(Tables.ROUND)
                 .where(Tables.ROUND.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
@@ -259,7 +259,7 @@ public class MaintainReview {
 
     public static void showReviews(HttpSession session, AdminData data, boolean editButton,
             int selectedReviewRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<ReviewRecord> reviewRecords = dslContext.selectFrom(Tables.REVIEW)
                 .where(Tables.REVIEW.ROUND_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetch();
@@ -348,7 +348,7 @@ public class MaintainReview {
 
     public static void showCarrierReviews(HttpSession session, AdminData data, boolean editButton,
             int selectedCarrierReviewRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<CarrierreviewRecord> carrierReviewRecords = dslContext.selectFrom(Tables.CARRIERREVIEW)
                 .where(Tables.CARRIERREVIEW.ROUND_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetch();

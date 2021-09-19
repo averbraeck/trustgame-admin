@@ -112,7 +112,7 @@ public class MaintainCarrier {
     /* ********************************************************************************************************* */
 
     public static void showCarriers(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<CarrierRecord> carrierRecords = dslContext.selectFrom(Tables.CARRIER)
                 .where(Tables.CARRIER.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();

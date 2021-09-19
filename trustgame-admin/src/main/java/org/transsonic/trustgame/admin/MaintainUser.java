@@ -186,7 +186,7 @@ public class MaintainUser {
     }
 
     public static void showUserGroups(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<UsergroupRecord> userGroupRecords = dslContext.selectFrom(Tables.USERGROUP).fetch();
 
@@ -210,7 +210,7 @@ public class MaintainUser {
 
     public static void showUsers(HttpSession session, AdminData data, int userGroupId, boolean editButton,
             int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<UserRecord> userRecords = dslContext.selectFrom(Tables.USER)
                 .where(Tables.USER.USERGROUP_ID.eq(userGroupId)).fetch();
@@ -386,7 +386,7 @@ public class MaintainUser {
     }
 
     private static void generateUserParameters(HttpServletRequest request, AdminData data) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("<p>Note: The user numbers will be generated at the places of the %-sign in the username \n"
                 + "and password, with the indicated number of digits. If password is blank, users can only \n"
                 + "login using the generated code. The username and login name will be the same.</p>\n");
@@ -458,7 +458,7 @@ public class MaintainUser {
     }
 
     private static String buttonRow(AdminData data) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("    <div class=\"tg-admin-form-buttons\">\n");
 
         s.append("      <span class=\"tg-admin-form-button\" /><a href=\"#\" onClick=\"submitEditForm('");

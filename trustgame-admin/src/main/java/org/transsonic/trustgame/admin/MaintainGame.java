@@ -395,7 +395,7 @@ public class MaintainGame {
     /* ********************************************************************************************************* */
 
     public static void showGames(HttpSession session, AdminData data, boolean editButton, int selectedGameRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch().sortAsc(Tables.GAME.CODE);
 
@@ -693,7 +693,7 @@ public class MaintainGame {
     /* ********************************************************************************************************* */
 
     public static void showRounds(HttpSession session, AdminData data, boolean editButton, int selectedRoundRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<RoundRecord> roundRecords = dslContext.selectFrom(Tables.ROUND)
                 .where(Tables.ROUND.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
@@ -772,7 +772,7 @@ public class MaintainGame {
     /* ********************************************************************************************************* */
 
     public static void showOrders(HttpSession session, AdminData data, boolean editButton, int selectedOrderRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<OrderRecord> orderRecords = dslContext.selectFrom(Tables.ORDER)
                 .where(Tables.ORDER.ROUND_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetch();
@@ -865,7 +865,7 @@ public class MaintainGame {
 
     public static void showOrderCarriers(HttpSession session, AdminData data, boolean editButton,
             int selectedOrderCarrierRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<OrdercarrierRecord> orderCarrierRecords = dslContext.selectFrom(Tables.ORDERCARRIER)
                 .where(Tables.ORDERCARRIER.ORDER_ID.eq(data.getColumn(2).getSelectedRecordNr())).fetch();

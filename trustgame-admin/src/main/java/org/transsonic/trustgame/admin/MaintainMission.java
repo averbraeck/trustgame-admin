@@ -109,7 +109,7 @@ public class MaintainMission {
     /* ********************************************************************************************************* */
 
     public static void showMissions(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<MissionRecord> missionRecords = dslContext.selectFrom(Tables.MISSION)
                 .where(Tables.MISSION.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();

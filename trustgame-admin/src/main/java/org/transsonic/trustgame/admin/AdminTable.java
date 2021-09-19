@@ -11,7 +11,7 @@ public class AdminTable {
     }
 
     public static String finalButton(String text, String method) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("      <div class=\"tg-admin-table-button\">");
         s.append("<a href=\"#\" onClick=\"clickRecordId('");
         s.append(method);

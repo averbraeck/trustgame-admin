@@ -109,7 +109,7 @@ public class MaintainClient {
     /* ********************************************************************************************************* */
 
     public static void showClients(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<ClientRecord> clientRecords = dslContext.selectFrom(Tables.CLIENT)
                 .where(Tables.CLIENT.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();

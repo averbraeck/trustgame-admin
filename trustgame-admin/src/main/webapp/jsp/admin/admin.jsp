@@ -31,7 +31,7 @@
   <body onload="initPage()">
     <div class="tg-page">
       <div class="tg-header">
-        <span class="tg-freightbooking">TransSonic Trust Game</span>
+        <span class="tg-freightbooking">TransSonic FreightBooking Game</span>
         <span class="tg-slogan">Game Administration</span>
       </div>
       <div class="tg-header-right">

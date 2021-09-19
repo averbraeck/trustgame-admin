@@ -4,7 +4,7 @@ public class ModalWindowUtils {
 
     public static void popup(AdminData data, String title, String message, String okMethod) {
         // make popup
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("<p>");
         s.append(message);
         s.append("</p>\n");
@@ -13,7 +13,7 @@ public class ModalWindowUtils {
     }
 
     public static String makeModalWindow(String title, String content, String onClickClose) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("    <div class=\"tg-modal\">\n");
         s.append("      <div class=\"tg-modal-window\" id=\"tg-modal-window\">\n");
         s.append("        <div class=\"tg-modal-window-header\">");
@@ -35,7 +35,7 @@ public class ModalWindowUtils {
     }
 
     public static String makeOkModalWindow(String title, String htmlText, String okMethod) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("        <div class=\"tg-modal-body\">");
         s.append("          <div class=\"tg-modal-text\">\n");
         s.append("            <p>\n");

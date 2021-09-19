@@ -212,7 +212,7 @@ public class MaintainGamePlay {
     /* ********************************************************************************************************* */
 
     public static void showGames(HttpSession session, AdminData data, int selectedGameRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
 
@@ -234,7 +234,7 @@ public class MaintainGamePlay {
 
     public static void showGamePlay(HttpSession session, AdminData data, boolean editButton,
             int selectedGameplayRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameplayRecord> gamePlayRecords = dslContext.selectFrom(Tables.GAMEPLAY)
                 .where(Tables.GAMEPLAY.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
@@ -326,7 +326,7 @@ public class MaintainGamePlay {
 
     public static void showGameUsers(HttpSession session, AdminData data, boolean editButton,
             int selectedGameuserRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameuserRecord> gameUserRecords = dslContext.selectFrom(Tables.GAMEUSER)
                 .where(Tables.GAMEUSER.GAMEPLAY_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetch();

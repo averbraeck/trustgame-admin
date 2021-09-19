@@ -114,7 +114,7 @@ public class MaintainFBReport {
     /* ********************************************************************************************************* */
 
     public static void showFBReports(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
 
         List<CarrierRecord> carriers = dslContext.selectFrom(Tables.CARRIER)

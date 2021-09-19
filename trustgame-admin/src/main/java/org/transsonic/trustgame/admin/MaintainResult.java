@@ -106,7 +106,7 @@ public class MaintainResult {
     /* ********************************************************************************************************* */
 
     private static void showGames(HttpSession session, AdminData data, int selectedGameRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
 
@@ -127,7 +127,7 @@ public class MaintainResult {
     /* ********************************************************************************************************* */
 
     private static void showGamePlay(HttpSession session, AdminData data, int selectedGameplayRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameplayRecord> gamePlayRecords = dslContext.selectFrom(Tables.GAMEPLAY)
                 .where(Tables.GAMEPLAY.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
@@ -152,7 +152,7 @@ public class MaintainResult {
     /* ********************************************************************************************************* */
 
     private static void showGameUsers(HttpSession session, AdminData data, int selectedGameuserRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameuserRecord> gameUserRecords = dslContext.selectFrom(Tables.GAMEUSER)
                 .where(Tables.GAMEUSER.GAMEPLAY_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetch();
@@ -246,7 +246,7 @@ public class MaintainResult {
         // highest rounds number
         int highestRoundNumber = gameUser.getRoundnumber().intValue();
 
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("\n<div class=\"tg-detail-score\">\n");
         s.append("  <table width=\"100%\">\n");
         s.append("    <thead><tr><td>Round</td><td>Order</td><td>Chosen Carrier</td>"
@@ -497,7 +497,7 @@ public class MaintainResult {
     }
 
     private static String csvHeader(boolean tab) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         String sep = tab ? "\t" : ",";
         s.append("gameNr");
         s.append(sep);
@@ -531,7 +531,7 @@ public class MaintainResult {
     private static String csvLine(boolean tab, GameplayRecord gamePlay, int gameUserNr, String userCode,
             String userName, boolean played, String roundNr, boolean boughtReport, String orderNr, String carrierName,
             int profit, int satisfaction, int sustainability) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         String sep = tab ? "\t" : ",";
         s.append(gamePlay.getGameId());
         s.append(sep);

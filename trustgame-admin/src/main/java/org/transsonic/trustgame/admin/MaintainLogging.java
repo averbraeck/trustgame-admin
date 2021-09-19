@@ -104,7 +104,7 @@ public class MaintainLogging {
     /* ********************************************************************************************************* */
 
     public static void showGames(HttpSession session, AdminData data, int selectedGameRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
 
@@ -125,7 +125,7 @@ public class MaintainLogging {
     /* ********************************************************************************************************* */
 
     public static void showGamePlay(HttpSession session, AdminData data, int selectedGameplayRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameplayRecord> gamePlayRecords = dslContext.selectFrom(Tables.GAMEPLAY)
                 .where(Tables.GAMEPLAY.GAME_ID.eq(data.getColumn(0).getSelectedRecordNr())).fetch();
@@ -150,7 +150,7 @@ public class MaintainLogging {
     /* ********************************************************************************************************* */
 
     public static void showGameUsers(HttpSession session, AdminData data, int selectedGameuserRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameuserRecord> gameUserRecords = dslContext.selectFrom(Tables.GAMEUSER)
                 .where(Tables.GAMEUSER.GAMEPLAY_ID.eq(data.getColumn(1).getSelectedRecordNr())).fetch();
@@ -182,7 +182,7 @@ public class MaintainLogging {
         List<UserclickRecord> userClicks = dslContext.selectFrom(Tables.USERCLICK)
                 .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetch().sortAsc(Tables.USERCLICK.TIMESTAMP);
 
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("\n<div class=\"tg-logging\">\n");
         s.append("  <table width=\"100%\">\n");
         s.append("    <thead><tr><td>Time</td><td>Button</td><td>Value</td>"
@@ -308,7 +308,7 @@ public class MaintainLogging {
     }
 
     public static String csvHeader(boolean tab) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         String sep = tab ? "\t" : ",";
         s.append("gameNr");
         s.append(sep);
@@ -340,7 +340,7 @@ public class MaintainLogging {
     private static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
     public static String csvLine(GameplayRecord gamePlay, UserclickRecord userClick, UserRecord user, boolean tab) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         String sep = tab ? "\t" : ",";
         s.append(gamePlay.getGameId());
         s.append(sep);

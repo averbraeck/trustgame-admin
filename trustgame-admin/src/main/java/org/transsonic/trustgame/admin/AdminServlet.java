@@ -236,7 +236,7 @@ public class AdminServlet extends HttpServlet {
     }
 
     public static void makeColumnContent(AdminData data) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         s.append("<table width=\"100%\">\n");
         s.append("  <tr>");
         for (int i = 0; i < data.getNrColumns(); i++) {
@@ -265,7 +265,7 @@ public class AdminServlet extends HttpServlet {
     }
 
     public static String getTopMenu(AdminData data) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         topmenu(data, s, "user", "User");
         topmenu(data, s, "carrier", "Carrier");
         topmenu(data, s, "fbreport", "FB Report");
@@ -283,7 +283,7 @@ public class AdminServlet extends HttpServlet {
     private static final String bn = "          <div class=\"tg-admin-menu-button\"";
     private static final String br = "          <div class=\"tg-admin-menu-button-red\"";
 
-    private static void topmenu(AdminData data, StringBuffer s, String key, String text) {
+    private static void topmenu(AdminData data, StringBuilder s, String key, String text) {
         s.append(key.equals(data.getMenuChoice()) ? br : bn);
         s.append(" onclick=\"clickMenu('");
         s.append(key);

@@ -89,7 +89,7 @@ public class MaintainBriefing {
     }
 
     public static void showBriefings(HttpSession session, AdminData data, boolean editButton, int selectedRecordNr) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<BriefingRecord> briefingRecords = dslContext.selectFrom(Tables.BRIEFING).fetch();
 

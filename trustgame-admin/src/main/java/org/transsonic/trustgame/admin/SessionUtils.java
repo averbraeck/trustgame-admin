@@ -42,7 +42,7 @@ public final class SessionUtils {
 
     public static void showGames(HttpSession session, AdminData data, int selectedGameRecordNr, String showText,
             String showMethod) {
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         List<GameRecord> gameRecords = dslContext.selectFrom(Tables.GAME).fetch();
 
