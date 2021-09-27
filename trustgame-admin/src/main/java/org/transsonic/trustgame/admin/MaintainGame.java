@@ -546,7 +546,7 @@ public class MaintainGame {
         for (CarrierRecord carrier : carriers) {
             CarrierRecord newCarrier = dslContext.newRecord(Tables.CARRIER);
             newCarrier.setGameId(newGame.getId());
-            newCarrier.setName(carrier.getName().substring(0, Math.min(carrier.getName().length(), 35)) + " (copy)");
+            newCarrier.setName(carrier.getName());
             newCarrier.setSlogan(carrier.getSlogan());
             newCarrier.setLogo(carrier.getLogo());
             newCarrier.setService(carrier.getService());
