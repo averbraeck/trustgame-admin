@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row10;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -89,6 +89,16 @@ public class Gameplay extends TableImpl<GameplayRecord> {
      * The column <code>trustgame.gameplay.Help_ID</code>.
      */
     public final TableField<GameplayRecord, Integer> HELP_ID = createField(DSL.name("Help_ID"), SQLDataType.INTEGER.defaultValue(DSL.field("NULL", SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>trustgame.gameplay.Autoregister</code>.
+     */
+    public final TableField<GameplayRecord, Byte> AUTOREGISTER = createField(DSL.name("Autoregister"), SQLDataType.TINYINT.nullable(false).defaultValue(DSL.field("0", SQLDataType.TINYINT)), this, "");
+
+    /**
+     * The column <code>trustgame.gameplay.GroupPassword</code>.
+     */
+    public final TableField<GameplayRecord, String> GROUPPASSWORD = createField(DSL.name("GroupPassword"), SQLDataType.VARCHAR(90).nullable(false), this, "");
 
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);
@@ -213,11 +223,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row10 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row10<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String> fieldsRow() {
+        return (Row10) super.fieldsRow();
     }
 }
