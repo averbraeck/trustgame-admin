@@ -350,7 +350,7 @@ public class MaintainUser {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         UserRecord user = userId == 0 ? dslContext.newRecord(Tables.USER)
                 : dslContext.selectFrom(Tables.USER).where(Tables.USER.ID.eq(userId)).fetchOne();
-        String hashedPassword = userId == 0 ? "" : user.getPassword();
+        String hashedPassword = userId == 0 ? "" : user.getPassword(); // has to be BEFORE setFields
         String errors = data.getFormColumn().getForm().setFields(user, request, data);
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors,

@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row11;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -99,6 +99,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
      * The column <code>trustgame.gameplay.GroupPassword</code>.
      */
     public final TableField<GameplayRecord, String> GROUPPASSWORD = createField(DSL.name("GroupPassword"), SQLDataType.VARCHAR(90).nullable(false), this, "");
+
+    /**
+     * The column <code>trustgame.gameplay.UsernamePrefix</code>.
+     */
+    public final TableField<GameplayRecord, String> USERNAMEPREFIX = createField(DSL.name("UsernamePrefix"), SQLDataType.VARCHAR(16).nullable(false), this, "");
 
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);
@@ -223,11 +228,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row11 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row11<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String, String> fieldsRow() {
+        return (Row11) super.fieldsRow();
     }
 }

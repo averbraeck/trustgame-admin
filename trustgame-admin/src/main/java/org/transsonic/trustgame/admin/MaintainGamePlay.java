@@ -1,9 +1,12 @@
 package org.transsonic.trustgame.admin;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -11,6 +14,7 @@ import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.types.UInteger;
 import org.transsonic.trustgame.admin.form.AdminForm;
+import org.transsonic.trustgame.admin.form.FormEntryBoolean;
 import org.transsonic.trustgame.admin.form.FormEntryDateTime;
 import org.transsonic.trustgame.admin.form.FormEntryInt;
 import org.transsonic.trustgame.admin.form.FormEntryPickRecord;
@@ -294,6 +298,19 @@ public class MaintainGamePlay {
                         .setInitialValue(gamePlay.getHelpId() == null ? 0 : gamePlay.getHelpId())
                         .setLabel("Help screen")
                         .setPickTable(data, Tables.BRIEFING, Tables.BRIEFING.ID, Tables.BRIEFING.NAME))
+                .addEntry(new FormEntryBoolean(Tables.GAMEPLAY.AUTOREGISTER)
+                        .setInitialValue(gamePlay.getAutoregister())
+                        .setLabel("Self registration?"))
+                .addEntry(new FormEntryString(Tables.GAMEPLAY.GROUPPASSWORD)
+                        .setLabel("Group Password")
+                        .setRequired(gamePlayId == 0)
+                        .setInitialValue("")
+                        .setMaxChars(255))
+                .addEntry(new FormEntryString(Tables.GAMEPLAY.USERNAMEPREFIX)
+                        .setLabel("Username Prefix")
+                        .setRequired(true)
+                        .setInitialValue(gamePlay.getUsernameprefix())
+                        .setMaxChars(16))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit GamePlay", form);
@@ -303,8 +320,24 @@ public class MaintainGamePlay {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         GameplayRecord gamePlay = gamePlayId == 0 ? dslContext.newRecord(Tables.GAMEPLAY)
                 : dslContext.selectFrom(Tables.GAMEPLAY).where(Tables.GAMEPLAY.ID.eq(gamePlayId)).fetchOne();
+        String hashedPassword = gamePlayId == 0 ? "" : gamePlay.getGrouppassword(); // has to be BEFORE setFields
         String errors = data.getFormColumn().getForm().setFields(gamePlay, request, data);
         gamePlay.setGameId(data.getColumn(0).getSelectedRecordNr());
+        
+        if (gamePlay.getGrouppassword().length() > 0) {
+            MessageDigest md;
+            try {
+                // https://www.baeldung.com/java-md5
+                md = MessageDigest.getInstance("MD5");
+                md.update(gamePlay.getGrouppassword().getBytes());
+                byte[] digest = md.digest();
+                hashedPassword = DatatypeConverter.printHexBinary(digest).toLowerCase();
+            } catch (NoSuchAlgorithmException e1) {
+                throw new RuntimeException(e1);
+            }
+        }
+        gamePlay.set(Tables.GAMEPLAY.GROUPPASSWORD, hashedPassword); // restore old password if not changed
+
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('gameplay')");
             return -1;
