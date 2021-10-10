@@ -98,12 +98,12 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     /**
      * The column <code>trustgame.gameplay.GroupPassword</code>.
      */
-    public final TableField<GameplayRecord, String> GROUPPASSWORD = createField(DSL.name("GroupPassword"), SQLDataType.VARCHAR(90).nullable(false), this, "");
+    public final TableField<GameplayRecord, String> GROUPPASSWORD = createField(DSL.name("GroupPassword"), SQLDataType.VARCHAR(90).defaultValue(DSL.field("''", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>trustgame.gameplay.UsernamePrefix</code>.
      */
-    public final TableField<GameplayRecord, String> USERNAMEPREFIX = createField(DSL.name("UsernamePrefix"), SQLDataType.VARCHAR(16).nullable(false), this, "");
+    public final TableField<GameplayRecord, String> USERNAMEPREFIX = createField(DSL.name("UsernamePrefix"), SQLDataType.VARCHAR(16).defaultValue(DSL.field("''", SQLDataType.VARCHAR)), this, "");
 
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);

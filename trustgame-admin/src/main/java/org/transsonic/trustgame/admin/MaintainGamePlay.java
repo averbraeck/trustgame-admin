@@ -280,6 +280,11 @@ public class MaintainGamePlay {
                         .setRequired()
                         .setInitialValue(gamePlay.getGroupdescription())
                         .setLabel("Group description"))
+                .addEntry(new FormEntryString(Tables.GAMEPLAY.GROUPPASSWORD)
+                        .setLabel("Password " + (gamePlay.getGrouppassword().length() == 0 ? "(empty)" : "(set)"))
+                        .setRequired(gamePlay.getGrouppassword().length() == 0)
+                        .setInitialValue("")
+                        .setMaxChars(255))
                 .addEntry(new FormEntryDateTime(Tables.GAMEPLAY.STARTPLAYDATE)
                         .setInitialValue(gamePlay.getStartplaydate())
                         .setLabel("Earliest play date"))
@@ -288,7 +293,7 @@ public class MaintainGamePlay {
                         .setLabel("Latest play date"))
                 .addEntry(new FormEntryPickRecord(Tables.GAMEPLAY.BRIEFING_ID)
                         .setInitialValue(gamePlay.getBriefingId() == null ? 0 : gamePlay.getBriefingId())
-                        .setLabel("Briefing (help)")
+                        .setLabel("Briefing (start)")
                         .setPickTable(data, Tables.BRIEFING, Tables.BRIEFING.ID, Tables.BRIEFING.NAME))
                 .addEntry(new FormEntryPickRecord(Tables.GAMEPLAY.DEBRIEFING_ID)
                         .setInitialValue(gamePlay.getDebriefingId() == null ? 0 : gamePlay.getDebriefingId())
@@ -301,14 +306,8 @@ public class MaintainGamePlay {
                 .addEntry(new FormEntryBoolean(Tables.GAMEPLAY.AUTOREGISTER)
                         .setInitialValue(gamePlay.getAutoregister())
                         .setLabel("Self registration?"))
-                .addEntry(new FormEntryString(Tables.GAMEPLAY.GROUPPASSWORD)
-                        .setLabel("Group Password")
-                        .setRequired(gamePlayId == 0)
-                        .setInitialValue("")
-                        .setMaxChars(255))
                 .addEntry(new FormEntryString(Tables.GAMEPLAY.USERNAMEPREFIX)
                         .setLabel("Username Prefix")
-                        .setRequired(true)
                         .setInitialValue(gamePlay.getUsernameprefix())
                         .setMaxChars(16))
                 .endForm();
@@ -322,26 +321,26 @@ public class MaintainGamePlay {
                 : dslContext.selectFrom(Tables.GAMEPLAY).where(Tables.GAMEPLAY.ID.eq(gamePlayId)).fetchOne();
         String hashedPassword = gamePlayId == 0 ? "" : gamePlay.getGrouppassword(); // has to be BEFORE setFields
         String errors = data.getFormColumn().getForm().setFields(gamePlay, request, data);
-        gamePlay.setGameId(data.getColumn(0).getSelectedRecordNr());
-        
-        if (gamePlay.getGrouppassword().length() > 0) {
-            MessageDigest md;
-            try {
-                // https://www.baeldung.com/java-md5
-                md = MessageDigest.getInstance("MD5");
-                md.update(gamePlay.getGrouppassword().getBytes());
-                byte[] digest = md.digest();
-                hashedPassword = DatatypeConverter.printHexBinary(digest).toLowerCase();
-            } catch (NoSuchAlgorithmException e1) {
-                throw new RuntimeException(e1);
-            }
-        }
-        gamePlay.set(Tables.GAMEPLAY.GROUPPASSWORD, hashedPassword); // restore old password if not changed
-
         if (errors.length() > 0) {
             ModalWindowUtils.popup(data, "Error storing record", errors, "clickMenu('gameplay')");
             return -1;
         } else {
+            gamePlay.setGameId(data.getColumn(0).getSelectedRecordNr());
+
+            if (gamePlay.getGrouppassword().length() > 0) {
+                MessageDigest md;
+                try {
+                    // https://www.baeldung.com/java-md5
+                    md = MessageDigest.getInstance("MD5");
+                    md.update(gamePlay.getGrouppassword().getBytes());
+                    byte[] digest = md.digest();
+                    hashedPassword = DatatypeConverter.printHexBinary(digest).toLowerCase();
+                } catch (NoSuchAlgorithmException e1) {
+                    throw new RuntimeException(e1);
+                }
+            }
+            gamePlay.set(Tables.GAMEPLAY.GROUPPASSWORD, hashedPassword); // restore old password if not changed
+
             try {
                 gamePlay.store();
             } catch (DataAccessException exception) {

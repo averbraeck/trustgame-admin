@@ -68,7 +68,7 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>trustgame.user.Email</code>.
      */
-    public final TableField<UserRecord, String> EMAIL = createField(DSL.name("Email"), SQLDataType.VARCHAR(90).defaultValue(DSL.field("NULL", SQLDataType.VARCHAR)), this, "");
+    public final TableField<UserRecord, String> EMAIL = createField(DSL.name("Email"), SQLDataType.VARCHAR(90).defaultValue(DSL.field("''", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>trustgame.user.Name</code>.
@@ -78,7 +78,7 @@ public class User extends TableImpl<UserRecord> {
     /**
      * The column <code>trustgame.user.Password</code>.
      */
-    public final TableField<UserRecord, String> PASSWORD = createField(DSL.name("Password"), SQLDataType.VARCHAR(90).nullable(false), this, "");
+    public final TableField<UserRecord, String> PASSWORD = createField(DSL.name("Password"), SQLDataType.VARCHAR(90).defaultValue(DSL.field("''", SQLDataType.VARCHAR)), this, "");
 
     /**
      * The column <code>trustgame.user.CreateTime</code>.
