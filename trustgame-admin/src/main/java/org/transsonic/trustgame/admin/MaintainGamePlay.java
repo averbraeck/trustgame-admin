@@ -19,6 +19,7 @@ import org.transsonic.trustgame.admin.form.FormEntryDateTime;
 import org.transsonic.trustgame.admin.form.FormEntryInt;
 import org.transsonic.trustgame.admin.form.FormEntryPickRecord;
 import org.transsonic.trustgame.admin.form.FormEntryString;
+import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.admin.form.FormEntryUInt;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
@@ -310,6 +311,9 @@ public class MaintainGamePlay {
                         .setLabel("Username Prefix")
                         .setInitialValue(gamePlay.getUsernameprefix())
                         .setMaxChars(16))
+                .addEntry(new FormEntryText(Tables.GAMEPLAY.AUTOREGISTERTEXT)
+                        .setInitialValue(gamePlay.getAutoregistertext() == null ? "" : gamePlay.getAutoregistertext())
+                        .setLabel("Self registration popup text (html)"))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit GamePlay", form);
