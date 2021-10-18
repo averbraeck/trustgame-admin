@@ -267,6 +267,7 @@ public class MaintainGamePlay {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
         GameplayRecord gamePlay = gamePlayId == 0 ? dslContext.newRecord(Tables.GAMEPLAY)
                 : dslContext.selectFrom(Tables.GAMEPLAY).where(Tables.GAMEPLAY.ID.eq(gamePlayId)).fetchOne();
+        boolean noPassword = gamePlay.getGrouppassword() == null || gamePlay.getGrouppassword().length() == 0;
         //@formatter:off
         AdminForm form = new AdminForm()
                 .setEdit(edit)
@@ -282,8 +283,8 @@ public class MaintainGamePlay {
                         .setInitialValue(gamePlay.getGroupdescription())
                         .setLabel("Group description"))
                 .addEntry(new FormEntryString(Tables.GAMEPLAY.GROUPPASSWORD)
-                        .setLabel("Password " + (gamePlay.getGrouppassword().length() == 0 ? "(empty)" : "(set)"))
-                        .setRequired(gamePlay.getGrouppassword().length() == 0)
+                        .setLabel("Password " + (noPassword ? "(empty)" : "(set)"))
+                        .setRequired(noPassword)
                         .setInitialValue("")
                         .setMaxChars(255))
                 .addEntry(new FormEntryDateTime(Tables.GAMEPLAY.STARTPLAYDATE)
