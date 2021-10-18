@@ -314,6 +314,10 @@ public class MaintainGamePlay {
                 .addEntry(new FormEntryText(Tables.GAMEPLAY.AUTOREGISTERTEXT)
                         .setInitialValue(gamePlay.getAutoregistertext() == null ? "" : gamePlay.getAutoregistertext())
                         .setLabel("Self registration popup text (html)"))
+                .addEntry(new FormEntryPickRecord(Tables.GAMEPLAY.AUTOREGISTERUSERGROUP_ID)
+                        .setInitialValue(gamePlay.getAutoregisterusergroupId() == null ? 0 : gamePlay.getAutoregisterusergroupId())
+                        .setLabel("Default usergroup")
+                        .setPickTable(data, Tables.USERGROUP, Tables.USERGROUP.ID, Tables.USERGROUP.GROUPNAME))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit GamePlay", form);

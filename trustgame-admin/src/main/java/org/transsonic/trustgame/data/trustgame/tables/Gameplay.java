@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -110,6 +110,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
      */
     public final TableField<GameplayRecord, String> AUTOREGISTERTEXT = createField(DSL.name("AutoregisterText"), SQLDataType.CLOB.defaultValue(DSL.field("NULL", SQLDataType.CLOB)), this, "");
 
+    /**
+     * The column <code>trustgame.gameplay.AutoregisterUserGroup_ID</code>.
+     */
+    public final TableField<GameplayRecord, Integer> AUTOREGISTERUSERGROUP_ID = createField(DSL.name("AutoregisterUserGroup_ID"), SQLDataType.INTEGER.defaultValue(DSL.field("NULL", SQLDataType.INTEGER)), this, "");
+
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);
     }
@@ -150,7 +155,7 @@ public class Gameplay extends TableImpl<GameplayRecord> {
 
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING1_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING3_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_GAME1_IDX);
+        return Arrays.<Index>asList(Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING1_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_BRIEFING3_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_GAME1_IDX, Indexes.GAMEPLAY_FK_GAMEPLAY_USERGROUP1_IDX);
     }
 
     @Override
@@ -170,13 +175,14 @@ public class Gameplay extends TableImpl<GameplayRecord> {
 
     @Override
     public List<ForeignKey<GameplayRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<GameplayRecord, ?>>asList(Keys.FK_GAMEPLAY_GAME1, Keys.FK_GAMEPLAY_BRIEFING1, Keys.FK_GAMEPLAY_BRIEFING2, Keys.FK_GAMEPLAY_BRIEFING3);
+        return Arrays.<ForeignKey<GameplayRecord, ?>>asList(Keys.FK_GAMEPLAY_GAME1, Keys.FK_GAMEPLAY_BRIEFING1, Keys.FK_GAMEPLAY_BRIEFING2, Keys.FK_GAMEPLAY_BRIEFING3, Keys.FK_GAMEPLAY_USERGROUP1);
     }
 
     private transient Game _game;
     private transient Briefing _fkGameplayBriefing1;
     private transient Briefing _fkGameplayBriefing2;
     private transient Briefing _fkGameplayBriefing3;
+    private transient Usergroup _usergroup;
 
     public Game game() {
         if (_game == null)
@@ -206,6 +212,13 @@ public class Gameplay extends TableImpl<GameplayRecord> {
         return _fkGameplayBriefing3;
     }
 
+    public Usergroup usergroup() {
+        if (_usergroup == null)
+            _usergroup = new Usergroup(this, Keys.FK_GAMEPLAY_USERGROUP1);
+
+        return _usergroup;
+    }
+
     @Override
     public Gameplay as(String alias) {
         return new Gameplay(DSL.name(alias), this);
@@ -233,11 +246,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String, String, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String, String, String, Integer> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }

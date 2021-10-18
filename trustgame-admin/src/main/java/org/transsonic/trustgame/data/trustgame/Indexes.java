@@ -46,6 +46,7 @@ public class Indexes {
     public static final Index GAMEPLAY_FK_GAMEPLAY_BRIEFING2_IDX = Internal.createIndex(DSL.name("fk_GamePlay_Briefing2_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.DEBRIEFING_ID }, false);
     public static final Index GAMEPLAY_FK_GAMEPLAY_BRIEFING3_IDX = Internal.createIndex(DSL.name("fk_GamePlay_Briefing3_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.HELP_ID }, false);
     public static final Index GAMEPLAY_FK_GAMEPLAY_GAME1_IDX = Internal.createIndex(DSL.name("fk_GamePlay_Game1_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.GAME_ID }, false);
+    public static final Index GAMEPLAY_FK_GAMEPLAY_USERGROUP1_IDX = Internal.createIndex(DSL.name("fk_GamePlay_UserGroup1_idx"), Gameplay.GAMEPLAY, new OrderField[] { Gameplay.GAMEPLAY.AUTOREGISTERUSERGROUP_ID }, false);
     public static final Index USERROUND_FK_GAMEPLAYROUND_GAMEPLAY1_IDX = Internal.createIndex(DSL.name("fk_GamePlayRound_GamePlay1_idx"), Userround.USERROUND, new OrderField[] { Userround.USERROUND.GAMEPLAY_ID }, false);
     public static final Index USERROUND_FK_GAMEPLAYROUND_ROUND1_IDX = Internal.createIndex(DSL.name("fk_GamePlayRound_Round1_idx"), Userround.USERROUND, new OrderField[] { Userround.USERROUND.ROUND_ID }, false);
     public static final Index USERROUND_FK_GAMEPLAYROUND_USER1_IDX = Internal.createIndex(DSL.name("fk_GamePlayRound_User1_idx"), Userround.USERROUND, new OrderField[] { Userround.USERROUND.GAMEUSER_ID }, false);
