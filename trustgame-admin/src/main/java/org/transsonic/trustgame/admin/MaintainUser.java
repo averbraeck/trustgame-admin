@@ -330,7 +330,7 @@ public class MaintainUser {
     /** make unique user code */
     private static String makeUniqueUserCode(AdminData data) {
         DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
         String code = "";
         boolean same = true;
         while (same) {

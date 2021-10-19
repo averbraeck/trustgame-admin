@@ -319,6 +319,10 @@ public class MaintainGamePlay {
                         .setInitialValue(gamePlay.getAutoregisterusergroupId() == null ? 0 : gamePlay.getAutoregisterusergroupId())
                         .setLabel("Default usergroup")
                         .setPickTable(data, Tables.USERGROUP, Tables.USERGROUP.ID, Tables.USERGROUP.GROUPNAME))
+                .addEntry(new FormEntryString(Tables.GAMEPLAY.AUTOREGISTERLINK)
+                        .setLabel("Registration 'OK' link")
+                        .setInitialValue(gamePlay.getAutoregisterlink() == null ? "" : gamePlay.getAutoregisterlink())
+                        .setMaxChars(90))
                 .endForm();
         //@formatter:on
         data.getFormColumn().setHeaderForm("Edit GamePlay", form);

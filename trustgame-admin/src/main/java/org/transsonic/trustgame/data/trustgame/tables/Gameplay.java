@@ -14,7 +14,7 @@ import org.jooq.Identity;
 import org.jooq.Index;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row14;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -114,6 +114,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
      * The column <code>trustgame.gameplay.AutoregisterUserGroup_ID</code>.
      */
     public final TableField<GameplayRecord, Integer> AUTOREGISTERUSERGROUP_ID = createField(DSL.name("AutoregisterUserGroup_ID"), SQLDataType.INTEGER.defaultValue(DSL.field("NULL", SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>trustgame.gameplay.AutoregisterLink</code>.
+     */
+    public final TableField<GameplayRecord, String> AUTOREGISTERLINK = createField(DSL.name("AutoregisterLink"), SQLDataType.VARCHAR(90).defaultValue(DSL.field("NULL", SQLDataType.VARCHAR)), this, "");
 
     private Gameplay(Name alias, Table<GameplayRecord> aliased) {
         this(alias, aliased, null);
@@ -246,11 +251,11 @@ public class Gameplay extends TableImpl<GameplayRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row14 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String, String, String, Integer> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row14<Integer, Integer, String, LocalDateTime, LocalDateTime, Integer, Integer, Integer, Byte, String, String, String, Integer, String> fieldsRow() {
+        return (Row14) super.fieldsRow();
     }
 }
