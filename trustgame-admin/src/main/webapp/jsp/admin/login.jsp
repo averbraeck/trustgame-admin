@@ -145,7 +145,7 @@ html, body {
       <div class="tg-login-header-right">
         <img src="images/nwo.png" />
         <img src="images/tudelft.png" />
-        <span style="font-size: 12px; padding-left: 20px; position:relative; top:-4px; color:black;">v2.4.1</span>
+        <span style="font-size: 12px; padding-left: 20px; position:relative; top:-4px; color:black;">v2.4.2</span>
       </div>
     </div>
   

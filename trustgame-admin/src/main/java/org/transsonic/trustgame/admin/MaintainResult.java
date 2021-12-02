@@ -431,8 +431,9 @@ public class MaintainResult {
                             if (userCarrier.getRoundnumber() == round) {
                                 CarrierRecord carrier = dslContext.selectFrom(Tables.CARRIER)
                                         .where(Tables.CARRIER.ID.eq(userCarrier.getCarrierId())).fetchAny();
-                                bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(), user.getUsername(),
-                                        hasPlayed, Integer.toString(round), true, "", carrier.getName(), -5, 0, 0));
+                                bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(),
+                                        user.getUsername(), hasPlayed, Integer.toString(round), true, "",
+                                        carrier.getName(), -5, 0, 0));
                             }
                         }
 
@@ -455,12 +456,15 @@ public class MaintainResult {
                                     : dslContext.selectFrom(Tables.CARRIER)
                                             .where(Tables.CARRIER.ID.eq(orderCarrier.getCarrierId())).fetchAny();
 
-                            int profit = order.getTransportearnings() - orderCarrier.getQuoteoffer()
-                                    + orderCarrier.getExtraprofit();
-                            bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(), user.getUsername(),
-                                    hasPlayed, Integer.toString(round), false,
-                                    Integer.toString(order.getOrdernumber().intValue()), carrier.getName(), profit,
-                                    orderCarrier.getOutcomesatisfaction(), orderCarrier.getOutcomesustainability()));
+                            if (order != null && orderCarrier != null && carrier != null) {
+                                int profit = order.getTransportearnings() - orderCarrier.getQuoteoffer()
+                                        + orderCarrier.getExtraprofit();
+                                bw.write(csvLine(tab, gamePlay, gameUser.getId(), user.getUsercode(),
+                                        user.getUsername(), hasPlayed, Integer.toString(round), false,
+                                        Integer.toString(order.getOrdernumber().intValue()), carrier.getName(), profit,
+                                        orderCarrier.getOutcomesatisfaction(),
+                                        orderCarrier.getOutcomesustainability()));
+                            }
 
                         }
                     }
