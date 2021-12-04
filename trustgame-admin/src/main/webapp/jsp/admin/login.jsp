@@ -152,7 +152,7 @@ html, body {
     <div class="tg-login-body">
     
       <div class="tg-login-top-message">
-        <h1>Administration for the FreightBooking Game</h1> 
+        <h1>FreightBooking Game Administration</h1> 
           <p>The following functions are available:</p>
           <ul>
             <li>Creating and maintaining carrier and client data</li>
