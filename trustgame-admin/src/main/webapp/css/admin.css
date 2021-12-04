@@ -109,7 +109,7 @@ html, body {
 }
 
 .tg-header-game-user {
-  position: fixed;
+  position: absolute;
   text-align: left;
   color: white;
   font-weight: normal;
