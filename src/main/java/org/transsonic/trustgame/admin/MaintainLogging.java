@@ -201,7 +201,8 @@ public class MaintainLogging {
             s.append(userClick.getRoundnumber());
             s.append("</td><td>");
             if (userClick.getButtonorfield().equals("ViewTransportOutcome")
-                    || userClick.getButtonorfield().equals("GiveStars"))
+                    || userClick.getButtonorfield().equals("GiveStars")
+                    || userClick.getButtonorfield().equals("changeReview"))
                 s.append(userClick.getOrdernumber() == 0 ? ""
                         : readOrderFromOrderId(data, userClick.getOrdernumber()).getOrdernumber().intValue());
             else
@@ -368,7 +369,8 @@ public class MaintainLogging {
         s.append(userClick.getRoundnumber());
         s.append(sep);
         if (userClick.getButtonorfield().equals("ViewTransportOutcome")
-                || userClick.getButtonorfield().equals("GiveStars"))
+                || userClick.getButtonorfield().equals("GiveStars")
+                || userClick.getButtonorfield().equals("changeReview"))
             s.append(userClick.getOrdernumber() == 0 ? ""
                     : readOrderFromOrderId(data, userClick.getOrdernumber()).getOrdernumber().intValue());
         else
