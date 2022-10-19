@@ -21,6 +21,7 @@ import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameplayRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameuserRecord;
+import org.transsonic.trustgame.data.trustgame.tables.records.OrderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
 
@@ -199,7 +200,12 @@ public class MaintainLogging {
             s.append("</td><td>");
             s.append(userClick.getRoundnumber());
             s.append("</td><td>");
-            s.append(userClick.getOrdernumber() == 0 ? "" : userClick.getOrdernumber());
+            if (userClick.getButtonorfield().equals("ViewTransportOutcome")
+                    || userClick.getButtonorfield().equals("GiveStars"))
+                s.append(userClick.getOrdernumber() == 0 ? ""
+                        : readOrderFromOrderId(data, userClick.getOrdernumber()).getOrdernumber().intValue());
+            else
+                s.append(userClick.getOrdernumber() == 0 ? "" : userClick.getOrdernumber());
             s.append("</td><td>");
             s.append(userClick.getClientname() == null ? "" : userClick.getClientname());
             s.append("</td><td>");
@@ -230,7 +236,7 @@ public class MaintainLogging {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
                 bw.write(csvHeader(tab));
                 for (UserclickRecord userClick : userClicks) {
-                    bw.write(csvLine(gamePlay, userClick, user, tab));
+                    bw.write(csvLine(data, gamePlay, userClick, user, tab));
                 }
             } catch (IOException exception) {
                 ModalWindowUtils.popup(data, "Error writing to temporary file", "<p>" + exception.getMessage() + "</p>",
@@ -277,7 +283,7 @@ public class MaintainLogging {
                             .where(Tables.USERCLICK.GAMEUSER_ID.eq(gameUser.getId())).fetch()
                             .sortAsc(Tables.USERCLICK.TIMESTAMP);
                     for (UserclickRecord userClick : userClicks) {
-                        bw.write(csvLine(gamePlay, userClick, user, tab));
+                        bw.write(csvLine(data, gamePlay, userClick, user, tab));
                     }
                 }
             } catch (IOException exception) {
@@ -339,7 +345,8 @@ public class MaintainLogging {
 
     private static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
 
-    public static String csvLine(GameplayRecord gamePlay, UserclickRecord userClick, UserRecord user, boolean tab) {
+    public static String csvLine(AdminData data, GameplayRecord gamePlay, UserclickRecord userClick, UserRecord user,
+            boolean tab) {
         StringBuilder s = new StringBuilder();
         String sep = tab ? "\t" : ",";
         s.append(gamePlay.getGameId());
@@ -360,7 +367,12 @@ public class MaintainLogging {
         s.append(sep);
         s.append(userClick.getRoundnumber());
         s.append(sep);
-        s.append(userClick.getOrdernumber());
+        if (userClick.getButtonorfield().equals("ViewTransportOutcome")
+                || userClick.getButtonorfield().equals("GiveStars"))
+            s.append(userClick.getOrdernumber() == 0 ? ""
+                    : readOrderFromOrderId(data, userClick.getOrdernumber()).getOrdernumber().intValue());
+        else
+            s.append(userClick.getOrdernumber() == 0 ? "" : userClick.getOrdernumber());
         s.append(sep);
         s.append(csvString(userClick.getClientname() == null ? "" : userClick.getClientname()));
         s.append(sep);
@@ -375,4 +387,8 @@ public class MaintainLogging {
         return "\"" + result + "\"";
     }
 
+    public static OrderRecord readOrderFromOrderId(final AdminData data, final Integer orderId) {
+        DSLContext dslContext = DSL.using(data.getDataSource(), SQLDialect.MYSQL);
+        return dslContext.selectFrom(Tables.ORDER).where(Tables.ORDER.ID.eq(orderId)).fetchAny();
+    }
 }
