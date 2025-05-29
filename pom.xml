@@ -19,9 +19,9 @@
   <inceptionYear>2021</inceptionYear>
 
   <properties>
-    <jdk.version>11</jdk.version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <jdk.version>17</jdk.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <javax.servlet.version>4.0.1</javax.servlet.version>
