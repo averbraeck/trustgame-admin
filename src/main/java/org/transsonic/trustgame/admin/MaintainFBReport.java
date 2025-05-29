@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
@@ -19,6 +16,9 @@ import org.transsonic.trustgame.admin.form.FormEntryUInt;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.CarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.FbreportRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class MaintainFBReport {
 

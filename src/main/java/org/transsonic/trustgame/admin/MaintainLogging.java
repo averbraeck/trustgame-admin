@@ -10,10 +10,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -24,6 +20,10 @@ import org.transsonic.trustgame.data.trustgame.tables.records.GameuserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public class MaintainLogging {
 

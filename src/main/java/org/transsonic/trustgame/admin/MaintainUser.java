@@ -6,8 +6,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
 import org.jooq.DSLContext;
@@ -20,6 +18,9 @@ import org.transsonic.trustgame.admin.form.FormEntryString;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UsergroupRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class MaintainUser {
 

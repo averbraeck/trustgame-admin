@@ -2,9 +2,6 @@ package org.transsonic.trustgame.admin;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
@@ -15,6 +12,9 @@ import org.transsonic.trustgame.admin.form.FormEntryString;
 import org.transsonic.trustgame.admin.form.FormEntryText;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.ClientRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class MaintainClient {
 

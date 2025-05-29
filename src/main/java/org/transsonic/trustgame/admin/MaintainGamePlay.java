@@ -4,8 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 
 import org.jooq.DSLContext;
@@ -33,6 +31,9 @@ import org.transsonic.trustgame.data.trustgame.tables.records.UserclickRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UsergroupRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserorderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.UserroundRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class MaintainGamePlay {
 

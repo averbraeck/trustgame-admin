@@ -6,12 +6,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.jooq.Record;
 import org.transsonic.trustgame.admin.AdminData;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 public class AdminForm {
 

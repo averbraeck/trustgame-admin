@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.exception.DataAccessException;
@@ -29,6 +26,9 @@ import org.transsonic.trustgame.data.trustgame.tables.records.OrderRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.OrdercarrierRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.ReviewRecord;
 import org.transsonic.trustgame.data.trustgame.tables.records.RoundRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 public class MaintainGame {
 

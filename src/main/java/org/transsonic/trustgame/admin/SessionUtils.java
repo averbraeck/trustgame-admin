@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.transsonic.trustgame.data.trustgame.Tables;
 import org.transsonic.trustgame.data.trustgame.tables.records.GameRecord;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 public final class SessionUtils {
 
